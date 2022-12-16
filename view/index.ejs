@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <b>Mouza : Borolekh </b>
+    <div>
+        <form action="/searchplot">
+            <table>
+                <tr>
+                    <td>Select Plot No : </td>
+                    <td></td>
+                    <td>
+                        <select name="plotNo">
+                            <% for(let i = 0;i<plotList.length;i++){ %>
+                                <option><%= plotList[i].plot_no_en %></option>
+                            <%  }%>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <input type="submit" value="Search" />
+                    </td>
+                </tr>
+            </table>
+
+        </form>
+    </div>
+
+
+</body>
+</html>

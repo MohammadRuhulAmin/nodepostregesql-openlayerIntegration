@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Draw and Modify Features</title>
+    <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
+    <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+    <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
+   
+    <style>
+       .map {
+          width: 100%;
+          height: 400px;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="map" class="map"></div>
+    <form class="form-inline">
+      <label>Geometry type &nbsp;</label>
+      <select id="type">
+        <option value="Modify" >Modify </option>
+        <option value="Point">Point</option>
+        <option value="LineString">LineString</option>
+        <option value="Polygon">Polygon</option>
+        <option value="Circle">Circle</option>
+      </select>
+    </form>
+    <script>
+      
+      var typeSelect = document.getElementById('type');
+      var sourceOfDrawing = new ol.source.Vector();
+      var vectorOfDrawing = new ol.layer.Vector({
+        source: sourceOfDrawing,
+        style: new ol.style.Style({
+          fill: new ol.style.Fill({
+            color: 'rgba(255, 255, 255, 0.2)'
+          }),
+          stroke: new ol.style.Stroke({
+            color: '#ffcc33',
+            width: 2
+          }),
+          image: new ol.style.Circle({
+            radius: 7,
+            fill: new ol.style.Fill({
+              color: '#ffcc33'
+            })
+          })
+        })
+      });
+
+      var vectorForMap = new ol.layer.Vector({
+        background: 'white',
+        source: new ol.source.Vector({
+          url: 'https://openlayers.org/data/vector/us-states.json',
+          format: new ol.format.GeoJSON(),
+          wrapX: false,
+      }),
+    });
+       
+    var selectForMap = new ol.interaction.Select({
+        wrapX: false,
+    });
+
+      var modifyForMap = new ol.interaction.Modify({
+        features: selectForMap.getFeatures()
+       
+      });
+      
+   
+    
+      var  map = new ol.Map({
+          interactions : ol.interaction.defaults().extend([selectForMap, modifyForMap]),
+          layers: [ vectorOfDrawing,vectorForMap],
+          target: 'map',
+          view: new ol.View({
+            center: [-11000000, 4600000],
+            zoom: 4
+          })
+        });
+      
+
+      var modifyOfDrawing = new ol.interaction.Modify({source: sourceOfDrawing});
+      map.addInteraction(modifyOfDrawing);
+
+      var draw, snap; 
+      
+
+      function addInteractions() {
+      
+        if(typeSelect.value != "Modify"){
+          map.getInteractions().forEach(x => x.setActive(false));
+          //map.getInteractions().select = false;
+          draw = new ol.interaction.Draw({
+              source: sourceOfDrawing,
+              type: typeSelect.value
+            });
+            map.addInteraction(draw);
+            snap = new ol.interaction.Snap({source: sourceOfDrawing});
+            map.addInteraction(snap);  
+        }
+        else{
+          map.getInteractions().forEach(x => x.setActive(true));
+          
+        }
+      }
+
+      /**
+       * Handle change event.
+       */
+      typeSelect.onchange = function() {
+        map.removeInteraction(draw);
+        map.removeInteraction(snap);
+        addInteractions();
+      };
+
+      addInteractions();
+    </script>
+  </body>
+</html>
