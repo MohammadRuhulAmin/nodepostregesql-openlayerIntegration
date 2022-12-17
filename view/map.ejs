@@ -28,12 +28,13 @@
         <option value="Circle">Circle</option>
       </select>
     </form>
-    <p id="plotInfo"><%=plotInfo %></p>
+ 
+    <input id="plotInfo" type="text" value="<%=plotInfo %> "/>
     <!-- <script src="../assets/geojson.json"></script> -->
     <script type="text/javascript">
       
-      //const plotGeo = document.getElementById("plotInfo").textContent;
-      //console.log(plotGeo);
+      const plotGeo =  document.getElementById("plotInfo").value;
+      console.log(plotGeo);
       const raster = new ol.layer.Tile({
         source: new ol.source.OSM(),
       });
@@ -68,14 +69,16 @@ const vectorLayer = new VectorLayer({
   style: styleFunction,
 });
       */
-     var plotGeo = {
+
+var xlotGeo = {
   "type": "FeatureCollection",
   "features": [
     {
       "type": "Feature",
       "properties": {},
       "geometry": {
-        "coordinates": [
+        "coordinates": 
+        [
           [
             [
               88.43450687294342,
@@ -131,17 +134,19 @@ const vectorLayer = new VectorLayer({
             ]
           ]
         ],
+        
         "type": "Polygon"
       }
     }
   ]
 };
-      
-      
-     
+
+
+
+
       var vectorForMap = new ol.layer.Vector({
         source: new ol.source.Vector({
-        features: (new ol.format.GeoJSON()).readFeatures(plotGeo, {
+        features: (new ol.format.GeoJSON()).readFeatures(xlotGeo, {
             dataProjection: 'EPSG:4326',
           featureProjection: 'EPSG:3857'
         })
@@ -165,7 +170,7 @@ const vectorLayer = new VectorLayer({
     
       var  map = new ol.Map({
           interactions : ol.interaction.defaults().extend([selectForMap, modifyForMap]),
-          layers: [ vectorOfDrawing,vectorForMap],
+          layers: [vectorOfDrawing,vectorForMap],
           target: 'map',
           view: new ol.View({
            //center: [-11000000, 4600000],
@@ -216,6 +221,5 @@ const vectorLayer = new VectorLayer({
 
       addInteractions();
     </script>
-    
   </body>
 </html>

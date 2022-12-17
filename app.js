@@ -20,13 +20,14 @@ app.get('/',(req,res)=>{
     });
 });
 app.get('/searchplot',(req,res)=>{
-    
-    let gid = 2;
-    let query = "select ST_AsGeoJson(geom)  from mouza_map_drone where gid = $1";
+    const gid = req.query.plotNo;
+    console.log(gid);
+    let query = "select ST_AsGeoJSON(geom) from mouza_map_drone where gid = $1";
     pool.query(query,[gid],(err,results)=>{
         if(err)throw err;
         var geojson = results.rows[0].st_asgeojson;
-        res.render('map',{plotInfo:JSON.parse(geojson)});
+        //res.send(geojson);
+        res.render('map',{plotInfo:geojson});
     })
     
 });
