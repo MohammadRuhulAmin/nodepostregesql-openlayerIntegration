@@ -28,8 +28,15 @@
         <option value="Circle">Circle</option>
       </select>
     </form>
-    <script>
+    <p id="plotInfo"><%=plotInfo %></p>
+    <!-- <script src="../assets/geojson.json"></script> -->
+    <script type="text/javascript">
       
+      //const plotGeo = document.getElementById("plotInfo").textContent;
+      //console.log(plotGeo);
+      const raster = new ol.layer.Tile({
+        source: new ol.source.OSM(),
+      });
       var typeSelect = document.getElementById('type');
       var sourceOfDrawing = new ol.source.Vector();
       var vectorOfDrawing = new ol.layer.Vector({
@@ -51,15 +58,100 @@
         })
       });
 
+      /*
+        const vectorSource = new VectorSource({
+  features: new GeoJSON().readFeatures(geojsonObject),
+});
+
+const vectorLayer = new VectorLayer({
+  source: vectorSource,
+  style: styleFunction,
+});
+      */
+     var plotGeo = {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              88.43450687294342,
+              26.437457685963267
+            ],
+            [
+              88.55365297946355,
+              25.956375258673404
+            ],
+            [
+              88.38486266189483,
+              25.40158813895171
+            ],
+            [
+              87.98770897349561,
+              24.880272889229488
+            ],
+            [
+              87.52105338962656,
+              23.50367562328212
+            ],
+            [
+              88.39479150410455,
+              22.287207239865168
+            ],
+            [
+              90.06283699537732,
+              21.97449806828466
+            ],
+            [
+              92.74362439206766,
+              22.232073765195324
+            ],
+            [
+              93.041489658368,
+              23.357913754264786
+            ],
+            [
+              92.13796501726091,
+              24.98831358457251
+            ],
+            [
+              91.9989613209429,
+              25.6435063982302
+            ],
+            [
+              90.31105814524886,
+              26.170434997979854
+            ],
+            [
+              88.43450687294342,
+              26.437457685963267
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      }
+    }
+  ]
+};
+      
+      
+     
       var vectorForMap = new ol.layer.Vector({
-        background: 'white',
         source: new ol.source.Vector({
-          url: 'https://openlayers.org/data/vector/us-states.json',
-          format: new ol.format.GeoJSON(),
-          wrapX: false,
+        features: (new ol.format.GeoJSON()).readFeatures(plotGeo, {
+            dataProjection: 'EPSG:4326',
+          featureProjection: 'EPSG:3857'
+        })
       }),
-    });
-       
+      });
+
+   
+    
+  
+
     var selectForMap = new ol.interaction.Select({
         wrapX: false,
     });
@@ -76,8 +168,10 @@
           layers: [ vectorOfDrawing,vectorForMap],
           target: 'map',
           view: new ol.View({
-            center: [-11000000, 4600000],
-            zoom: 4
+           //center: [-11000000, 4600000],
+           //center:[90.19530825,24.988718323],
+           center: ol.proj.transform([90.19530825,24.988718323], 'EPSG:4326', 'EPSG:3857'),
+            zoom: 8
           })
         });
       
@@ -91,7 +185,11 @@
       function addInteractions() {
       
         if(typeSelect.value != "Modify"){
-          map.getInteractions().forEach(x => x.setActive(false));
+          map.getInteractions().forEach(x => {
+            x.setActive(false)
+            console.log(x);
+          });
+          
           //map.getInteractions().select = false;
           draw = new ol.interaction.Draw({
               source: sourceOfDrawing,
@@ -118,5 +216,6 @@
 
       addInteractions();
     </script>
+    
   </body>
 </html>
