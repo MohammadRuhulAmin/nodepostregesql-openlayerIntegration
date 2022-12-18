@@ -8,7 +8,10 @@
 
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
     <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
-   
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
     <style>
        .map {
           width: 100%;
@@ -28,13 +31,73 @@
         <option value="Circle">Circle</option>
       </select>
     </form>
- 
+    
+    <p id="updatedGeoJsonData"></p>
     <input id="plotInfo" type="text" value="<%=plotInfo %> "/>
     <!-- <script src="../assets/geojson.json"></script> -->
+    <!-- Button trigger modal -->
+    <br>
+    <br>
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <form action="/addnew-plot" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <table class="table">
+            <tr>
+              <td>GID </td>
+              <td><input type="number" name="gid" /></td>
+            </tr>
+            <tr>
+              <td>OID_ </td>
+              <td><input type="number" name="oid_" /></td>
+            </tr>
+            <tr>
+              <td>Name </td>
+              <td><input type="text" name="name" /></td>
+            </tr>
+            <tr>
+              <td>SymbolID </td>
+              <td><input type="number" name="symbolid" /></td>
+            </tr>
+            <tr>
+              <td>area_h </td>
+              <td><input type="text" name="area_h" /></td>
+            </tr>
+            <tr>
+              <td>Geom Data</td>
+              <td><input type="text" name="geom" /></td>
+            </tr>
+          
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+    
     <script type="text/javascript">
       
       const plotGeo =  document.getElementById("plotInfo").value;
-      console.log(plotGeo);
+      //console.log(plotGeo);
       const raster = new ol.layer.Tile({
         source: new ol.source.OSM(),
       });
@@ -166,7 +229,7 @@ var xlotGeo = {
        
       });
       
-   
+      
     
       var  map = new ol.Map({
           interactions : ol.interaction.defaults().extend([selectForMap, modifyForMap]),
@@ -220,6 +283,10 @@ var xlotGeo = {
       };
 
       addInteractions();
+
+ 
+
+
     </script>
   </body>
 </html>

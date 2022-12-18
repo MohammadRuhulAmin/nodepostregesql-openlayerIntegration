@@ -1,5 +1,5 @@
 {
-  "name": "MapCrudApplication",
+  "name": "mapcrudapplication",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -13,10 +13,10 @@
     "body-parser": "^1.20.1",
     "ejs": "^3.1.8",
     "express": "^4.18.2",
-    "fs": "0.0.1-security",
-    "load-json-file": "^7.0.1",
-    "nodemon": "^2.0.20",
     "path": "^0.12.7",
     "pg": "^8.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
   }
 }

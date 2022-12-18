@@ -5,7 +5,15 @@ const PORT = 3000;
 
 app.set("view engine", "ejs");
 app.set("views", "./view")
-app.use(express.static(__dirname + "/public"))
+
+const bodyParser = require("body-parser")
+  
+// New app using express module
+
+app.use(bodyParser.urlencoded({
+    extended:true
+}));
+
 
 app.get('/',(req,res)=>{
     let qry = "select gid from mouza_map_drone";
@@ -31,6 +39,17 @@ app.get('/searchplot',(req,res)=>{
     })
     
 });
+
+app.post('/addnew-plot',(req,res)=>{
+   
+    const {gid,oid_,name,symbolid,area_h,geom} = req.body;
+    console.log(req.body);
+    let qry = "insert into mouza_map_drone(oid_,name,symbolid,area_h,geom) values($1,$2,$3,$4,$5)";
+    pool.query(qry, [oid_,name,symbolid,area_h,geom], (err, results) => {
+        if(err)throw err; 
+        else  res.send("Data inserted Successfully");
+    })
+})  
 
 
 
