@@ -11,7 +11,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
+    
+    
     <style>
        .map {
           width: 100%;
@@ -40,7 +41,7 @@
     <br>
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-  Launch demo modal
+  + Add Plot  Details 
 </button>
 
 <!-- Modal -->
@@ -97,7 +98,7 @@
     <script type="text/javascript">
       
       const plotGeo =  document.getElementById("plotInfo").value;
-      //console.log(plotGeo);
+      console.log(plotGeo);
       const raster = new ol.layer.Tile({
         source: new ol.source.OSM(),
       });
@@ -132,6 +133,8 @@ const vectorLayer = new VectorLayer({
   style: styleFunction,
 });
       */
+
+
 
 var xlotGeo = {
   "type": "FeatureCollection",
@@ -204,14 +207,17 @@ var xlotGeo = {
   ]
 };
 
+    
+
+ 
 
 
 
       var vectorForMap = new ol.layer.Vector({
         source: new ol.source.Vector({
-        features: (new ol.format.GeoJSON()).readFeatures(xlotGeo, {
-            dataProjection: 'EPSG:4326',
+        features: (new ol.format.GeoJSON()).readFeatures(plotGeo, {
           featureProjection: 'EPSG:3857'
+      
         })
       }),
       });
@@ -236,9 +242,9 @@ var xlotGeo = {
           layers: [vectorOfDrawing,vectorForMap],
           target: 'map',
           view: new ol.View({
-           //center: [-11000000, 4600000],
+           center: [-119.448390384,-0.02474743],
            //center:[90.19530825,24.988718323],
-           center: ol.proj.transform([90.19530825,24.988718323], 'EPSG:4326', 'EPSG:3857'),
+           //center: ol.proj.transform([-119.448390384,-0.02474743], 'EPSG:4326', 'EPSG:3857'),
             zoom: 8
           })
         });

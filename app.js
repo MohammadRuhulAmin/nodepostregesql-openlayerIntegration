@@ -16,26 +16,24 @@ app.use(bodyParser.urlencoded({
 
 
 app.get('/',(req,res)=>{
-    let qry = "select gid from mouza_map_drone";
-    
+    let qry = "select plot_no_en from borolekh order by plot_no_en asc";
     pool.query(qry, (err, results) => {
         if (err) throw err
         else {
-            //res.send(results.rows);
             res.render('index',{plotList:results.rows});
         }
-
     });
 });
 app.get('/searchplot',(req,res)=>{
-    const gid = req.query.plotNo;
-    console.log(gid);
-    let query = "select ST_AsGeoJSON(geom) from mouza_map_drone where gid = $1";
-    pool.query(query,[gid],(err,results)=>{
+    const plot_no_en = req.query.plotNo;
+    console.log(plot_no_en);
+    //let query = "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(geom, 3400), 4326)) FROM borolekh where plot_no_en = $1;"
+    let query = "SELECT ST_AsGeoJson(geom) FROM borolekh Where plot_no_en = $1";
+    pool.query(query,[plot_no_en],(err,results)=>{
         if(err)throw err;
         var geojson = results.rows[0].st_asgeojson;
         //res.send(geojson);
-        res.render('map',{plotInfo:geojson});
+        res.render('display_plot',{plotInfo:geojson});
     })
     
 });
@@ -50,9 +48,6 @@ app.post('/addnew-plot',(req,res)=>{
         else  res.send("Data inserted Successfully");
     })
 })  
-
-
-
 
 
 app.listen(PORT,()=>{
