@@ -11,7 +11,7 @@
       }
     </style>
     <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/build/ol.js"></script>
-
+    <script src="https://unpkg.com/@turf/turf@5.1.6/turf.min.js"></script>
 
 
   </head>
@@ -32,17 +32,17 @@
           </span>
         </div>
       </div>
+      <button onclick="splitOperationWithTurf()"> Split Polygon  </button>
 
 
     <script type="text/javascript">
         const source = new ol.source.Vector({wrapX: false});
-
         const vector = new ol.layer.Vector({
             source: source,
         });
 
         const plotGeo =  document.getElementById("plotInfo").value;
-        console.log(plotGeo);
+       
         var map = new ol.Map({
             target: 'map',
             layers: [
@@ -61,12 +61,11 @@
           })
         })
       );
-
+      
+      var LineSplitterGeoJson ;
       map.getView().fit(geometry);
-      
-      
       const typeSelect = document.getElementById('type');
-      let draw; // global so we can remove it later
+      let draw; 
       function addInteraction() {
         const value = typeSelect.value;
             if (value !== 'None') {
@@ -75,6 +74,14 @@
                 type: typeSelect.value,
                 });
                 map.addInteraction(draw);
+                draw.on("drawend",function(e){
+                    var writer = new ol.format.GeoJSON();
+                    //pass the feature as an array
+                    LineSplitterGeoJson = writer.writeFeatures([e.feature]);
+                    //alert(LineSplitterGeoJson)
+                });
+                            
+              
             }
       }
         typeSelect.onchange = function () {
@@ -83,6 +90,50 @@
         };
 
         addInteraction();
+
+      
+        function splitOperationWithTurf(){
+            var plotGeoJson = JSON.parse(plotGeo);
+            var lineStringJson = JSON.parse(LineSplitterGeoJson);
+            var poly = turf.polygon(plotGeoJson.coordinates[0]);
+            var line = turf.polygon(lineStringJson.features[0].geometry);
+            console.log(poly);
+            console.log(line);
+            var polyAsLine = turf.polygonToLine(poly);
+            console.log(polyAsLine);
+            var unionedLines = turf.union(polyAsLine,line);
+            console.log(unionedLines);
+            var polygonized = turf.polygonize(unionedLines);
+            console.log(polygonized);
+          
+          
+
+           
+
+            
+          
+           
+            
+           
+            
+            
+  
+            
+        }
+
+        function split(){
+            console.log("SPLIT ");
+            const polygon = JSON.parse(plotGeo);
+            const lineString = JSON.parse(LineSplitterGeoJson);
+            
+            const poly = turf.polygon(polygon.coordinates);
+            const line = turf.polygon(lineString.coordinates);
+            console.log(line);
+          
+           
+        }
+       
+        
     </script>
   
   </body>
