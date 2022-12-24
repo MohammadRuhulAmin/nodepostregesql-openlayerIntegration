@@ -91,47 +91,69 @@
 
         addInteraction();
 
-      
+        
+
         function splitOperationWithTurf(){
             var plotGeoJson = JSON.parse(plotGeo);
             var lineStringJson = JSON.parse(LineSplitterGeoJson);
             var poly = turf.polygon(plotGeoJson.coordinates[0]);
             var line = turf.polygon(lineStringJson.features[0].geometry);
-            console.log(poly);
-            console.log(line);
+            var poly_coordinates = poly.geometry.coordinates;
+            var line_coordinates  = [line.geometry.coordinates.coordinates];
             var polyAsLine = turf.polygonToLine(poly);
+            var makeLineGeoJson = {
+              "type":"feature",
+               "geometry":{
+                  "coordinates":line_coordinates[0],
+                  "type": "LineString"
+               }
+            };
+            console.log("polyAsLine");
             console.log(polyAsLine);
-            var unionedLines = turf.union(polyAsLine,line);
+            console.log("MakeLineGeoJson : ");
+            console.log(makeLineGeoJson);
+
+            var unionedLines =  turf.union(polyAsLine,makeLineGeoJson);
+            console.log("UnionedLines");
             console.log(unionedLines);
-            var polygonized = turf.polygonize(unionedLines);
+            const polygonized = turf.polygonize(unionedLines);
+            console.log("polygonized : ");
             console.log(polygonized);
-          
-          
-
-           
+      
 
             
+           
           
-           
-            
-           
-            
-            
-  
+          
             
         }
 
         function split(){
-            console.log("SPLIT ");
-            const polygon = JSON.parse(plotGeo);
-            const lineString = JSON.parse(LineSplitterGeoJson);
-            
-            const poly = turf.polygon(polygon.coordinates);
-            const line = turf.polygon(lineString.coordinates);
-            console.log(line);
-          
-           
+          console.log("+++++++++++++++++++++=")      
+          var poly1 = turf.polygon([[
+                  [-82.574787, 35.594087],
+                  [-82.574787, 35.615581],
+                  [-82.545261, 35.615581],
+                  [-82.545261, 35.594087],
+                  [-82.574787, 35.594087]
+              ]]);
+                var poly2 = turf.polygon([[
+                  [-82.560024, 35.585153],
+                  [-82.560024, 35.602602],
+                  [-82.52964, 35.602602],
+                  [-82.52964, 35.585153],
+                  [-82.560024, 35.585153]
+              ]]);
+        
+        console.log("poly1 : ");
+        console.log(poly1);
+        console.log("poly2 : ");
+        console.log(poly2);
+        console.log("Union ================: ");
+        console.log(turf.union(poly1,poly2));    
+        console.log("+++++++++++++++++++++=")   
         }
+     
        
         
     </script>
