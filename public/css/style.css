@@ -1,0 +1,10 @@
+
+html,body,.map {
+  align-content: center;
+  margin: 0;
+  padding: 0;
+  width: 600px;
+  height: 100%;
+  border-style:  dotted;
+}
+

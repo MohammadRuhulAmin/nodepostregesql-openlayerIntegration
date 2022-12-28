@@ -2,39 +2,62 @@
 <html lang="en">
   <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/css/ol.css" type="text/css">
-    <style>
-      html, body, .map {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-      }
-    </style>
+    <link rel="stylesheet" href="css/style.css" />
+    
     <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/build/ol.js"></script>
     <script src="https://unpkg.com/@turf/turf@5.1.6/turf.min.js"></script>
 
-
   </head>
   <body>
+ 
+ 
+
     <div id="map" class="map"></div>
+    <br><br>
     <input id="plotInfo" type="hidden" value="<%=plotInfo %> "/>
-    <div class="row">
-        <div class="col-auto">
-          <span class="input-group">
-            <label class="input-group-text" for="type">Geometry type:</label>
-            <select class="form-select" id="type">
-              <option value="Point">Point</option>
-              <option value="LineString">LineString</option>
-              <option value="Polygon">Polygon</option>
-              <option value="Circle">Circle</option>
-              <option value="None">None</option>
-            </select>
-          </span>
-        </div>
-      </div>
-      <button onclick="splitOperationWithTurf()"> Split Polygon  </button>
-
-
+    
+    <br>
+    <br>
+    <table border="1px">
+      <tr>
+        <td>
+          <button onclick="splitOperationWithTurf()"> Cut PolyGon </button></td>
+        </td>
+        <td>
+          <div>
+            <div>
+                <span>
+                  <label > Draw Geometry :</label>
+                  <select  id="type">
+                    <option value="Point">Point</option>
+                    <option value="LineString">LineString</option>
+                    <option value="Polygon">Polygon</option>
+                    <option value="Circle">Circle</option>
+                    <option value="None">None</option>
+                  </select>
+                </span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <button onclick="DisplaySplitPoly1()"> Display Splitted Polygon - 1  </button>
+        </td>
+        <td>
+          <button onclick="DisplaySplitPoly2()"> Display Splitted Polygon - 2  </button>
+        </td>
+      </tr>
+    </table>
+    <br>
+    <br>
+    <div id="map_sp_1" class="map">
+      <p id="area_sp_1"></p>
+    </div>
+    <br><br>
+    <div id="map_sp_2" class="map">
+      <p id="area_sp_2"></p>
+    </div>
+    
+   
     <script type="text/javascript">
         const source = new ol.source.Vector({wrapX: false});
         const vector = new ol.layer.Vector({
@@ -53,7 +76,7 @@
             ],
             view: new ol.View()
         });
-      var geometry = new ol.format.GeoJSON().readGeometry(plotGeo);
+     var geometry = new ol.format.GeoJSON().readGeometry(plotGeo);
       map.addLayer(
         new ol.layer.Vector({
           source: new ol.source.Vector({
@@ -61,9 +84,10 @@
           })
         })
       );
+      map.getView().fit(geometry);
       
       var LineSplitterGeoJson ;
-      map.getView().fit(geometry);
+     
       const typeSelect = document.getElementById('type');
       let draw; 
       function addInteraction() {
@@ -78,9 +102,8 @@
                     var writer = new ol.format.GeoJSON();
                     //pass the feature as an array
                     LineSplitterGeoJson = writer.writeFeatures([e.feature]);
-                    //alert(LineSplitterGeoJson)
-                });
-                            
+                  
+                });           
               
             }
       }
@@ -91,8 +114,7 @@
 
         addInteraction();
 
-        
-
+        var splittedPolygon;
         function splitOperationWithTurf(){
             var plotGeoJson = JSON.parse(plotGeo);
             var lineStringJson = JSON.parse(LineSplitterGeoJson);
@@ -108,55 +130,88 @@
                   "type": "LineString"
                }
             };
-            console.log("polyAsLine");
-            console.log(polyAsLine);
-            console.log("MakeLineGeoJson : ");
-            console.log(makeLineGeoJson);
-
             var unionedLines =  turf.union(polyAsLine,makeLineGeoJson);
-            console.log("UnionedLines");
-            console.log(unionedLines);
             const polygonized = turf.polygonize(unionedLines);
+            splittedPolygon = polygonized;
+            console.log("======================")
             console.log("polygonized : ");
-            console.log(polygonized);
-      
-
-            
-           
-          
-          
-            
+            console.log(polygonized); 
+            console.log("======================");
         }
-
-        function split(){
-          console.log("+++++++++++++++++++++=")      
-          var poly1 = turf.polygon([[
-                  [-82.574787, 35.594087],
-                  [-82.574787, 35.615581],
-                  [-82.545261, 35.615581],
-                  [-82.545261, 35.594087],
-                  [-82.574787, 35.594087]
-              ]]);
-                var poly2 = turf.polygon([[
-                  [-82.560024, 35.585153],
-                  [-82.560024, 35.602602],
-                  [-82.52964, 35.602602],
-                  [-82.52964, 35.585153],
-                  [-82.560024, 35.585153]
-              ]]);
         
-        console.log("poly1 : ");
-        console.log(poly1);
-        console.log("poly2 : ");
-        console.log(poly2);
-        console.log("Union ================: ");
-        console.log(turf.union(poly1,poly2));    
-        console.log("+++++++++++++++++++++=")   
+        // for splitted polygon - 1 
+        function DisplaySplitPoly1(){
+              
+              const source_sp_1 = new ol.source.Vector({wrapX: false});
+              const vector_sp_1 = new ol.layer.Vector({
+                  source: source_sp_1,
+              });
+
+              var map_sp_1 = new ol.Map({
+                  target: 'map_sp_1',
+                  layers: [
+                      vector_sp_1
+                  ],
+                  view: new ol.View()
+              });
+      
+          var geometry_sp_1 = new ol.format.GeoJSON().readGeometry(splittedPolygon.features[0].geometry);
+          console.log(splittedPolygon.features[0].geometry.coordinates)
+         
+          
+          map_sp_1.addLayer(
+              new ol.layer.Vector({
+                source: new ol.source.Vector({
+                  features: [new ol.Feature(geometry_sp_1)]
+                })
+              })
+            );
+            map_sp_1.getView().fit(geometry_sp_1);
+            const sp_area_1_polygon = turf.polygon(splittedPolygon.features[0].geometry.coordinates);
+            const area_sp_1 = turf.area(sp_area_1_polygon);
+            document.getElementById('area_sp_1').innerHTML = "Area : " + area_sp_1 + " Square Meters ";
         }
-     
+        
+
+       // for splitted polygon - 2 
+        function DisplaySplitPoly2(){
+          const source_sp_2 = new ol.source.Vector({wrapX: false});
+          const vector_sp_2 = new ol.layer.Vector({
+              source: source_sp_2,
+          });
+
+          var map_sp_2 = new ol.Map({
+              target: 'map_sp_2',
+              layers: [
+                  vector_sp_2
+              ],
+              view: new ol.View()
+          });
+    
+
+  
+        var geometry_sp_2 = new ol.format.GeoJSON().readGeometry(splittedPolygon.features[1].geometry);
+        map_sp_2.addLayer(
+            new ol.layer.Vector({
+              source: new ol.source.Vector({
+                features: [new ol.Feature(geometry_sp_2)]
+              })
+            })
+          );
+          map_sp_2.getView().fit(geometry_sp_2);
+          const sp_area_2_polygon = turf.polygon(splittedPolygon.features[1].geometry.coordinates);
+          const area_sp_2 = turf.area(sp_area_2_polygon);
+          document.getElementById('area_sp_2').innerHTML = "Area : " + area_sp_2 + " Square Meters ";
+        }
        
         
+
     </script>
-  
   </body>
 </html>
+
+
+
+
+
+

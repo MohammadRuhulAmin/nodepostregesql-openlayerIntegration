@@ -5,10 +5,10 @@ const PORT = 3000;
 
 app.set("view engine", "ejs");
 app.set("views", "./view")
-
+app.use(express.static(__dirname + "/public"))
 const bodyParser = require("body-parser")
   
-// New app using express module
+
 
 app.use(bodyParser.urlencoded({
     extended:true
