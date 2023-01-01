@@ -1,0 +1,16 @@
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.6.2/proj4.min.js"></script>
+
+</head>
+<body>
+    <script>
+        var utm = "+proj=utm +zone=32";
+        var wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+        console.log(proj4(utm,wgs84,[539884, 4942158]));
+        console.log(proj4(utm,wgs84,[11122,121111]));
+    </script>
+
+</body>
+
+</html>
