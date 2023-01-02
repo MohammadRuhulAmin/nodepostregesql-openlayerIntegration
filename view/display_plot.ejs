@@ -3,7 +3,7 @@
   <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/css/ol.css" type="text/css">
     <link rel="stylesheet" href="css/style.css" />
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.6.2/proj4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/build/ol.js"></script>
     <script src="https://unpkg.com/@turf/turf@5.1.6/turf.min.js"></script>
 
@@ -85,7 +85,97 @@
         })
       );
       map.getView().fit(geometry);
+      // display distance label start 
       
+      var data = JSON.parse(plotGeo)
+       // getting distance 
+      var coordinateDistance = [];
+      function designDistance(){
+        const length = data.coordinates[0][0].length;
+        
+          for(let i = 1;i<length;i++){
+              var coord = data.coordinates[0][0];
+              var dist = distance(coord[i-1][0],coord[i][0],coord[i-1][1],coord[i][1]);
+              coordinateDistance.push(dist);
+          }
+          coordinateDistance.push(distance(coord[length-1][0],coord[0][0],coord[length-1][1],coord[0][1]));
+          
+        }
+      designDistance();
+      // distance of coordinates 
+      function distance(x1,x2, y1,y2){
+         return Math.sqrt(  Math.pow((x1-x2),2)+ Math.pow((y1-y2),2));
+      }
+      // mid point of coordinates 
+      const midPointArray = [];
+      function midPointOfCoordinates(){
+        let coord = data.coordinates[0][0];
+       
+        for(let i = 1;i<coord.length;i++){
+          let midx = (coord[i-1][0] + coord[i][0])/2;
+          let midy = (coord[i-1][1] + coord[i][1])/2;
+          midPointArray.push([midx,midy]);
+        }
+        midPointArray.push([(coord[0][0] + coord[coord.length - 1][0])/2,(coord[0][1] + coord[coord.length-1][1])/2]);
+        
+      }
+      midPointOfCoordinates();
+      
+      // function to add label : 
+      function displayLabel(coordx,coordy,distance){
+            var utm = "+proj=utm +zone=32";
+            var wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+            var coord = proj4(utm,wgs84,[coordx, coordy])
+            var labelFeature = new ol.Feature({
+                geometry: new ol.geom.Point([coordx,coordy]),
+            });
+            var labelonly = new ol.style.Style({
+                text: new ol.style.Text({
+                    font: '14px sans-serif',
+                    //offsetY: -25,
+                    //text: `${parseInt(coordx)},${parseInt(coordy)}`,
+                    text:`${parseInt(distance)} km`,
+                    fill: new ol.style.Fill({
+                        color: 'red'
+                    }),
+                })
+            });
+            labelFeature.setStyle(labelonly);
+            var vectorSource = new ol.source.Vector({
+                features: [labelFeature]
+            });
+
+            var vectorLayer = new ol.layer.Vector({
+                source: vectorSource
+            });
+            
+            map.addLayer(
+                new ol.layer.Vector({
+                    source: vectorSource
+                })
+            );
+        }
+       const coordinateSet = data.coordinates[0][0];
+      
+      //  for(let i = 0;i<coordinateSet.length;i++){
+      //       displayLabel(coordinateSet[i][0],coordinateSet[i][1]);
+      //  }
+       for(let i = 0;i<midPointArray.length;i++){
+          console.log(midPointArray[i][0],midPointArray[i][1])
+          displayLabel(midPointArray[i][0]+4,midPointArray[i][1]+4, coordinateDistance[i]);
+       }
+
+
+
+
+
+      // display label end 
+
+
+
+
+
+      // line splitting function
       var LineSplitterGeoJson ;
      
       const typeSelect = document.getElementById('type');
