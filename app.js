@@ -32,8 +32,7 @@ app.get('/searchplot',(req,res)=>{
     pool.query(query,[plot_no_en],(err,results)=>{
         if(err)throw err;
         var geojson = results.rows[0].st_asgeojson;
-        //res.send(geojson);
-        res.render('display_plot',{plotInfo:geojson});
+        res.render('map',{plotInfo:geojson});
     })
     
 });
