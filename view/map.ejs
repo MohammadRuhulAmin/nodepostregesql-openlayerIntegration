@@ -13,6 +13,8 @@
  
 
     <div id="map" class="map"></div>
+    <p>Splitted Area 1 : <span id="sA_1"></span> </p>
+    <p>Splitted Area 2 : <span id="sA_2"></span></p>
     <br><br>
     <input id="plotInfo" type="hidden" value="<%=plotInfo %> "/>
     
@@ -201,13 +203,27 @@
           console.log("Modifyed Feature : ")
           var format = new ol.format["GeoJSON"]();
           LineSplitterGeoJson = format.writeFeatures(source.getFeatures());
-          //LineSplitterGeoJson = JSON.parse(geoJsonStr);
           console.log("ly: ");
           console.log(LineSplitterGeoJson);
+          splitOperationWithTurf();
+          const sp_area_1_polygon = turf.polygon(splittedPolygon.features[0].geometry.coordinates);
+          const area_sp_1 = turf.area(sp_area_1_polygon);
+          document.getElementById('sA_1').innerHTML = "Area : " + area_sp_1/1000 + " Square KM ";
+          
+          const sp_area_2_polygon = turf.polygon(splittedPolygon.features[1].geometry.coordinates);
+          const area_sp_2 = turf.area(sp_area_2_polygon);
+          document.getElementById('sA_2').innerHTML = "Area : " + area_sp_2/1000 + " Square KM ";
           
           
         });
 
+        // clearing vector source 
+        function clearVectorSources(){
+          var features = vectorLayer.getSource().getFeatures();
+          features.forEach((feature) => {
+            vectorLayer.getSource().removeFeature(feature);
+          });
+        }
 
         var splittedPolygon;
         function splitOperationWithTurf(){
@@ -279,8 +295,8 @@
 
        // for splitted polygon - 2 
         function DisplaySplitPoly2(){
-          const source_sp_2 = new ol.source.Vector({wrapX: false});
-          const vector_sp_2 = new ol.layer.Vector({
+          var source_sp_2 = new ol.source.Vector({wrapX: false});
+          var vector_sp_2 = new ol.layer.Vector({
               source: source_sp_2,
           });
 
