@@ -60,7 +60,7 @@
    
     <script type="text/javascript">
         const source = new ol.source.Vector({wrapX: false});
-        const vector = new ol.layer.Vector({
+        const vector_plot = new ol.layer.Vector({
             source:source,
         });
 
@@ -69,7 +69,7 @@
         var map = new ol.Map({
             target: 'map',
             layers: [
-                vector
+                vector_plot
             ],
             view: new ol.View()
         });
@@ -92,7 +92,6 @@
       var coordinateDistance_sp_plot_2 = [];
       function designDistance(data,coordinateDistance){
         const length = data.coordinates[0][0].length;
-        
           for(let i = 1;i<length;i++){
               var coord = data.coordinates[0][0];
               var dist = distance(coord[i-1][0],coord[i][0],coord[i-1][1],coord[i][1]);
@@ -144,23 +143,23 @@
             });
 
             labelFeature.setStyle(labelonly);
-            const vectorSource = new ol.source.Vector({
+            const vectorSource_for_parent_label = new ol.source.Vector({
                 features: [labelFeature]
             });
 
             const vectorLayer = new ol.layer.Vector({
-                source: vectorSource
+                source: vectorSource_for_parent_label
             });
             
             map.addLayer(
                 new ol.layer.Vector({
-                    source: vectorSource
+                    source: vectorSource_for_parent_label
                 })
             );
         }
 
        for(let i = 0;i<midPointArray_parent.length;i++){
-        displayLabelForParentPlot(midPointArray_parent[i][0]+4,midPointArray_parent[i][1]+4, coordinateDistance_parent[i]);
+          displayLabelForParentPlot(midPointArray_parent[i][0]+4,midPointArray_parent[i][1]+4, coordinateDistance_parent[i]);
        }
       // display label end 
 
@@ -169,9 +168,10 @@
       
       var LineSplitterGeoJson ;
       var modify = new ol.interaction.Modify({source: source});
-      map.addInteraction(modify);
+     
       const typeSelect = document.getElementById('type');
       let draw,snap;
+      
       function addInteraction() {
         const value = typeSelect.value;
                 if (value !== 'None') {
@@ -182,7 +182,9 @@
                 map.addInteraction(draw);
                 draw.on("drawend",function(e){
                     var writer = new ol.format.GeoJSON();
+                    console.log("lx:")
                     LineSplitterGeoJson = writer.writeFeatures([e.feature]);
+                    console.log(JSON.parse(LineSplitterGeoJson));
                     
                 });           
             }
@@ -192,8 +194,20 @@
             map.removeInteraction(snap);
             addInteraction();
         };
+        
+        map.addInteraction(modify);
+        
+        modify.on('modifyend',function(e){
+          console.log("Modifyed Feature : ")
+          var format = new ol.format["GeoJSON"]();
+          LineSplitterGeoJson = format.writeFeatures(source.getFeatures());
+          //LineSplitterGeoJson = JSON.parse(geoJsonStr);
+          console.log("ly: ");
+          console.log(LineSplitterGeoJson);
+          
+          
+        });
 
-        addInteraction();
 
         var splittedPolygon;
         function splitOperationWithTurf(){
