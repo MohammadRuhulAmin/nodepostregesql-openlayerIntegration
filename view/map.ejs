@@ -161,6 +161,7 @@
         }
 
        for(let i = 0;i<midPointArray_parent.length;i++){
+        if(coordinateDistance_parent[i]>0)
           displayLabelForParentPlot(midPointArray_parent[i][0]+4,midPointArray_parent[i][1]+4, coordinateDistance_parent[i]);
        }
       // display label end 
@@ -214,7 +215,6 @@
           const area_sp_2 = turf.area(sp_area_2_polygon);
           document.getElementById('sA_2').innerHTML = "Area : " + area_sp_2/1000 + " Square KM ";
           
-          
         });
 
         // clearing vector source 
@@ -255,7 +255,9 @@
         }
         // for splitted polygon - 1 
           function DisplaySplitPoly1(){
-                
+            const div = document.createElement("div");
+            div.setAttribute("id","map_sp_1");
+            document.body.appendChild(div);
                 var source_sp_1 = new ol.source.Vector({wrapX: false});
                 var vector_sp_1 = new ol.layer.Vector({
                     source: source_sp_1,
@@ -295,6 +297,9 @@
 
        // for splitted polygon - 2 
         function DisplaySplitPoly2(){
+          const div = document.createElement("div");
+            div.setAttribute("id","map_sp_2");
+            document.body.appendChild(div);
           var source_sp_2 = new ol.source.Vector({wrapX: false});
           var vector_sp_2 = new ol.layer.Vector({
               source: source_sp_2,
