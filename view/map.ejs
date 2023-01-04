@@ -10,7 +10,6 @@
   </head>
   <body>
  
- 
 
     <div id="map" class="map"></div>
     <p>Splitted Area 1 : <span id="sA_1"></span> </p>
@@ -59,23 +58,21 @@
       <p id="area_sp_2"></p>
     </div>
     
-   
-    <script type="text/javascript">
-        const source = new ol.source.Vector({wrapX: false});
-        const vector_plot = new ol.layer.Vector({
+    <!-- script for display parent plot  -->
+   <script type="text/javascript">
+      const source = new ol.source.Vector({wrapX: false});
+      const vector_plot = new ol.layer.Vector({
             source:source,
         });
-
-        const plotGeo =  document.getElementById("plotInfo").value;
-       
-        var map = new ol.Map({
+      const plotGeo =  document.getElementById("plotInfo").value;
+      var map = new ol.Map({
             target: 'map',
             layers: [
                 vector_plot
             ],
             view: new ol.View()
         });
-     var geometry = new ol.format.GeoJSON().readGeometry(plotGeo);
+      var geometry = new ol.format.GeoJSON().readGeometry(plotGeo);
       map.addLayer(
         new ol.layer.Vector({
           source: new ol.source.Vector({
@@ -84,9 +81,10 @@
         })
       );
       map.getView().fit(geometry);
+   </script>
 
-      // display distance label start for Parent Plot 
-        // data is parent plot geojson 
+   <!-- labeling for parent plot  -->
+   <script>
       var data = JSON.parse(plotGeo)
        // getting distance 
       var coordinateDistance_parent = [];
@@ -164,11 +162,10 @@
         if(coordinateDistance_parent[i]>0)
           displayLabelForParentPlot(midPointArray_parent[i][0]+4,midPointArray_parent[i][1]+4, coordinateDistance_parent[i]);
        }
-      // display label end 
+   </script>
 
-
-      // line splitting function
-      
+   <!-- cut parent polygon & modify line string  -->
+    <script type="text/javascript">
       var LineSplitterGeoJson ;
       var modify = new ol.interaction.Modify({source: source});
      
@@ -217,13 +214,7 @@
           
         });
 
-        // clearing vector source 
-        function clearVectorSources(){
-          var features = vectorLayer.getSource().getFeatures();
-          features.forEach((feature) => {
-            vectorLayer.getSource().removeFeature(feature);
-          });
-        }
+     
 
         var splittedPolygon;
         function splitOperationWithTurf(){
@@ -245,16 +236,14 @@
             const polygonized = turf.polygonize(unionedLines);
             splittedPolygon = polygonized;
         }
-        
-        var spGeoJson_1 = {
-            "type":"MultiPolygon"
+    </script>
 
-        }
-        var spGeoJson_2 = {
+    <!-- script for child plot - 1  -->
+    <script>
+         var spGeoJson_1 = {
             "type":"MultiPolygon"
         }
-        // for splitted polygon - 1 
-          function DisplaySplitPoly1(){
+      function DisplaySplitPoly1(){
             const div = document.createElement("div");
             div.setAttribute("id","map_sp_1");
             document.body.appendChild(div);
@@ -290,13 +279,14 @@
               
               
         }
-      
-        // label for splitted polygon -1 
-      
-        
+    </script>
+    <!-- script for child plot -2  -->
 
-       // for splitted polygon - 2 
-        function DisplaySplitPoly2(){
+    <script>
+       var spGeoJson_2 = {
+            "type":"MultiPolygon"
+        }
+       function DisplaySplitPoly2(){
           const div = document.createElement("div");
             div.setAttribute("id","map_sp_2");
             document.body.appendChild(div);
@@ -329,9 +319,8 @@
           document.getElementById('area_sp_2').innerHTML = "Area : " + area_sp_2 + " Square Meters ";
           spGeoJson_2.coordinates = [splittedPolygon.features[1].geometry.coordinates];
         }
-       
-
     </script>
+
   </body>
 </html>
 
