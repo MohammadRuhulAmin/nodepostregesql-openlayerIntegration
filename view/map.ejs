@@ -60,6 +60,7 @@
     
     <!-- script for display parent plot  -->
    <script type="text/javascript">
+     
       const source = new ol.source.Vector({wrapX: false});
       const vector_plot = new ol.layer.Vector({
             source:source,
@@ -107,8 +108,7 @@
       }
       // mid point of coordinates 
       const midPointArray_parent = [];
-      const midPointArray_splittedPlot_1 = [];
-      const midPointArray_splittedPlot_2 = [];
+     
 
       function midPointOfCoordinates(data,midPointArray){
         let coord = data.coordinates[0][0];
@@ -147,9 +147,7 @@
                 features: [labelFeature]
             });
 
-            const vectorLayer = new ol.layer.Vector({
-                source: vectorSource_for_parent_label
-            });
+         
             
             map.addLayer(
                 new ol.layer.Vector({
@@ -238,7 +236,7 @@
         }
     </script>
 
-    <!-- script for child plot - 1  -->
+    <!-- script for child plot - 1 with label  -->
     <script>
          var spGeoJson_1 = {
             "type":"MultiPolygon"
@@ -277,19 +275,94 @@
               const area_sp_1 = turf.area(sp_area_1_polygon);
               document.getElementById('area_sp_1').innerHTML = "Area : " + area_sp_1 + " Square Meters ";
               
-              
-        }
-    </script>
-    <!-- script for child plot -2  -->
+          //adding label for splitted polygon -1 
+               // getting distance
+          var midPointArray_sp_plot_1 = [];
+          var coordinateDistance_sp_plot_1 = [];
 
+          function designDistance_sp_plot_1(spGeoJson_1,coordinateDistance){
+            const length = spGeoJson_1.coordinates[0][0].length;
+              for(let i = 1;i<length;i++){
+                  var coord = spGeoJson_1.coordinates[0][0];
+                  var dist = distance_sp_plot_1(coord[i-1][0],coord[i][0],coord[i-1][1],coord[i][1]);
+                  coordinateDistance.push(dist);
+              }
+              coordinateDistance.push(distance_sp_plot_1(coord[length-1][0],coord[0][0],coord[length-1][1],coord[0][1]));
+
+            }
+
+            designDistance_sp_plot_1(data,coordinateDistance_sp_plot_1);
+          // distance of coordinates
+          function distance_sp_plot_1(x1,x2, y1,y2){
+              return Math.sqrt(  Math.pow((x1-x2),2)+ Math.pow((y1-y2),2));
+          }
+          // mid point of coordinates
+          
+
+
+          function midPointOfCoordinates_sp_plot_1(spGeoJson_1,midPointArray_sp_plot_1){
+            let coord = spGeoJson_1.coordinates[0][0];
+            
+            for(let i = 1;i<coord.length;i++){
+              let midx = (coord[i-1][0] + coord[i][0])/2;
+              let midy = (coord[i-1][1] + coord[i][1])/2;
+              midPointArray_sp_plot_1.push([midx,midy]);
+            }
+            midPointArray_sp_plot_1.push([(coord[0][0] + coord[coord.length - 1][0])/2,(coord[0][1] + coord[coord.length-1][1])/2]);
+
+          }
+          midPointOfCoordinates_sp_plot_1(spGeoJson_1,midPointArray_sp_plot_1);
+
+          // function to add label :
+          function displayLabelFor_sp_plot_1(coordx,coordy,distance){
+                
+                const utm = "+proj=utm +zone=32";
+                const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+                const coord = proj4(utm,wgs84,[coordx, coordy])
+                const labelFeature_sp_plot_1 = new ol.Feature({
+                    geometry: new ol.geom.Point([coordx,coordy]),
+                });
+
+                const labelonly_sp_plot_1 = new ol.style.Style({
+                    text: new ol.style.Text({
+                        font: '14px sans-serif',
+                        text:`${parseInt(distance)} m`,
+                        fill: new ol.style.Fill({
+                            color: 'red'
+                        }),
+                    })
+                });
+
+                labelFeature_sp_plot_1.setStyle(labelonly_sp_plot_1);
+                const vectorSource_for_sp_plot_1 = new ol.source.Vector({
+                    features: [labelFeature_sp_plot_1]
+                });
+
+            
+                map_sp_1.addLayer(
+                    new ol.layer.Vector({
+                        source: vectorSource_for_sp_plot_1
+                    })
+                );
+            }
+
+            for(let i = 0;i<midPointArray_sp_plot_1.length;i++){
+            if(coordinateDistance_sp_plot_1[i]>0)
+              displayLabelFor_sp_plot_1(midPointArray_sp_plot_1[i][0]+4,midPointArray_sp_plot_1[i][1]+4, coordinateDistance_sp_plot_1[i]);
+            }
+                
+          }
+    </script>
+
+
+
+    <!-- splitted polygon -2  -->
     <script>
+
        var spGeoJson_2 = {
             "type":"MultiPolygon"
         }
        function DisplaySplitPoly2(){
-          const div = document.createElement("div");
-            div.setAttribute("id","map_sp_2");
-            document.body.appendChild(div);
           var source_sp_2 = new ol.source.Vector({wrapX: false});
           var vector_sp_2 = new ol.layer.Vector({
               source: source_sp_2,
@@ -318,9 +391,88 @@
           const area_sp_2 = turf.area(sp_area_2_polygon);
           document.getElementById('area_sp_2').innerHTML = "Area : " + area_sp_2 + " Square Meters ";
           spGeoJson_2.coordinates = [splittedPolygon.features[1].geometry.coordinates];
+          // label for splitted polygon -2 
+          var midPointArray_sp_plot_2 = [];
+          var coordinateDistance_sp_plot_2 = [];
+
+          function designDistance_sp_plot_2(spGeoJson_2,coordinateDistance){
+            const length = spGeoJson_2.coordinates[0][0].length;
+              for(let i = 1;i<length;i++){
+                  var coord = spGeoJson_2.coordinates[0][0];
+                  var dist = distance_sp_plot_2(coord[i-1][0],coord[i][0],coord[i-1][1],coord[i][1]);
+                  coordinateDistance.push(dist);
+              }
+              coordinateDistance.push(distance_sp_plot_2(coord[length-1][0],coord[0][0],coord[length-1][1],coord[0][1]));
+
+            }
+
+            designDistance_sp_plot_2(data,coordinateDistance_sp_plot_2);
+          // distance of coordinates
+          function distance_sp_plot_2(x1,x2, y1,y2){
+              return Math.sqrt(  Math.pow((x1-x2),2)+ Math.pow((y1-y2),2));
+          }
+          // mid point of coordinates
+          
+
+
+          function midPointOfCoordinates_sp_plot_2(spGeoJson_2,midPointArray_sp_plot_2){
+            let coord = spGeoJson_2.coordinates[0][0];
+            
+            for(let i = 1;i<coord.length;i++){
+              let midx = (coord[i-1][0] + coord[i][0])/2;
+              let midy = (coord[i-1][1] + coord[i][1])/2;
+              midPointArray_sp_plot_2.push([midx,midy]);
+            }
+            midPointArray_sp_plot_2.push([(coord[0][0] + coord[coord.length - 1][0])/2,(coord[0][1] + coord[coord.length-1][1])/2]);
+
+          }
+          midPointOfCoordinates_sp_plot_2(spGeoJson_2,midPointArray_sp_plot_2);
+
+          // function to add label :
+          function displayLabelFor_sp_plot_2(coordx,coordy,distance){
+                
+                const utm = "+proj=utm +zone=32";
+                const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+                const coord = proj4(utm,wgs84,[coordx, coordy])
+                const labelFeature_sp_plot_2= new ol.Feature({
+                    geometry: new ol.geom.Point([coordx,coordy]),
+                });
+
+                const labelonly_sp_plot_2 = new ol.style.Style({
+                    text: new ol.style.Text({
+                        font: '14px sans-serif',
+                        text:`${parseInt(distance)} m`,
+                        fill: new ol.style.Fill({
+                            color: 'red'
+                        }),
+                    })
+                });
+
+                labelFeature_sp_plot_2.setStyle(labelonly_sp_plot_2);
+                const vectorSource_for_sp_plot_2 = new ol.source.Vector({
+                    features: [labelFeature_sp_plot_2]
+                });
+
+            
+                map_sp_2.addLayer(
+                    new ol.layer.Vector({
+                        source: vectorSource_for_sp_plot_2
+                    })
+                );
+            }
+
+            for(let i = 0;i<midPointArray_sp_plot_2.length;i++){
+            if(coordinateDistance_sp_plot_2[i]>0)
+              displayLabelFor_sp_plot_2(midPointArray_sp_plot_2[i][0]+2,midPointArray_sp_plot_2[i][1]+2, coordinateDistance_sp_plot_2[i]);
+            }
+                
+
         }
     </script>
 
+    
+
+  
   </body>
 </html>
 
