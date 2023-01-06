@@ -12,7 +12,7 @@
 
     <div id="map" class="map">
 
-      <label><p>Area : <%=plotArea %> sqft , Shape Length : <%=plotLeng %> ft</p></label>
+      <label><p>Area : <%=plotArea %> sqft , Shape Length : <%=plotLeng*3.28084  %> ft</p></label>
     
     </div>
     <p>Splitted Area 1 : <span id="sA_1"></span> </p>
@@ -94,28 +94,65 @@
       var coordinateDistance_parent = [];
       var coordinateDistance_sp_plot_1 = [];
       var coordinateDistance_sp_plot_2 = [];
+      var parentCoordinatesLangLot = [];
+      function parentCoordinateLangLotConverter(){
+          for(let i = 0;i<data.coordinates[0][0].length;i++){
+             console.log()
+             const utm = "+proj=utm +zone=32";
+             const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+             const coord = proj4(utm,wgs84,[data.coordinates[0][0][i][0],data.coordinates[0][0][i][1]])
+             parentCoordinatesLangLot.push(coord);
+          }
+          
+          
+      }
+      parentCoordinateLangLotConverter();
+      
       function designDistance(data,coordinateDistance){
-        const length = data.coordinates[0][0].length;
+        const length = parentCoordinatesLangLot.length;
           for(let i = 1;i<length;i++){
-              var coord = data.coordinates[0][0];
-              var dist = distance(coord[i-1][0],coord[i][0],coord[i-1][1],coord[i][1]);
+              var dist = distance(parentCoordinatesLangLot[i-1][0],parentCoordinatesLangLot[i][0],parentCoordinatesLangLot[i-1][1],parentCoordinatesLangLot[i][1]);
               coordinateDistance.push(dist);
           }
-          coordinateDistance.push(distance(coord[length-1][0],coord[0][0],coord[length-1][1],coord[0][1]));
+          coordinateDistance.push(distance(parentCoordinatesLangLot[length-1][0],parentCoordinatesLangLot[0][0],parentCoordinatesLangLot[length-1][1],parentCoordinatesLangLot[0][1]));
           
         }
       designDistance(data,coordinateDistance_parent);
       // distance of coordinates 
-      function distance(x1,x2, y1,y2){
-         return Math.sqrt(  Math.pow((x1-x2),2)+ Math.pow((y1-y2),2));
-      }
+      function distance(lat1,lat2, lon1, lon2){
+   
+        // The math module contains a function
+        // named toRadians which converts from
+        // degrees to radians.
+        lon1 =  lon1 * Math.PI / 180;
+        lon2 = lon2 * Math.PI / 180;
+        lat1 = lat1 * Math.PI / 180;
+        lat2 = lat2 * Math.PI / 180;
+   
+        // Haversine formula
+        let dlon = lon2 - lon1;
+        let dlat = lat2 - lat1;
+        let a = Math.pow(Math.sin(dlat / 2), 2)
+                 + Math.cos(lat1) * Math.cos(lat2)
+                 * Math.pow(Math.sin(dlon / 2),2);
+               
+        let c = 2 * Math.asin(Math.sqrt(a));
+   
+        // Radius of earth in kilometers. Use 3956
+        // for miles
+        let r = 6371;
+        let sln = c*r;
+        console.log(sln*3280.8398950131)
+        // calculate the result
+        return(c * r * 1000*3.28084 );
+    }
+ 
       // mid point of coordinates 
       const midPointArray_parent = [];
      
 
       function midPointOfCoordinates(data,midPointArray){
         let coord = data.coordinates[0][0];
-        
         for(let i = 1;i<coord.length;i++){
           let midx = (coord[i-1][0] + coord[i][0])/2;
           let midy = (coord[i-1][1] + coord[i][1])/2;
@@ -138,7 +175,7 @@
             const labelonly = new ol.style.Style({
                 text: new ol.style.Text({
                     font: '14px sans-serif',
-                    text:`${parseInt(distance)} m`,
+                    text:`${parseInt(distance)} ft`,
                     fill: new ol.style.Fill({
                         color: 'red'
                     }),

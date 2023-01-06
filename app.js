@@ -28,7 +28,7 @@ app.get('/',(req,res)=>{
 app.get('/searchplot',(req,res)=>{
     const plot_no_en = req.query.plotNo;
     var geoJson,stArea,stleng;
-    let query1 = "SELECT ST_AsGeoJson(ST_Simplify(geom,4)) FROM borolekh Where plot_no_en = $1";
+    let query1 = "SELECT ST_AsGeoJson(ST_Simplify(geom,2)) FROM borolekh Where plot_no_en = $1";
     let query2 = "SELECT shape_area FROM borolekh WHERE plot_no_en = $1";
     let query3 = "SELECT shape_leng FROM borolekh WHERE plot_no_en = $1"
     pool.query(query3,[plot_no_en],(err,result)=>{
@@ -54,7 +54,7 @@ app.get('/searchplot',(req,res)=>{
 
 app.post('/addnew-plot',(req,res)=>{
     const {gid,oid_,name,symbolid,area_h,geom} = req.body;
-    console.log(req.body);
+   
     let qry = "insert into mouza_map_drone(oid_,name,symbolid,area_h,geom) values($1,$2,$3,$4,$5)";
     pool.query(qry, [oid_,name,symbolid,area_h,geom], (err, results) => {
         if(err)throw err; 
