@@ -242,9 +242,7 @@
             "type":"MultiPolygon"
         }
       function DisplaySplitPoly1(){
-            const div = document.createElement("div");
-            div.setAttribute("id","map_sp_1");
-            document.body.appendChild(div);
+
                 var source_sp_1 = new ol.source.Vector({wrapX: false});
                 var vector_sp_1 = new ol.layer.Vector({
                     source: source_sp_1,
@@ -297,12 +295,8 @@
               return Math.sqrt(  Math.pow((x1-x2),2)+ Math.pow((y1-y2),2));
           }
           // mid point of coordinates
-          
-
-
           function midPointOfCoordinates_sp_plot_1(spGeoJson_1,midPointArray_sp_plot_1){
             let coord = spGeoJson_1.coordinates[0][0];
-            
             for(let i = 1;i<coord.length;i++){
               let midx = (coord[i-1][0] + coord[i][0])/2;
               let midy = (coord[i-1][1] + coord[i][1])/2;
@@ -311,11 +305,11 @@
             midPointArray_sp_plot_1.push([(coord[0][0] + coord[coord.length - 1][0])/2,(coord[0][1] + coord[coord.length-1][1])/2]);
 
           }
+
           midPointOfCoordinates_sp_plot_1(spGeoJson_1,midPointArray_sp_plot_1);
 
           // function to add label :
-          function displayLabelFor_sp_plot_1(coordx,coordy,distance){
-                
+          function displayLabelFor_sp_plot_1(coordx,coordy,distance){       
                 const utm = "+proj=utm +zone=32";
                 const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
                 const coord = proj4(utm,wgs84,[coordx, coordy])
@@ -350,7 +344,6 @@
             if(coordinateDistance_sp_plot_1[i]>0)
               displayLabelFor_sp_plot_1(midPointArray_sp_plot_1[i][0]+4,midPointArray_sp_plot_1[i][1]+4, coordinateDistance_sp_plot_1[i]);
             }
-                
           }
     </script>
 
@@ -358,7 +351,6 @@
 
     <!-- splitted polygon -2  -->
     <script>
-
        var spGeoJson_2 = {
             "type":"MultiPolygon"
         }
@@ -403,10 +395,9 @@
                   coordinateDistance.push(dist);
               }
               coordinateDistance.push(distance_sp_plot_2(coord[length-1][0],coord[0][0],coord[length-1][1],coord[0][1]));
-
             }
 
-            designDistance_sp_plot_2(data,coordinateDistance_sp_plot_2);
+            designDistance_sp_plot_2(spGeoJson_2,coordinateDistance_sp_plot_2);
           // distance of coordinates
           function distance_sp_plot_2(x1,x2, y1,y2){
               return Math.sqrt(  Math.pow((x1-x2),2)+ Math.pow((y1-y2),2));

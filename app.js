@@ -28,8 +28,8 @@ app.get('/searchplot',(req,res)=>{
     const plot_no_en = req.query.plotNo;
     console.log(plot_no_en);
     //let query = "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(geom, 3400), 4326)) FROM borolekh where plot_no_en = $1;"
-    let query = "SELECT ST_AsGeoJson(ST_Simplify(geom,4)) FROM borolekh Where plot_no_en = $1";
-    pool.query(query,[plot_no_en],(err,results)=>{
+    let query1 = "SELECT ST_AsGeoJson(ST_Simplify(geom,4)) FROM borolekh Where plot_no_en = $1";
+    pool.query(query1,[plot_no_en],(err,results)=>{
         if(err)throw err;
         var geojson = results.rows[0].st_asgeojson;
         res.render('map',{plotInfo:geojson});
