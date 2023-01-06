@@ -420,22 +420,31 @@
           // label for splitted polygon -2 
           var midPointArray_sp_plot_2 = [];
           var coordinateDistance_sp_plot_2 = [];
-
+          var sp_2CoordinatesLangLot = [];
+          function sp_2CoordinateLangLotConverter(){
+              for(let i = 0;i<spGeoJson_2.coordinates[0][0].length;i++){
+                const utm = "+proj=utm +zone=32";
+                const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+                const coord = proj4(utm,wgs84,[spGeoJson_2.coordinates[0][0][i][0],spGeoJson_2.coordinates[0][0][i][1]])
+                sp_2CoordinatesLangLot.push(coord);
+              }
+          }
+          sp_2CoordinateLangLotConverter();
           function designDistance_sp_plot_2(spGeoJson_2,coordinateDistance){
             const length = spGeoJson_2.coordinates[0][0].length;
               for(let i = 1;i<length;i++){
                   var coord = spGeoJson_2.coordinates[0][0];
-                  var dist = distance_sp_plot_2(coord[i-1][0],coord[i][0],coord[i-1][1],coord[i][1]);
+                  var dist = distance(sp_2CoordinatesLangLot[i-1][0],sp_2CoordinatesLangLot[i][0],sp_2CoordinatesLangLot[i-1][1],sp_2CoordinatesLangLot[i][1]);
                   coordinateDistance.push(dist);
               }
-              coordinateDistance.push(distance_sp_plot_2(coord[length-1][0],coord[0][0],coord[length-1][1],coord[0][1]));
+              coordinateDistance.push(distance(sp_2CoordinatesLangLot[length-1][0],sp_2CoordinatesLangLot[0][0],sp_2CoordinatesLangLot[length-1][1],sp_2CoordinatesLangLot[0][1]));
+
             }
+        
 
             designDistance_sp_plot_2(spGeoJson_2,coordinateDistance_sp_plot_2);
-          // distance of coordinates
-          function distance_sp_plot_2(x1,x2, y1,y2){
-              return Math.sqrt(  Math.pow((x1-x2),2)+ Math.pow((y1-y2),2));
-          }
+     
+       
           // mid point of coordinates
           
 
@@ -466,7 +475,7 @@
                 const labelonly_sp_plot_2 = new ol.style.Style({
                     text: new ol.style.Text({
                         font: '14px sans-serif',
-                        text:`${parseInt(distance)} m`,
+                        text:`${parseInt(distance)} ft`,
                         fill: new ol.style.Fill({
                             color: 'red'
                         }),
