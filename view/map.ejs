@@ -1,298 +1,517 @@
-
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <title>Draw and Modify Features</title>
-    <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
-    <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
-
-    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
-    <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    
-    
-    <style>
-       .map {
-          width: 100%;
-          height: 400px;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/css/ol.css" type="text/css">
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.6.2/proj4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/build/ol.js"></script>
+    <script src="https://unpkg.com/@turf/turf@5.1.6/turf.min.js"></script>
   </head>
   <body>
-    <div id="map" class="map"></div>
-    <form class="form-inline">
-      <label>Geometry type &nbsp;</label>
-      <select id="type">
-        <option value="Modify" >Modify </option>
-        <option value="Point">Point</option>
-        <option value="LineString">LineString</option>
-        <option value="Polygon">Polygon</option>
-        <option value="Circle">Circle</option>
-      </select>
-    </form>
-    
-    <p id="updatedGeoJsonData"></p>
-    <input id="plotInfo" type="text" value="<%=plotInfo %> "/>
-    <!-- <script src="../assets/geojson.json"></script> -->
-    <!-- Button trigger modal -->
-    <br>
-    <br>
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-  + Add Plot  Details 
-</button>
+ 
 
-<!-- Modal -->
-<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <form action="/addnew-plot" method="post">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <table class="table">
-            <tr>
-              <td>GID </td>
-              <td><input type="number" name="gid" /></td>
-            </tr>
-            <tr>
-              <td>OID_ </td>
-              <td><input type="number" name="oid_" /></td>
-            </tr>
-            <tr>
-              <td>Name </td>
-              <td><input type="text" name="name" /></td>
-            </tr>
-            <tr>
-              <td>SymbolID </td>
-              <td><input type="number" name="symbolid" /></td>
-            </tr>
-            <tr>
-              <td>area_h </td>
-              <td><input type="text" name="area_h" /></td>
-            </tr>
-            <tr>
-              <td>Geom Data</td>
-              <td><input type="text" name="geom" /></td>
-            </tr>
-          
-          </table>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Save changes</button>
-        </div>
-      </form>
+    <div id="map" class="map">
+
+      <label><p>Area : <%=plotArea %> sqft , Shape Length : <%=plotLeng*3.28084  %> ft</p></label>
+    
     </div>
-  </div>
-</div>
-
-
+    <p>Splitted Area 1 : <span id="sA_1"></span> </p>
+    <p>Splitted Area 2 : <span id="sA_2"></span></p>
+    <br><br>
+    <input id="plotInfo" type="hidden" value="<%=plotInfo %> "/>
     
-    <script type="text/javascript">
-      
-      const plotGeo =  document.getElementById("plotInfo").value;
-      console.log(plotGeo);
-      const raster = new ol.layer.Tile({
-        source: new ol.source.OSM(),
-      });
-      var typeSelect = document.getElementById('type');
-      var sourceOfDrawing = new ol.source.Vector();
-      var vectorOfDrawing = new ol.layer.Vector({
-        source: sourceOfDrawing,
-        style: new ol.style.Style({
-          fill: new ol.style.Fill({
-            color: 'rgba(255, 255, 255, 0.2)'
-          }),
-          stroke: new ol.style.Stroke({
-            color: '#ffcc33',
-            width: 2
-          }),
-          image: new ol.style.Circle({
-            radius: 7,
-            fill: new ol.style.Fill({
-              color: '#ffcc33'
-            })
-          })
-        })
-      });
-
-      /*
-        const vectorSource = new VectorSource({
-  features: new GeoJSON().readFeatures(geojsonObject),
-});
-
-const vectorLayer = new VectorLayer({
-  source: vectorSource,
-  style: styleFunction,
-});
-      */
-
-
-
-var xlotGeo = {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "properties": {},
-      "geometry": {
-        "coordinates": 
-        [
-          [
-            [
-              88.43450687294342,
-              26.437457685963267
-            ],
-            [
-              88.55365297946355,
-              25.956375258673404
-            ],
-            [
-              88.38486266189483,
-              25.40158813895171
-            ],
-            [
-              87.98770897349561,
-              24.880272889229488
-            ],
-            [
-              87.52105338962656,
-              23.50367562328212
-            ],
-            [
-              88.39479150410455,
-              22.287207239865168
-            ],
-            [
-              90.06283699537732,
-              21.97449806828466
-            ],
-            [
-              92.74362439206766,
-              22.232073765195324
-            ],
-            [
-              93.041489658368,
-              23.357913754264786
-            ],
-            [
-              92.13796501726091,
-              24.98831358457251
-            ],
-            [
-              91.9989613209429,
-              25.6435063982302
-            ],
-            [
-              90.31105814524886,
-              26.170434997979854
-            ],
-            [
-              88.43450687294342,
-              26.437457685963267
-            ]
-          ]
-        ],
-        
-        "type": "Polygon"
-      }
-    }
-  ]
-};
-
+    <br>
+    <br>
+    <table border="1px">
+      <tr>
+        <td>
+          <button onclick="splitOperationWithTurf()"> Cut PolyGon </button></td>
+        </td>
+        <td>
+          <div>
+            <div>
+                <span>
+                  <label > Draw Geometry :</label>
+                  <select  id="type">
+                    <option value="Point">Point</option>
+                    <option value="LineString">LineString</option>
+                    <option value="Polygon">Polygon</option>
+                    <option value="Circle">Circle</option>
+                    <option value="None">None</option>
+                  </select>
+                </span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <button onclick="DisplaySplitPoly1()"> Display Splitted Polygon - 1  </button>
+        </td>
+        <td>
+          <button onclick="DisplaySplitPoly2()"> Display Splitted Polygon - 2  </button>
+        </td>
+      </tr>
+    </table>
+    <br>
+    <br>
+    <div id="map_sp_1" class="map">
+      <p id="area_sp_1"></p>
+    </div>
+    <br><br>
+    <div id="map_sp_2" class="map">
+      <p id="area_sp_2"></p>
+    </div>
     
-
- 
-
-
-
-      var vectorForMap = new ol.layer.Vector({
-        source: new ol.source.Vector({
-        features: (new ol.format.GeoJSON()).readFeatures(plotGeo, {
-          featureProjection: 'EPSG:3857'
-      
-        })
-      }),
-      });
-
-   
-    
-  
-
-    var selectForMap = new ol.interaction.Select({
-        wrapX: false,
-    });
-
-      var modifyForMap = new ol.interaction.Modify({
-        features: selectForMap.getFeatures()
-       
-      });
-      
-      
-    
-      var  map = new ol.Map({
-          interactions : ol.interaction.defaults().extend([selectForMap, modifyForMap]),
-          layers: [vectorOfDrawing,vectorForMap],
-          target: 'map',
-          view: new ol.View({
-           center: [-119.448390384,-0.02474743],
-           //center:[90.19530825,24.988718323],
-           //center: ol.proj.transform([-119.448390384,-0.02474743], 'EPSG:4326', 'EPSG:3857'),
-            zoom: 8
-          })
+    <!-- script for display parent plot  -->
+   <script type="text/javascript">
+     
+      const source = new ol.source.Vector({wrapX: false});
+      const vector_plot = new ol.layer.Vector({
+            source:source,
         });
-      
+      const plotGeo =  document.getElementById("plotInfo").value;
+      var map = new ol.Map({
+            target: 'map',
+            layers: [
+                vector_plot
+            ],
+            view: new ol.View()
+        });
+      var geometry = new ol.format.GeoJSON().readGeometry(plotGeo);
+      map.addLayer(
+        new ol.layer.Vector({
+          source: new ol.source.Vector({
+            features: [new ol.Feature(geometry)]
+          })
+        })
+      );
+      map.getView().fit(geometry);
+   </script>
 
-      var modifyOfDrawing = new ol.interaction.Modify({source: sourceOfDrawing});
-      map.addInteraction(modifyOfDrawing);
-
-      var draw, snap; 
-      
-
-      function addInteractions() {
-      
-        if(typeSelect.value != "Modify"){
-          map.getInteractions().forEach(x => {
-            x.setActive(false)
-            console.log(x);
-          });
-          
-          //map.getInteractions().select = false;
-          draw = new ol.interaction.Draw({
-              source: sourceOfDrawing,
-              type: typeSelect.value
-            });
-            map.addInteraction(draw);
-            snap = new ol.interaction.Snap({source: sourceOfDrawing});
-            map.addInteraction(snap);  
-        }
-        else{
-          map.getInteractions().forEach(x => x.setActive(true));
-          
-        }
+   <!-- labeling for parent plot  -->
+   <script>
+      var data = JSON.parse(plotGeo)
+       // getting distance 
+      var coordinateDistance_parent = [];
+      var coordinateDistance_sp_plot_1 = [];
+      var coordinateDistance_sp_plot_2 = [];
+      var parentCoordinatesLangLot = [];
+      function parentCoordinateLangLotConverter(){
+          for(let i = 0;i<data.coordinates[0][0].length;i++){
+             console.log()
+             const utm = "+proj=utm +zone=32";
+             const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+             const coord = proj4(utm,wgs84,[data.coordinates[0][0][i][0],data.coordinates[0][0][i][1]])
+             parentCoordinatesLangLot.push(coord);
+          }
       }
-
-      /**
-       * Handle change event.
-       */
-      typeSelect.onchange = function() {
-        map.removeInteraction(draw);
-        map.removeInteraction(snap);
-        addInteractions();
-      };
-
-      addInteractions();
-
+      parentCoordinateLangLotConverter();
+      
+      function designDistance(data,coordinateDistance){
+        const length = parentCoordinatesLangLot.length;
+          for(let i = 1;i<length;i++){
+              var dist = distance(parentCoordinatesLangLot[i-1][0],parentCoordinatesLangLot[i][0],parentCoordinatesLangLot[i-1][1],parentCoordinatesLangLot[i][1]);
+              coordinateDistance.push(dist);
+          }
+          coordinateDistance.push(distance(parentCoordinatesLangLot[length-1][0],parentCoordinatesLangLot[0][0],parentCoordinatesLangLot[length-1][1],parentCoordinatesLangLot[0][1]));
+          
+        }
+      designDistance(data,coordinateDistance_parent);
+      // distance of coordinates 
+      function distance(lat1,lat2, lon1, lon2){
+        lon1 =  lon1 * Math.PI / 180;
+        lon2 = lon2 * Math.PI / 180;
+        lat1 = lat1 * Math.PI / 180;
+        lat2 = lat2 * Math.PI / 180;
+        let dlon = lon2 - lon1;
+        let dlat = lat2 - lat1;
+        let a = Math.pow(Math.sin(dlat / 2), 2)
+                 + Math.cos(lat1) * Math.cos(lat2)
+                 * Math.pow(Math.sin(dlon / 2),2);
+               
+        let c = 2 * Math.asin(Math.sqrt(a));
+        let r = 6371;
+        let sln = c*r;
+        console.log(sln*3280.8398950131)
+        return(c * r * 1000*3.28084 );
+    }
  
+      // mid point of coordinates 
+      const midPointArray_parent = [];
+     
 
+      function midPointOfCoordinates(data,midPointArray){
+        let coord = data.coordinates[0][0];
+        for(let i = 1;i<coord.length;i++){
+          let midx = (coord[i-1][0] + coord[i][0])/2;
+          let midy = (coord[i-1][1] + coord[i][1])/2;
+          midPointArray.push([midx,midy]);
+        }
+        midPointArray.push([(coord[0][0] + coord[coord.length - 1][0])/2,(coord[0][1] + coord[coord.length-1][1])/2]);
+        
+      }
+      midPointOfCoordinates(data,midPointArray_parent);
+      
+      // function to add label : 
+      function displayLabelForParentPlot(coordx,coordy,distance){
+            const utm = "+proj=utm +zone=32";
+            const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+            const coord = proj4(utm,wgs84,[coordx, coordy])
+            const labelFeature = new ol.Feature({
+                geometry: new ol.geom.Point([coordx,coordy]),
+            });
 
+            const labelonly = new ol.style.Style({
+                text: new ol.style.Text({
+                    font: '14px sans-serif',
+                    text:`${parseInt(distance)} ft`,
+                    fill: new ol.style.Fill({
+                        color: 'red'
+                    }),
+                })
+            });
+
+            labelFeature.setStyle(labelonly);
+            const vectorSource_for_parent_label = new ol.source.Vector({
+                features: [labelFeature]
+            });
+
+         
+            
+            map.addLayer(
+                new ol.layer.Vector({
+                    source: vectorSource_for_parent_label
+                })
+            );
+        }
+
+       for(let i = 0;i<midPointArray_parent.length;i++){
+        if(coordinateDistance_parent[i]>0)
+          displayLabelForParentPlot(midPointArray_parent[i][0]+4,midPointArray_parent[i][1]+4, coordinateDistance_parent[i]);
+       }
+   </script>
+
+   <!-- cut parent polygon & modify line string  -->
+    <script type="text/javascript">
+      var LineSplitterGeoJson ;
+      var modify = new ol.interaction.Modify({source: source});
+     
+      const typeSelect = document.getElementById('type');
+      let draw,snap;
+      
+      function addInteraction() {
+        const value = typeSelect.value;
+                if (value !== 'None') {
+                    draw = new ol.interaction.Draw({
+                    source: source,
+                    type: typeSelect.value,
+                });
+                map.addInteraction(draw);
+                draw.on("drawend",function(e){
+                    var writer = new ol.format.GeoJSON();
+                    console.log("lx:")
+                    LineSplitterGeoJson = writer.writeFeatures([e.feature]);
+                    console.log(JSON.parse(LineSplitterGeoJson));
+                    
+                });           
+            }
+      }
+        typeSelect.onchange = function () {
+            map.removeInteraction(draw);
+            map.removeInteraction(snap);
+            addInteraction();
+        };
+        
+        map.addInteraction(modify);
+        
+        modify.on('modifyend',function(e){
+          console.log("Modifyed Feature : ")
+          var format = new ol.format["GeoJSON"]();
+          LineSplitterGeoJson = format.writeFeatures(source.getFeatures());
+          console.log("ly: ");
+          console.log(LineSplitterGeoJson);
+          splitOperationWithTurf();
+          const sp_area_1_polygon = turf.polygon(splittedPolygon.features[0].geometry.coordinates);
+          const area_sp_1 = turf.area(sp_area_1_polygon);
+          document.getElementById('sA_1').innerHTML = "Area : " + area_sp_1/1000 + " Square KM ";
+          
+          const sp_area_2_polygon = turf.polygon(splittedPolygon.features[1].geometry.coordinates);
+          const area_sp_2 = turf.area(sp_area_2_polygon);
+          document.getElementById('sA_2').innerHTML = "Area : " + area_sp_2/1000 + " Square KM ";
+          
+        });
+
+     
+
+        var splittedPolygon;
+        function splitOperationWithTurf(){
+            var plotGeoJson = JSON.parse(plotGeo);
+            var lineStringJson = JSON.parse(LineSplitterGeoJson);
+            var poly = turf.polygon(plotGeoJson.coordinates[0]);
+            var line = turf.polygon(lineStringJson.features[0].geometry);
+            var poly_coordinates = poly.geometry.coordinates;
+            var line_coordinates  = [line.geometry.coordinates.coordinates];
+            var polyAsLine = turf.polygonToLine(poly);
+            var makeLineGeoJson = {
+              "type":"feature",
+               "geometry":{
+                  "coordinates":line_coordinates[0],
+                  "type": "LineString"
+               }
+            };
+            var unionedLines =  turf.union(polyAsLine,makeLineGeoJson);
+            const polygonized = turf.polygonize(unionedLines);
+            splittedPolygon = polygonized;
+        }
     </script>
+
+    <!-- script for child plot - 1 with label  -->
+    <script>
+         var spGeoJson_1 = {
+            "type":"MultiPolygon"
+        }
+      function DisplaySplitPoly1(){
+
+                var source_sp_1 = new ol.source.Vector({wrapX: false});
+                var vector_sp_1 = new ol.layer.Vector({
+                    source: source_sp_1,
+                });
+
+                var map_sp_1 = new ol.Map({
+                    target: 'map_sp_1',
+                    layers: [
+                        vector_sp_1
+                    ],
+                    view: new ol.View()
+                });
+        
+            var geometry_sp_1 = new ol.format.GeoJSON().readGeometry(splittedPolygon.features[0].geometry);
+            spGeoJson_1.coordinates = [splittedPolygon.features[0].geometry.coordinates];
+            
+            map_sp_1.addLayer(
+                new ol.layer.Vector({
+                  source: new ol.source.Vector({
+                    features: [new ol.Feature(geometry_sp_1)]
+                  })
+                })
+              );
+              map_sp_1.getView().fit(geometry_sp_1);
+              const sp_area_1_polygon = turf.polygon(splittedPolygon.features[0].geometry.coordinates);
+              const area_sp_1 = turf.area(sp_area_1_polygon);
+              document.getElementById('area_sp_1').innerHTML = "Area : " + area_sp_1 + " Square Meters ";
+              
+          //adding label for splitted polygon -1 
+               // getting distance
+          var midPointArray_sp_plot_1 = [];
+          var coordinateDistance_sp_plot_1 = [];
+          var sp_1CoordinatesLangLot = [];
+          function sp_1CoordinateLangLotConverter(){
+              for(let i = 0;i<spGeoJson_1.coordinates[0][0].length;i++){
+                const utm = "+proj=utm +zone=32";
+                const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+                const coord = proj4(utm,wgs84,[spGeoJson_1.coordinates[0][0][i][0],spGeoJson_1.coordinates[0][0][i][1]])
+                sp_1CoordinatesLangLot.push(coord);
+              }
+          }
+          sp_1CoordinateLangLotConverter();
+          function designDistance_sp_plot_1(spGeoJson_1,coordinateDistance){
+            const length = spGeoJson_1.coordinates[0][0].length;
+              for(let i = 1;i<length;i++){
+                  var coord = spGeoJson_1.coordinates[0][0];
+                  var dist = distance(sp_1CoordinatesLangLot[i-1][0],sp_1CoordinatesLangLot[i][0],sp_1CoordinatesLangLot[i-1][1],sp_1CoordinatesLangLot[i][1]);
+                  coordinateDistance.push(dist);
+              }
+              coordinateDistance.push(distance(sp_1CoordinatesLangLot[length-1][0],sp_1CoordinatesLangLot[0][0],sp_1CoordinatesLangLot[length-1][1],sp_1CoordinatesLangLot[0][1]));
+
+            }
+
+            designDistance_sp_plot_1(spGeoJson_1,coordinateDistance_sp_plot_1);
+          // distance of coordinates
+        
+          // mid point of coordinates
+          function midPointOfCoordinates_sp_plot_1(spGeoJson_1,midPointArray_sp_plot_1){
+            let coord = spGeoJson_1.coordinates[0][0];
+            for(let i = 1;i<coord.length;i++){
+              let midx = (coord[i-1][0] + coord[i][0])/2;
+              let midy = (coord[i-1][1] + coord[i][1])/2;
+              midPointArray_sp_plot_1.push([midx,midy]);
+            }
+            midPointArray_sp_plot_1.push([(coord[0][0] + coord[coord.length - 1][0])/2,(coord[0][1] + coord[coord.length-1][1])/2]);
+
+          }
+
+          midPointOfCoordinates_sp_plot_1(spGeoJson_1,midPointArray_sp_plot_1);
+
+          // function to add label :
+          function displayLabelFor_sp_plot_1(coordx,coordy,distance){       
+                const utm = "+proj=utm +zone=32";
+                const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+                const coord = proj4(utm,wgs84,[coordx, coordy])
+                const labelFeature_sp_plot_1 = new ol.Feature({
+                    geometry: new ol.geom.Point([coordx,coordy]),
+                });
+
+                const labelonly_sp_plot_1 = new ol.style.Style({
+                    text: new ol.style.Text({
+                        font: '14px sans-serif',
+                        text:`${parseInt(distance)} ft`,
+                        fill: new ol.style.Fill({
+                            color: 'red'
+                        }),
+                    })
+                });
+
+                labelFeature_sp_plot_1.setStyle(labelonly_sp_plot_1);
+                const vectorSource_for_sp_plot_1 = new ol.source.Vector({
+                    features: [labelFeature_sp_plot_1]
+                });
+
+            
+                map_sp_1.addLayer(
+                    new ol.layer.Vector({
+                        source: vectorSource_for_sp_plot_1
+                    })
+                );
+            }
+
+            for(let i = 0;i<midPointArray_sp_plot_1.length;i++){
+            if(coordinateDistance_sp_plot_1[i]>0)
+              displayLabelFor_sp_plot_1(midPointArray_sp_plot_1[i][0]+4,midPointArray_sp_plot_1[i][1]+4, coordinateDistance_sp_plot_1[i]);
+            }
+          }
+    </script>
+
+
+
+    <!-- splitted polygon -2  -->
+    
+    <script>
+       var spGeoJson_2 = {
+            "type":"MultiPolygon"
+        }
+       function DisplaySplitPoly2(){
+          var source_sp_2 = new ol.source.Vector({wrapX: false});
+          var vector_sp_2 = new ol.layer.Vector({
+              source: source_sp_2,
+          });
+
+          var map_sp_2 = new ol.Map({
+              target: 'map_sp_2',
+              layers: [
+                  vector_sp_2
+              ],
+              view: new ol.View()
+          });
+    
+
+  
+        var geometry_sp_2 = new ol.format.GeoJSON().readGeometry(splittedPolygon.features[1].geometry);
+        map_sp_2.addLayer(
+            new ol.layer.Vector({
+              source: new ol.source.Vector({
+                features: [new ol.Feature(geometry_sp_2)]
+              })
+            })
+          );
+          map_sp_2.getView().fit(geometry_sp_2);
+          const sp_area_2_polygon = turf.polygon(splittedPolygon.features[1].geometry.coordinates);
+          const area_sp_2 = turf.area(sp_area_2_polygon);
+          document.getElementById('area_sp_2').innerHTML = "Area : " + area_sp_2 + " Square Meters ";
+          spGeoJson_2.coordinates = [splittedPolygon.features[1].geometry.coordinates];
+          // label for splitted polygon -2 
+          var midPointArray_sp_plot_2 = [];
+          var coordinateDistance_sp_plot_2 = [];
+          var sp_2CoordinatesLangLot = [];
+          function sp_2CoordinateLangLotConverter(){
+              for(let i = 0;i<spGeoJson_2.coordinates[0][0].length;i++){
+                const utm = "+proj=utm +zone=32";
+                const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+                const coord = proj4(utm,wgs84,[spGeoJson_2.coordinates[0][0][i][0],spGeoJson_2.coordinates[0][0][i][1]])
+                sp_2CoordinatesLangLot.push(coord);
+              }
+          }
+          sp_2CoordinateLangLotConverter();
+          function designDistance_sp_plot_2(spGeoJson_2,coordinateDistance){
+            const length = spGeoJson_2.coordinates[0][0].length;
+              for(let i = 1;i<length;i++){
+                  var coord = spGeoJson_2.coordinates[0][0];
+                  var dist = distance(sp_2CoordinatesLangLot[i-1][0],sp_2CoordinatesLangLot[i][0],sp_2CoordinatesLangLot[i-1][1],sp_2CoordinatesLangLot[i][1]);
+                  coordinateDistance.push(dist);
+              }
+              coordinateDistance.push(distance(sp_2CoordinatesLangLot[length-1][0],sp_2CoordinatesLangLot[0][0],sp_2CoordinatesLangLot[length-1][1],sp_2CoordinatesLangLot[0][1]));
+
+            }
+        
+
+            designDistance_sp_plot_2(spGeoJson_2,coordinateDistance_sp_plot_2);
+     
+       
+          // mid point of coordinates
+          
+
+
+          function midPointOfCoordinates_sp_plot_2(spGeoJson_2,midPointArray_sp_plot_2){
+            let coord = spGeoJson_2.coordinates[0][0];
+            
+            for(let i = 1;i<coord.length;i++){
+              let midx = (coord[i-1][0] + coord[i][0])/2;
+              let midy = (coord[i-1][1] + coord[i][1])/2;
+              midPointArray_sp_plot_2.push([midx,midy]);
+            }
+            midPointArray_sp_plot_2.push([(coord[0][0] + coord[coord.length - 1][0])/2,(coord[0][1] + coord[coord.length-1][1])/2]);
+
+          }
+          midPointOfCoordinates_sp_plot_2(spGeoJson_2,midPointArray_sp_plot_2);
+
+          // function to add label :
+          function displayLabelFor_sp_plot_2(coordx,coordy,distance){
+                
+                const utm = "+proj=utm +zone=32";
+                const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+                const coord = proj4(utm,wgs84,[coordx, coordy])
+                const labelFeature_sp_plot_2= new ol.Feature({
+                    geometry: new ol.geom.Point([coordx,coordy]),
+                });
+
+                const labelonly_sp_plot_2 = new ol.style.Style({
+                    text: new ol.style.Text({
+                        font: '14px sans-serif',
+                        text:`${parseInt(distance)} ft`,
+                        fill: new ol.style.Fill({
+                            color: 'red'
+                        }),
+                    })
+                });
+
+                labelFeature_sp_plot_2.setStyle(labelonly_sp_plot_2);
+                const vectorSource_for_sp_plot_2 = new ol.source.Vector({
+                    features: [labelFeature_sp_plot_2]
+                });
+
+            
+                map_sp_2.addLayer(
+                    new ol.layer.Vector({
+                        source: vectorSource_for_sp_plot_2
+                    })
+                );
+            }
+
+            for(let i = 0;i<midPointArray_sp_plot_2.length;i++){
+            if(coordinateDistance_sp_plot_2[i]>0)
+              displayLabelFor_sp_plot_2(midPointArray_sp_plot_2[i][0]+2,midPointArray_sp_plot_2[i][1]+2, coordinateDistance_sp_plot_2[i]);
+            }
+                
+
+        }
+    </script>
+
+    
+
+  
   </body>
 </html>
+
+
+
+
+
+
