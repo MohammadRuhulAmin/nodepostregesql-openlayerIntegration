@@ -76,6 +76,7 @@
             ],
             view: new ol.View()
         });
+
      var geometry = new ol.format.GeoJSON().readGeometry(plotGeo);
       map.addLayer(
         new ol.layer.Vector({
@@ -115,7 +116,8 @@
         addInteraction();
 
         var splittedPolygon;
-        function splitOperationWithTurf(){
+        function splitOperationWithTurf()
+        {
             var plotGeoJson = JSON.parse(plotGeo);
             var lineStringJson = JSON.parse(LineSplitterGeoJson);
             var poly = turf.polygon(plotGeoJson.coordinates[0]);
@@ -141,7 +143,7 @@
         
         // for splitted polygon - 1 
         function DisplaySplitPoly1(){
-              
+  
               const source_sp_1 = new ol.source.Vector({wrapX: false});
               const vector_sp_1 = new ol.layer.Vector({
                   source: source_sp_1,
