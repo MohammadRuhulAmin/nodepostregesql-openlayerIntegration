@@ -6,12 +6,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.6.2/proj4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/build/ol.js"></script>
     <script src="https://unpkg.com/@turf/turf@5.1.6/turf.min.js"></script>
-
   </head>
   <body>
  
 
-    <div id="map" class="map"></div>
+    <div id="map" class="map">
+
+      <label><p>Area : <%=plotArea %> sqft , Shape Length : <%=plotLeng %> ft</p></label>
+    
+    </div>
     <p>Splitted Area 1 : <span id="sA_1"></span> </p>
     <p>Splitted Area 2 : <span id="sA_2"></span></p>
     <br><br>

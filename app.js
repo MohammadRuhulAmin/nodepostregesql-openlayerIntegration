@@ -24,21 +24,35 @@ app.get('/',(req,res)=>{
         }
     });
 });
+
 app.get('/searchplot',(req,res)=>{
     const plot_no_en = req.query.plotNo;
-    console.log(plot_no_en);
-    //let query = "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(geom, 3400), 4326)) FROM borolekh where plot_no_en = $1;"
+    var geoJson,stArea,stleng;
     let query1 = "SELECT ST_AsGeoJson(ST_Simplify(geom,4)) FROM borolekh Where plot_no_en = $1";
+    let query2 = "SELECT shape_area FROM borolekh WHERE plot_no_en = $1";
+    let query3 = "SELECT shape_leng FROM borolekh WHERE plot_no_en = $1"
+    pool.query(query3,[plot_no_en],(err,result)=>{
+        if(err)throw err;
+        stleng= result.rows[0]
+        
+    });
+
+    pool.query(query2,[plot_no_en],(err,result)=>{
+        if(err)throw err;
+        stArea = result.rows[0]
+        
+    });
+
     pool.query(query1,[plot_no_en],(err,results)=>{
         if(err)throw err;
-        var geojson = results.rows[0].st_asgeojson;
-        res.render('map',{plotInfo:geojson});
-    })
+        geoJson = results.rows[0].st_asgeojson;
+        res.render('map',{plotInfo:geoJson,plotArea:parseInt(stArea.shape_area),plotLeng:parseInt(stleng.shape_leng)});
+    });
+  
     
 });
 
 app.post('/addnew-plot',(req,res)=>{
-   
     const {gid,oid_,name,symbolid,area_h,geom} = req.body;
     console.log(req.body);
     let qry = "insert into mouza_map_drone(oid_,name,symbolid,area_h,geom) values($1,$2,$3,$4,$5)";
