@@ -12,7 +12,7 @@
 
     <div id="map" class="map">
 
-      <label><p>Area : <%=plotArea %> sqft , Shape Length : <%=plotLeng*3.28084  %> ft</p></label>
+      <label><p>Area : <%=plotArea %> SqM , Shape Length : <%=plotLeng*3.28084  %> ft</p></label>
     
     </div>
     <p>Splitted Area 1 : <span id="sA_1"></span> </p>
@@ -63,7 +63,6 @@
     
     <!-- script for display parent plot  -->
    <script type="text/javascript">
-     
       const source = new ol.source.Vector({wrapX: false});
       const vector_plot = new ol.layer.Vector({
             source:source,
@@ -97,7 +96,6 @@
       var parentCoordinatesLangLot = [];
       function parentCoordinateLangLotConverter(){
           for(let i = 0;i<data.coordinates[0][0].length;i++){
-             console.log()
              const utm = "+proj=utm +zone=32";
              const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
              const coord = proj4(utm,wgs84,[data.coordinates[0][0][i][0],data.coordinates[0][0][i][1]])
@@ -131,8 +129,7 @@
         let c = 2 * Math.asin(Math.sqrt(a));
         let r = 6371;
         let sln = c*r;
-        console.log(sln*3280.8398950131)
-        return(c * r * 1000*3.28084 );
+        return(c * r * 1000* 3.28084 );
     }
  
       // mid point of coordinates 
@@ -197,7 +194,17 @@
      
       const typeSelect = document.getElementById('type');
       let draw,snap;
-      
+      var sp_1ShortLangLot = [];
+      var sp_2ShortLangLot = [];
+      function UtmToLangLotConverter(coordinates,array){
+          for(let i = 0;i<coordinates[0].length;i++){
+              const utm = "+proj=utm +zone=32";
+              const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+              const coord = proj4(utm,wgs84,[coordinates[0][i][0],coordinates[0][i][1]])
+              array.push(coord);
+               
+              }
+          }
       function addInteraction() {
         const value = typeSelect.value;
                 if (value !== 'None') {
@@ -222,24 +229,27 @@
         };
         
         map.addInteraction(modify);
+
         
         modify.on('modifyend',function(e){
+          sp_1ShortLangLot = [];
+          sp_2ShortLangLot = [];
           console.log("Modifyed Feature : ")
           var format = new ol.format["GeoJSON"]();
           LineSplitterGeoJson = format.writeFeatures(source.getFeatures());
-          console.log("ly: ");
-          console.log(LineSplitterGeoJson);
           splitOperationWithTurf();
-          const sp_area_1_polygon = turf.polygon(splittedPolygon.features[0].geometry.coordinates);
+          UtmToLangLotConverter(splittedPolygon.features[0].geometry.coordinates,sp_1ShortLangLot);
+          const sp_area_1_polygon = turf.polygon([sp_1ShortLangLot]);
           const area_sp_1 = turf.area(sp_area_1_polygon);
-          document.getElementById('sA_1').innerHTML = "Area : " + area_sp_1/1000 + " Square KM ";
-          
-          const sp_area_2_polygon = turf.polygon(splittedPolygon.features[1].geometry.coordinates);
+          document.getElementById('sA_1').innerHTML = "Area : " + area_sp_1 + " SqM";
+
+          UtmToLangLotConverter(splittedPolygon.features[1].geometry.coordinates,sp_2ShortLangLot);
+          const sp_area_2_polygon = turf.polygon([sp_2ShortLangLot]);
           const area_sp_2 = turf.area(sp_area_2_polygon);
-          document.getElementById('sA_2').innerHTML = "Area : " + area_sp_2/1000 + " Square KM ";
+          document.getElementById('sA_2').innerHTML = "Area : " + area_sp_2 + " SqM ";
           
         });
-
+      
      
 
         var splittedPolygon;
@@ -266,11 +276,20 @@
 
     <!-- script for child plot - 1 with label  -->
     <script>
+
+      var sp_1CoordinatesLangLot = [];
          var spGeoJson_1 = {
             "type":"MultiPolygon"
         }
+        function sp_1CoordinateLangLotConverter(){
+              for(let i = 0;i<spGeoJson_1.coordinates[0][0].length;i++){
+                const utm = "+proj=utm +zone=32";
+                const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+                const coord = proj4(utm,wgs84,[spGeoJson_1.coordinates[0][0][i][0],spGeoJson_1.coordinates[0][0][i][1]])
+                sp_1CoordinatesLangLot.push(coord);
+              }
+          }
       function DisplaySplitPoly1(){
-
                 var source_sp_1 = new ol.source.Vector({wrapX: false});
                 var vector_sp_1 = new ol.layer.Vector({
                     source: source_sp_1,
@@ -295,24 +314,20 @@
                 })
               );
               map_sp_1.getView().fit(geometry_sp_1);
-              const sp_area_1_polygon = turf.polygon(splittedPolygon.features[0].geometry.coordinates);
+              sp_1ShortLangLot = []
+              UtmToLangLotConverter(splittedPolygon.features[0].geometry.coordinates,sp_1ShortLangLot);
+              const sp_area_1_polygon = turf.polygon([sp_1ShortLangLot]);
               const area_sp_1 = turf.area(sp_area_1_polygon);
-              document.getElementById('area_sp_1').innerHTML = "Area : " + area_sp_1 + " Square Meters ";
+              document.getElementById('area_sp_1').innerHTML = "Area : " + area_sp_1 + " SqM";
               
           //adding label for splitted polygon -1 
                // getting distance
           var midPointArray_sp_plot_1 = [];
           var coordinateDistance_sp_plot_1 = [];
-          var sp_1CoordinatesLangLot = [];
-          function sp_1CoordinateLangLotConverter(){
-              for(let i = 0;i<spGeoJson_1.coordinates[0][0].length;i++){
-                const utm = "+proj=utm +zone=32";
-                const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
-                const coord = proj4(utm,wgs84,[spGeoJson_1.coordinates[0][0][i][0],spGeoJson_1.coordinates[0][0][i][1]])
-                sp_1CoordinatesLangLot.push(coord);
-              }
-          }
+     
+        
           sp_1CoordinateLangLotConverter();
+
           function designDistance_sp_plot_1(spGeoJson_1,coordinateDistance){
             const length = spGeoJson_1.coordinates[0][0].length;
               for(let i = 1;i<length;i++){
@@ -321,7 +336,6 @@
                   coordinateDistance.push(dist);
               }
               coordinateDistance.push(distance(sp_1CoordinatesLangLot[length-1][0],sp_1CoordinatesLangLot[0][0],sp_1CoordinatesLangLot[length-1][1],sp_1CoordinatesLangLot[0][1]));
-
             }
 
             designDistance_sp_plot_1(spGeoJson_1,coordinateDistance_sp_plot_1);
@@ -385,6 +399,7 @@
     <!-- splitted polygon -2  -->
     
     <script>
+        var sp_2CoordinatesLangLot = [];
        var spGeoJson_2 = {
             "type":"MultiPolygon"
         }
@@ -413,14 +428,16 @@
             })
           );
           map_sp_2.getView().fit(geometry_sp_2);
-          const sp_area_2_polygon = turf.polygon(splittedPolygon.features[1].geometry.coordinates);
+          sp_2ShortLangLot = []
+          UtmToLangLotConverter(splittedPolygon.features[1].geometry.coordinates,sp_2ShortLangLot);
+          const sp_area_2_polygon = turf.polygon([sp_2ShortLangLot]);
           const area_sp_2 = turf.area(sp_area_2_polygon);
-          document.getElementById('area_sp_2').innerHTML = "Area : " + area_sp_2 + " Square Meters ";
+          document.getElementById('area_sp_2').innerHTML = "Area : " + area_sp_2 + " SqM";
           spGeoJson_2.coordinates = [splittedPolygon.features[1].geometry.coordinates];
           // label for splitted polygon -2 
           var midPointArray_sp_plot_2 = [];
           var coordinateDistance_sp_plot_2 = [];
-          var sp_2CoordinatesLangLot = [];
+        
           function sp_2CoordinateLangLotConverter(){
               for(let i = 0;i<spGeoJson_2.coordinates[0][0].length;i++){
                 const utm = "+proj=utm +zone=32";
@@ -499,7 +516,8 @@
             if(coordinateDistance_sp_plot_2[i]>0)
               displayLabelFor_sp_plot_2(midPointArray_sp_plot_2[i][0]+2,midPointArray_sp_plot_2[i][1]+2, coordinateDistance_sp_plot_2[i]);
             }
-                
+          
+          
 
         }
     </script>
