@@ -46,7 +46,9 @@ app.get('/searchplot',(req,res)=>{
     pool.query(query1,[plot_no_en],(err,results)=>{
         if(err)throw err;
         geoJson = results.rows[0].st_asgeojson;
-        res.render('map',{plotInfo:geoJson,plotArea:parseInt(stArea.shape_area),plotLeng:parseInt(stleng.shape_leng)});
+        let sArea = parseFloat(stArea.shape_area).toFixed(4);
+        let sLength = (parseFloat(stleng.shape_leng)*3.28084).toFixed(2) ;
+        res.render('map',{plotInfo:geoJson,plotArea:sArea,plotLeng:sLength});
     });
   
     

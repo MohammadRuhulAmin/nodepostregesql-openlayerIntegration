@@ -12,7 +12,7 @@
 
     <div id="map" class="map">
 
-      <label><p>Area : <%=plotArea %> SqM , Shape Length : <%=plotLeng*3.28084  %> ft</p></label>
+      <label><p>Area : <%=plotArea %> SqM , Shape Length : <%=plotLeng  %> ft</p></label>
     
     </div>
     <p>Splitted Area 1 : <span id="sA_1"></span> </p>
@@ -31,7 +31,7 @@
           <div>
             <div>
                 <span>
-                  <label > Draw Geometry :</label>
+                  <label> Draw Geometry :</label>
                   <select  id="type">
                     <option value="Point">Point</option>
                     <option value="LineString">LineString</option>
@@ -64,15 +64,27 @@
     <!-- script for display parent plot  -->
    <script type="text/javascript">
       const source = new ol.source.Vector({wrapX: false});
-      const vector_plot = new ol.layer.Vector({
+      const vector_string = new ol.layer.Vector({
             source:source,
+            style: new ol.style.Style({
+              fill: new ol.style.Fill({
+                color: 'rgba(255, 255, 255, 0.9)'
+              }),
+              stroke: new ol.style.Stroke({
+                color: '#FFA500',
+                width: 4
+              })
+            })
         });
       const plotGeo =  document.getElementById("plotInfo").value;
       var map = new ol.Map({
             target: 'map',
             layers: [
-                vector_plot
+                vector_string,
+                
             ],
+            
+           
             view: new ol.View()
         });
       var geometry = new ol.format.GeoJSON().readGeometry(plotGeo);
@@ -80,7 +92,14 @@
         new ol.layer.Vector({
           source: new ol.source.Vector({
             features: [new ol.Feature(geometry)]
-          })
+          }),
+          style: new ol.style.Style({
+              stroke: new ol.style.Stroke({
+                color: 'black',
+                width: 4
+              })
+            })
+         
         })
       );
       map.getView().fit(geometry);
@@ -111,7 +130,6 @@
               coordinateDistance.push(dist);
           }
           coordinateDistance.push(distance(parentCoordinatesLangLot[length-1][0],parentCoordinatesLangLot[0][0],parentCoordinatesLangLot[length-1][1],parentCoordinatesLangLot[0][1]));
-          
         }
       designDistance(data,coordinateDistance_parent);
       // distance of coordinates 
@@ -160,7 +178,7 @@
             const labelonly = new ol.style.Style({
                 text: new ol.style.Text({
                     font: '14px sans-serif',
-                    text:`${parseInt(distance)} ft`,
+                    text:`${distance.toFixed(1)} ft`,
                     fill: new ol.style.Fill({
                         color: 'red'
                     }),
@@ -209,13 +227,12 @@
         const value = typeSelect.value;
                 if (value !== 'None') {
                     draw = new ol.interaction.Draw({
-                    source: source,
-                    type: typeSelect.value,
-                });
+                          source: source,
+                          type: typeSelect.value,
+                          });
                 map.addInteraction(draw);
                 draw.on("drawend",function(e){
                     var writer = new ol.format.GeoJSON();
-                    console.log("lx:")
                     LineSplitterGeoJson = writer.writeFeatures([e.feature]);
                     console.log(JSON.parse(LineSplitterGeoJson));
                     
@@ -241,12 +258,12 @@
           UtmToLangLotConverter(splittedPolygon.features[0].geometry.coordinates,sp_1ShortLangLot);
           const sp_area_1_polygon = turf.polygon([sp_1ShortLangLot]);
           const area_sp_1 = turf.area(sp_area_1_polygon);
-          document.getElementById('sA_1').innerHTML = "Area : " + area_sp_1 + " SqM";
+          document.getElementById('sA_1').innerHTML = "Area : " + area_sp_1.toFixed(4) + " SqM";
 
           UtmToLangLotConverter(splittedPolygon.features[1].geometry.coordinates,sp_2ShortLangLot);
           const sp_area_2_polygon = turf.polygon([sp_2ShortLangLot]);
           const area_sp_2 = turf.area(sp_area_2_polygon);
-          document.getElementById('sA_2').innerHTML = "Area : " + area_sp_2 + " SqM ";
+          document.getElementById('sA_2').innerHTML = "Area : " + area_sp_2.toFixed(4) + " SqM ";
           
         });
       
@@ -310,7 +327,14 @@
                 new ol.layer.Vector({
                   source: new ol.source.Vector({
                     features: [new ol.Feature(geometry_sp_1)]
+                  }),
+                  style: new ol.style.Style({
+                      stroke: new ol.style.Stroke({
+                        color: 'black',
+                        width: 4
+                      })
                   })
+         
                 })
               );
               map_sp_1.getView().fit(geometry_sp_1);
@@ -318,7 +342,7 @@
               UtmToLangLotConverter(splittedPolygon.features[0].geometry.coordinates,sp_1ShortLangLot);
               const sp_area_1_polygon = turf.polygon([sp_1ShortLangLot]);
               const area_sp_1 = turf.area(sp_area_1_polygon);
-              document.getElementById('area_sp_1').innerHTML = "Area : " + area_sp_1 + " SqM";
+              document.getElementById('area_sp_1').innerHTML = "Area : " + area_sp_1.toFixed(4)+ " SqM";
               
           //adding label for splitted polygon -1 
                // getting distance
@@ -367,7 +391,7 @@
                 const labelonly_sp_plot_1 = new ol.style.Style({
                     text: new ol.style.Text({
                         font: '14px sans-serif',
-                        text:`${parseInt(distance)} ft`,
+                        text:`${distance.toFixed(1)} ft`,
                         fill: new ol.style.Fill({
                             color: 'red'
                         }),
@@ -424,7 +448,13 @@
             new ol.layer.Vector({
               source: new ol.source.Vector({
                 features: [new ol.Feature(geometry_sp_2)]
-              })
+              }),
+              style: new ol.style.Style({
+                      stroke: new ol.style.Stroke({
+                        color: 'black',
+                        width: 4
+                      })
+                  })
             })
           );
           map_sp_2.getView().fit(geometry_sp_2);
@@ -432,7 +462,7 @@
           UtmToLangLotConverter(splittedPolygon.features[1].geometry.coordinates,sp_2ShortLangLot);
           const sp_area_2_polygon = turf.polygon([sp_2ShortLangLot]);
           const area_sp_2 = turf.area(sp_area_2_polygon);
-          document.getElementById('area_sp_2').innerHTML = "Area : " + area_sp_2 + " SqM";
+          document.getElementById('area_sp_2').innerHTML = "Area : " + area_sp_2.toFixed(4) + " SqM";
           spGeoJson_2.coordinates = [splittedPolygon.features[1].geometry.coordinates];
           // label for splitted polygon -2 
           var midPointArray_sp_plot_2 = [];
@@ -475,7 +505,6 @@
               midPointArray_sp_plot_2.push([midx,midy]);
             }
             midPointArray_sp_plot_2.push([(coord[0][0] + coord[coord.length - 1][0])/2,(coord[0][1] + coord[coord.length-1][1])/2]);
-
           }
           midPointOfCoordinates_sp_plot_2(spGeoJson_2,midPointArray_sp_plot_2);
 
@@ -492,7 +521,7 @@
                 const labelonly_sp_plot_2 = new ol.style.Style({
                     text: new ol.style.Text({
                         font: '14px sans-serif',
-                        text:`${parseInt(distance)} ft`,
+                        text:`${distance.toFixed(1)} ft`,
                         fill: new ol.style.Fill({
                             color: 'red'
                         }),
@@ -521,7 +550,10 @@
 
         }
     </script>
-
+    <script>
+      let xxy = 3.4324322;
+      console.log(xxy.toFixed(2))
+    </script>
     
 
   
