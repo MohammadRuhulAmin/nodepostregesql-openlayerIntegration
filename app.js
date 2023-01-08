@@ -30,7 +30,7 @@ app.get('/searchplot',(req,res)=>{
     var geoJson,stArea,stleng;
     let query1 = "SELECT ST_AsGeoJson(ST_Simplify(geom,2)) FROM borolekh Where plot_no_en = $1";
     let query2 = "SELECT shape_area FROM borolekh WHERE plot_no_en = $1";
-    let query3 = "SELECT shape_leng FROM borolekh WHERE plot_no_en = $1"
+    let query3 = "SELECT shape_leng FROM borolekh WHERE plot_no_en = $1";
     pool.query(query3,[plot_no_en],(err,result)=>{
         if(err)throw err;
         stleng= result.rows[0]
@@ -45,8 +45,8 @@ app.get('/searchplot',(req,res)=>{
 
     pool.query(query1,[plot_no_en],(err,results)=>{
         if(err)throw err;
-        geoJson = results.rows[0].st_asgeojson;
-        let sArea = parseFloat(stArea.shape_area).toFixed(4);
+        geoJson = results.rows[0].st_asgeojson; //0.000247105
+        let sArea = parseFloat(stArea.shape_area *0.000247105).toFixed(4);
         let sLength = parseFloat(stleng.shape_leng)*3.28084 ;
         res.render('map',{plotInfo:geoJson,plotArea:sArea,plotLeng:sLength.toFixed(2)});
     });
