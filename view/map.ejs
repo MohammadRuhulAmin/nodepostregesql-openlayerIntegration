@@ -1,6 +1,14 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- bootstrap start  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- bootstrap end  -->
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/css/ol.css" type="text/css">
     <link rel="stylesheet" href="css/style.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.6.2/proj4.min.js"></script>
@@ -9,10 +17,36 @@
   </head>
   <body>
  
-
+   
     <div id="map" class="map">
-
-      <label><p>Total area : <%=plotArea %> acre , Shape Length : <%=plotLeng  %> ft , Splitted Area 1 : <span id="sA_1"></span> / Splitted Area 2 : <span id="sA_2"></span> </p></label>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+          Location
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav align-content-end">
+            <li class="nav-item active">
+              <p class="nav-link" >Total area : <%=(parseFloat(plotArea)*0.00002295684113).toFixed(2)  %> acre <span class="sr-only">(current)</span></p>
+            </li>
+            <li class="nav-item">
+              <p class="nav-link active" >Shape Length : <%=(parseFloat(plotLeng)*3.28084).toFixed(4)  %> ft</p>
+            </li>
+            <li class="nav-item">
+              <p class="nav-link active" >Splitted Area 1 : <span id="sA_1"></span></p>
+            </li>
+            <li class="nav-item">
+              <p class="nav-link " > Splitted Area 2 : <span id="sA_2"></span></p>
+            </li>
+            <li class="nav-item ">
+              
+             
+            </li>
+          </ul>
+           
+        </div>
+      </nav>
+    
+    
     
       
       
@@ -22,6 +56,50 @@
     <br><br>
     <input id="plotInfo" type="hidden" value="<%=plotInfo %> "/>
     
+    <!-- modal start  -->
+    <br>
+    <br>
+    
+    
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="exampleModalLongTitle">Location </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <table class="table table-striped">
+                <tr>
+                  <td>District</td>
+                  <td><%=district %></td>
+                </tr>
+                <tr>
+                  <td>Sub District </td>
+                  <td><%=subDistrict %></td>
+                </tr>
+                <tr>
+                  <td>JL No </td>
+                  <td><%=jlNo %></td>
+                </tr>
+                <tr>
+                  <td>Plot No</td>
+                  <td><%=plotNo %></td>
+                </tr>
+               
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+           
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- modal end  -->
     <br>
     <br>
     <table border="1px">
@@ -34,13 +112,10 @@
             <div>
                 <span>
                   <label> Draw Geometry :</label>
-                  <select  id="type">
-                    <option value="Point">Point</option>
-                    <option value="LineString">LineString</option>
-                    <option value="Polygon">Polygon</option>
-                    <option value="Circle">Circle</option>
-                    <option value="None">None</option>
-                  </select>
+                   <select  id="type" class="nav-item form-select form-select-lg mb-3">
+                <option value="None">None</option>
+                <option class="btn" value="LineString">LineString</option>
+              </select>
                 </span>
             </div>
           </div>
@@ -281,7 +356,6 @@
         modify.on('modifyend',function(e){
           sp_1ShortLangLot = [];
           sp_2ShortLangLot = [];
-          console.log("Modifyed Feature : ")
           var format = new ol.format["GeoJSON"]();
           LineSplitterGeoJson = format.writeFeatures(source.getFeatures());
           splitOperationWithTurf();
