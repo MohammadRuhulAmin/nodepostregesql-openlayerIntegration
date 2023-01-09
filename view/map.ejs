@@ -258,12 +258,12 @@
           UtmToLangLotConverter(splittedPolygon.features[0].geometry.coordinates,sp_1ShortLangLot);
           const sp_area_1_polygon = turf.polygon([sp_1ShortLangLot]);
           const area_sp_1 = turf.area(sp_area_1_polygon);
-          document.getElementById('sA_1').innerHTML = "Area : " + (area_sp_1*0.000247105).toFixed(4) + "acre";
+          document.getElementById('sA_1').innerHTML = "Area : " + (area_sp_1*0.00002295684113).toFixed(4) + "acre";
 
           UtmToLangLotConverter(splittedPolygon.features[1].geometry.coordinates,sp_2ShortLangLot);
           const sp_area_2_polygon = turf.polygon([sp_2ShortLangLot]);
           const area_sp_2 = turf.area(sp_area_2_polygon);
-          document.getElementById('sA_2').innerHTML = "Area : " + (area_sp_2*0.000247105).toFixed(4) + " acre ";
+          document.getElementById('sA_2').innerHTML = "Area : " + (area_sp_2*0.00002295684113).toFixed(4) + " acre ";
           
         });
       
@@ -342,7 +342,7 @@
               UtmToLangLotConverter(splittedPolygon.features[0].geometry.coordinates,sp_1ShortLangLot);
               const sp_area_1_polygon = turf.polygon([sp_1ShortLangLot]);
               const area_sp_1 = turf.area(sp_area_1_polygon);
-              document.getElementById('area_sp_1').innerHTML = "Area : " + (area_sp_1*0.000247105).toFixed(4)+ " acre ";
+              document.getElementById('area_sp_1').innerHTML = "Area : " + (area_sp_1*0.00002295684113).toFixed(4)+ " acre ";
               
           //adding label for splitted polygon -1 
                // getting distance
@@ -462,7 +462,7 @@
           UtmToLangLotConverter(splittedPolygon.features[1].geometry.coordinates,sp_2ShortLangLot);
           const sp_area_2_polygon = turf.polygon([sp_2ShortLangLot]);
           const area_sp_2 = turf.area(sp_area_2_polygon);
-          document.getElementById('area_sp_2').innerHTML = "Area : " + (area_sp_2*0.000247105).toFixed(4) + "acre";
+          document.getElementById('area_sp_2').innerHTML = "Area : " + (area_sp_2*0.00002295684113).toFixed(4) + " acre ";
           spGeoJson_2.coordinates = [splittedPolygon.features[1].geometry.coordinates];
           // label for splitted polygon -2 
           var midPointArray_sp_plot_2 = [];
