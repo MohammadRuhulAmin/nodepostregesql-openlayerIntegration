@@ -12,11 +12,13 @@
 
     <div id="map" class="map">
 
-      <label><p>Area : <%=plotArea %> acre , Shape Length : <%=plotLeng  %> ft</p></label>
+      <label><p>Total area : <%=plotArea %> acre , Shape Length : <%=plotLeng  %> ft , Splitted Area 1 : <span id="sA_1"></span> / Splitted Area 2 : <span id="sA_2"></span> </p></label>
+    
+      
+      
     
     </div>
-    <p>Splitted Area 1 : <span id="sA_1"></span> </p>
-    <p>Splitted Area 2 : <span id="sA_2"></span></p>
+   
     <br><br>
     <input id="plotInfo" type="hidden" value="<%=plotInfo %> "/>
     
@@ -77,12 +79,23 @@
             })
         });
       const plotGeo =  document.getElementById("plotInfo").value;
-      var map = new ol.Map({
+      const map = new ol.Map({
             target: 'map',
             layers: [
                 vector_string,
+                new ol.layer.Graticule({
+                // the style to use for the lines, optional.
+                strokeStyle: new ol.style.Stroke({
+                  color: 'rgba(255,120,0,0.9)',
+                  width: 1,
+                  lineDash: [10,10],
+                }),
+                showLabels: true ,
+                wrapX: true ,
+              }),
                 
             ],
+            
             
            
             view: new ol.View()
@@ -258,12 +271,12 @@
           UtmToLangLotConverter(splittedPolygon.features[0].geometry.coordinates,sp_1ShortLangLot);
           const sp_area_1_polygon = turf.polygon([sp_1ShortLangLot]);
           const area_sp_1 = turf.area(sp_area_1_polygon);
-          document.getElementById('sA_1').innerHTML = "Area : " + (area_sp_1*0.00002295684113).toFixed(4) + "acre";
+          document.getElementById('sA_1').innerHTML =  (area_sp_1*0.00002295684113).toFixed(4) + " acre";
 
           UtmToLangLotConverter(splittedPolygon.features[1].geometry.coordinates,sp_2ShortLangLot);
           const sp_area_2_polygon = turf.polygon([sp_2ShortLangLot]);
           const area_sp_2 = turf.area(sp_area_2_polygon);
-          document.getElementById('sA_2').innerHTML = "Area : " + (area_sp_2*0.00002295684113).toFixed(4) + " acre ";
+          document.getElementById('sA_2').innerHTML =  (area_sp_2*0.00002295684113).toFixed(4) + " acre ";
           
         });
       
