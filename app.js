@@ -61,6 +61,7 @@ app.get('/searchplot',(req,res)=>{
         
         res.render('map',
         {
+            plotId:plot_no_en,
             plotInfo:geoJson,
             plotArea:stArea.shape_area,
             plotLeng:stleng.shape_leng,
@@ -76,15 +77,46 @@ app.get('/searchplot',(req,res)=>{
     
 });
 
-app.post('/savePlot',(req,res)=>{
+app.post('/savePlot', (req,res)=>{
     
-    res.send(req.body)
-    console.log(req.body.spGeoJson_1)
+    const {spGeoJson_1,spGeoJson_2,plotId} = req.body;  
+   
+    let qry1 = "SELECT ST_GeomFromGeoJSON($1)";
+    pool.query(qry1,[spGeoJson_1],(err,result)=>{
+        if(err)throw err;
+        else{
+            var geom1 = result.rows[0];
+            pool.query(qry1,[spGeoJson_2],(err,result)=>{
+                if(err)throw err;
+                else{
+                    var geom2 = result.rows[0];
+                    
+                    let qry2 = "SELECT * FROM borolekh WHERE plot_no_en = $1";
+                    pool.query(qry2,[plotId],(err,result)=>{
+                        if(err)throw err;
+                        else{
+                            var pd = result.rows[0];
+                            console.log(geom1,geom2,pd);
+                            res.send("ok ")
+                        }
+                    })
+                }
+            })
+        }
+    })
+   
+    
+            
+    
+      
+
+  
+   
 })
 
 app.post('/addnew-plot',(req,res)=>{
     const {gid,oid_,name,symbolid,area_h,geom} = req.body;
-   
+    
     let qry = "insert into mouza_map_drone(oid_,name,symbolid,area_h,geom) values($1,$2,$3,$4,$5)";
     pool.query(qry, [oid_,name,symbolid,area_h,geom], (err, results) => {
         if(err)throw err; 

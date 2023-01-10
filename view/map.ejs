@@ -30,7 +30,7 @@
               <p class="nav-link" >Total area : <%=(parseFloat(plotArea)*0.00002295684113).toFixed(2)  %> acre <span class="sr-only">(current)</span></p>
             </li>
             <li class="nav-item">
-              <p class="nav-link active" >Shp Leng : <%=(parseFloat(plotLeng)*3.28084).toFixed(4)  %> ft</p>
+              <p class="nav-link active" >Shp Leng : <%=(parseFloat(plotLeng)*3.28084).toFixed(2)  %> ft</p>
             </li>
             <li class="nav-item">
               <p class="nav-link active" >area 1 : <span id="sA_1"></span></p>
@@ -59,6 +59,7 @@
          <form action="/savePlot" method="post">
             <input type="hidden" id="spGeoJson_1" name="spGeoJson_1"  />
             <input type="hidden" id="spGeoJson_2" name="spGeoJson_2" />
+            <input type="hidden"  name="plotId" value="<%=plotId %>" />
             <button type="submit" onclick="attachToSaveSplittedGeoJson()" class="btn btn-primary m-1">Save </button>
          </form>
         </div>
