@@ -60,6 +60,10 @@
             <input type="hidden" id="spGeoJson_1" name="spGeoJson_1"  />
             <input type="hidden" id="spGeoJson_2" name="spGeoJson_2" />
             <input type="hidden"  name="plotId" value="<%=plotId %>" />
+            <input type="hidden" name="sp_area_1" id="sp_area_1" />
+            <input type="hidden" name="sp_area_2" id="sp_area_2" />
+            <input type="hidden" name="sp_arm_1" id="sp_arm_1" value="1000"/>
+            <input type="hidden" name="sp_arm_2" id="sp_arm_2" value="2000" />
             <button type="submit" onclick="attachToSaveSplittedGeoJson()" class="btn btn-primary m-1">Save </button>
          </form>
         </div>
@@ -363,12 +367,12 @@
           const sp_area_1_polygon = turf.polygon([sp_1ShortLangLot]);
           const area_sp_1 = turf.area(sp_area_1_polygon);
           document.getElementById('sA_1').innerHTML =  (area_sp_1*0.00002295684113).toFixed(4) + " acre";
-
+          document.getElementById('sp_area_1').value = sp_area_1_polygon;
           UtmToLangLotConverter(splittedPolygon.features[1].geometry.coordinates,sp_2ShortLangLot);
           const sp_area_2_polygon = turf.polygon([sp_2ShortLangLot]);
           const area_sp_2 = turf.area(sp_area_2_polygon);
           document.getElementById('sA_2').innerHTML =  (area_sp_2*0.00002295684113).toFixed(4) + " acre ";
-          
+          document.getElementById('sp_area_2').value = sp_area_2_polygon;
         });
       
      
@@ -440,6 +444,7 @@
             spGeoJson_1.coordinates = [splittedPolygon.features[0].geometry.coordinates];
             // for saving perpous
             document.getElementById('spGeoJson_1').value = JSON.stringify(spGeoJson_1);
+            
             map_sp_1.addLayer(
                 new ol.layer.Vector({
                   source: new ol.source.Vector({
