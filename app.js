@@ -76,6 +76,12 @@ app.get('/searchplot',(req,res)=>{
     
 });
 
+app.post('/savePlot',(req,res)=>{
+    
+    res.send(req.body)
+    console.log(req.body.spGeoJson_1)
+})
+
 app.post('/addnew-plot',(req,res)=>{
     const {gid,oid_,name,symbolid,area_h,geom} = req.body;
    

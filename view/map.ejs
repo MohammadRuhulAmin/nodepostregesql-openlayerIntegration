@@ -55,6 +55,12 @@
           <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly1()"> Plot 1 </button>
           <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly2()"> Plot 2</button>
           <button type="button" class="btn btn-primary m-1" onclick="removeLastVectorString()"> CLR</button>
+
+         <form action="/savePlot" method="post">
+            <input type="hidden" id="spGeoJson_1" name="spGeoJson_1"  />
+            <input type="hidden" id="spGeoJson_2" name="spGeoJson_2" />
+            <button type="submit" onclick="attachToSaveSplittedGeoJson()" class="btn btn-primary m-1">Save </button>
+         </form>
         </div>
         
        
@@ -68,14 +74,14 @@
     </div>
    
     <br><br>
-    <input id="plotInfo" type="hidden" value="<%=plotInfo %> "/>
+    <input id="plotInfo" type="hidden" value="<%=plotInfo %>"/>
     
-    <!-- modal start  -->
+    
     <br>
     <br>
-    
-    
-    <!-- Modal -->
+  
+
+   
     <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -409,7 +415,7 @@
                 vector_sp_1 = new ol.layer.Vector({
                     source: source_sp_1,
                 });
-
+              
                 var map_sp_1 = new ol.Map({
                     target: 'map_sp_1',
                     layers: [
@@ -431,7 +437,8 @@
            
             var geometry_sp_1 = new ol.format.GeoJSON().readGeometry(splittedPolygon.features[0].geometry);
             spGeoJson_1.coordinates = [splittedPolygon.features[0].geometry.coordinates];
-            
+            // for saving perpous
+            document.getElementById('spGeoJson_1').value = JSON.stringify(spGeoJson_1);
             map_sp_1.addLayer(
                 new ol.layer.Vector({
                   source: new ol.source.Vector({
@@ -633,8 +640,8 @@
               coordinateDistance.push(distance(sp_2CoordinatesLangLot[length-1][0],sp_2CoordinatesLangLot[0][0],sp_2CoordinatesLangLot[length-1][1],sp_2CoordinatesLangLot[0][1]));
 
             }
-        
-
+            
+         
             designDistance_sp_plot_2(spGeoJson_2,coordinateDistance_sp_plot_2);
      
        
@@ -691,11 +698,12 @@
             if(coordinateDistance_sp_plot_2[i]>0)
               displayLabelFor_sp_plot_2(midPointArray_sp_plot_2[i][0]+2,midPointArray_sp_plot_2[i][1]+2, coordinateDistance_sp_plot_2[i]);
             }
+               //  for saving perpous
+               document.getElementById('spGeoJson_2').value =JSON.stringify(spGeoJson_2)
           
-          
-
         }
     </script>
+ 
   </body>
 </html>
 
