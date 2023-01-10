@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <!-- bootstrap start  -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+   
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
@@ -21,7 +22,7 @@
     <div id="map" class="map">
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-          Location
+          <i style='font-size:24px' class='fas'>&#xf015;</i>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav align-content-end">
@@ -29,21 +30,34 @@
               <p class="nav-link" >Total area : <%=(parseFloat(plotArea)*0.00002295684113).toFixed(2)  %> acre <span class="sr-only">(current)</span></p>
             </li>
             <li class="nav-item">
-              <p class="nav-link active" >Shape Length : <%=(parseFloat(plotLeng)*3.28084).toFixed(4)  %> ft</p>
+              <p class="nav-link active" >Shp Leng : <%=(parseFloat(plotLeng)*3.28084).toFixed(4)  %> ft</p>
             </li>
             <li class="nav-item">
-              <p class="nav-link active" >Splitted Area 1 : <span id="sA_1"></span></p>
+              <p class="nav-link active" >area 1 : <span id="sA_1"></span></p>
             </li>
             <li class="nav-item">
-              <p class="nav-link " > Splitted Area 2 : <span id="sA_2"></span></p>
+              <p class="nav-link " > area 2 : <span id="sA_2"></span></p>
             </li>
             <li class="nav-item ">
               
              
             </li>
           </ul>
-           
+         
         </div>
+        <select id="type" class="btn  float-right">
+          <option value="None">Draw  </option>
+       
+          <option class="btn" value="LineString">LineString</option>
+        </select>
+        <div class="btn-group" role="group" aria-label="Basic example">
+          <button type="button" class="btn btn-success m-1" onclick="splitOperationWithTurf()" ><i style="font-size:24px" class="fa">&#xf0c4;</i></button>
+          <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly1()"> Plot 1 </button>
+          <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly2()"> Plot 2</button>
+          <button type="button" class="btn btn-primary m-1" onclick="removeLastVectorString()"> CLR</button>
+        </div>
+        
+       
       </nav>
     
     
@@ -102,36 +116,7 @@
     <!-- modal end  -->
     <br>
     <br>
-    <table border="1px">
-      <tr>
-        <td>
-          <button onclick="splitOperationWithTurf()"> Cut PolyGon </button></td>
-        </td>
-        <td>
-          <div>
-            <div>
-                <span>
-                  <label> Draw Geometry :</label>
-                   <select  id="type" class="nav-item form-select form-select-lg mb-3">
-                <option value="None">None</option>
-                <option class="btn" value="LineString">LineString</option>
-              </select>
-                </span>
-            </div>
-          </div>
-        </td>
-        <td>
-          <button onclick="DisplaySplitPoly1()"> Display Splitted Polygon - 1  </button>
-        </td>
-        <td>
-          <button onclick="DisplaySplitPoly2()"> Display Splitted Polygon - 2  </button>
-        </td>
-        <td>
-          <button onclick="removeLastVectorString()">Remove Drawing</button>
-        </td>
-      </tr>
-    
-    </table>
+  
     <br>
     <br>
     <div id="map_sp_1" class="map">
@@ -185,10 +170,17 @@
         });
       var geometry = new ol.format.GeoJSON().readGeometry(plotGeo);
       function removeLastVectorString(){
-        var features = vector_string.getSource().getFeatures();
-        features.forEach((feature) => {
+        var features_lineString = vector_string.getSource().getFeatures();
+        features_lineString.forEach((feature) => {
           vector_string.getSource().removeFeature(feature);
-    });
+         });
+      
+         var features_spPlot_1 = vector_sp_1.getSource().getFeatures();
+         features_spPlot_1.forEach((feature) => {
+          vector_sp_1.getSource().removeFeature(feature);
+         });
+          
+        
       }
       map.addLayer(
         new ol.layer.Vector({
@@ -212,6 +204,7 @@
 
    <!-- labeling for parent plot  -->
    <script>
+      var vector_sp_1;
       var data = JSON.parse(plotGeo)
        // getting distance 
       var coordinateDistance_parent = [];
@@ -392,6 +385,7 @@
             var unionedLines =  turf.union(polyAsLine,makeLineGeoJson);
             const polygonized = turf.polygonize(unionedLines);
             splittedPolygon = polygonized;
+            //alert ("Polygon is cutted Successfully!");
         }
     </script>
 
@@ -412,7 +406,7 @@
           }
       function DisplaySplitPoly1(){
                 var source_sp_1 = new ol.source.Vector({wrapX: false});
-                var vector_sp_1 = new ol.layer.Vector({
+                vector_sp_1 = new ol.layer.Vector({
                     source: source_sp_1,
                 });
 
