@@ -39,7 +39,7 @@
               <p class="nav-link active" >area 1 : <span id="sA_1"></span></p>
             </li>
             <li class="nav-item">
-              <p class="nav-link " > area 2 : <span id="sA_2"></span></p>
+              <p class="nav-link active" > area 2 : <span id="sA_2"></span></p>
             </li>
             <li class="nav-item ">
               
@@ -54,11 +54,11 @@
           <option class="btn" value="LineString">LineString</option>
         </select>
         <div class="btn-group" role="group" aria-label="Basic example">
-          <button type="button" class="btn btn-success m-1" onclick="splitOperationWithTurf();DisplaySplitPoly1();DisplaySplitPoly2()" ><i style="font-size:24px" class="fa">&#xf0c4;</i></button>
+          <button type="button" id="cutButton" class="btn btn-success m-1" onclick="splitOperationWithTurf();DisplaySplitPoly1();DisplaySplitPoly2();buttonEnableDisable();displayCutMessage()" ><i style="font-size:24px" class="fa">&#xf0c4;</i></button>
           <!-- <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly1()"> Plot 1 </button>
           <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly2()"> Plot 2</button> -->
           <button type="button" class="btn btn-primary m-1" onclick="clearPage()"> CLR</button>
-          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmSave">
+          <button id = "saveButton" type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmSave">
             <i style="font-size:24px" class="fa">&#xf0c7;</i>
           </button>
         
@@ -164,6 +164,7 @@
                 vector_string,
                 new ol.layer.Graticule({
                 // the style to use for the lines, optional.
+                visible: true,
                 strokeStyle: new ol.style.Stroke({
                   color: 'rgba(255,120,0,0.9)',
                   width: 1,
@@ -352,6 +353,7 @@
             }
       }
         typeSelect.onchange = function () {
+          document.getElementById("cutButton").disabled = false;
             map.removeInteraction(draw);
             map.removeInteraction(snap);
             addInteraction();
@@ -376,13 +378,13 @@
           //TotalPlotArea
           var firstPlotPercent = (area_sp_1/TotalPlotArea)*100;
           //document.getElementById('sA_1').innerHTML =  (area_sp_1*0.00002295684113).toFixed(4) + " acre";
-          document.getElementById('sA_1').innerHTML = firstPlotPercent.toFixed(2)  + " %";
+          document.getElementById('sA_1').innerHTML = firstPlotPercent.toFixed(2)  + " %" + " (" + (area_sp_1*0.00002295684113).toFixed(2) +" acre)";
           document.getElementById('sp_area_1').value = sp_area_1_polygon;
           UtmToLangLotConverter(splittedPolygon.features[1].geometry.coordinates,sp_2ShortLangLot);
           const sp_area_2_polygon = turf.polygon([sp_2ShortLangLot]);
           const area_sp_2 = turf.area(sp_area_2_polygon);
           //document.getElementById('sA_2').innerHTML =  (area_sp_2*0.00002295684113).toFixed(4) + " acre ";
-          document.getElementById('sA_2').innerHTML =  (100-firstPlotPercent).toFixed(2)+ "  %";
+          document.getElementById('sA_2').innerHTML =  (100-firstPlotPercent).toFixed(2)+ "  %" + " (" + (area_sp_2*0.00002295684113).toFixed(2) +" acre)";
           document.getElementById('sp_area_2').value = sp_area_2_polygon;
         }
      
@@ -727,7 +729,17 @@
         window.location.reload();
       } 
     </script>
-
+    <script>
+      function displayCutMessage(){
+        alert("Split Operation Done");
+      }
+      document.getElementById("cutButton").disabled = true;
+      document.getElementById("saveButton").disabled = true;
+      function buttonEnableDisable(){
+        document.getElementById("cutButton").disabled = true;
+        document.getElementById("saveButton").disabled = false;
+      }
+    </script>
 
 <!-- Modal -->
 <div class="modal fade" id="confirmSave" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
