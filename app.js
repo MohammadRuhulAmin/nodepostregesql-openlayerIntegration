@@ -117,7 +117,7 @@ app.post('/savePlot', (req,res)=>{
                                                 if(err)throw err;
                                                 else {
                                                     var geom2Area = result.rows[0];
-                                                    let qry7 = "SELECT ST_Length($1)";
+                                                    let qry7 = "SELECT ST_Length( ST_boundary($1))";
                                                     pool.query(qry7,[geom1.st_geomfromgeojson],(err,result)=>{
                                                         if(err) throw err;
                                                         else {
