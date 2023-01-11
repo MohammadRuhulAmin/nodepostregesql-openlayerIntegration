@@ -106,10 +106,8 @@ app.post('/savePlot', (req,res)=>{
                                                     if(err) throw err;
                                                     else res.send("Data has been inserted Successfully!");
                                                 })
-                                            }
-                                             
+                                            }  
                                     });
-                           
                         }
                     })
                 }

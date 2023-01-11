@@ -20,6 +20,7 @@
  
    
     <div id="map" class="map">
+      
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
           <i style='font-size:24px' class='fas'>&#xf015;</i>
@@ -27,7 +28,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav align-content-end">
             <li class="nav-item active">
-              <p class="nav-link" >Total area : <%=(parseFloat(plotArea)*0.00002295684113).toFixed(2)  %> acre <span class="sr-only">(current)</span></p>
+              <p class="nav-link">Total area : <%=(parseFloat(plotArea)*0.00002295684113).toFixed(2)  %> acre <span class="sr-only">(current)</span></p>
             </li>
             <li class="nav-item">
               <p class="nav-link active" >Shp Leng : <%=(parseFloat(plotLeng)*3.28084).toFixed(2)  %> ft</p>
@@ -80,6 +81,7 @@
    
     <br><br>
     <input id="plotInfo" type="hidden" value="<%=plotInfo %>"/>
+    <input type="hidden" id="plotTotalArea" value="<%=plotArea %>" />
     
     
     <br>
@@ -318,7 +320,9 @@
     <script type="text/javascript">
       var LineSplitterGeoJson ;
       var modify = new ol.interaction.Modify({source: source});
-     
+              
+      var TotalPlotArea = document.getElementById('plotTotalArea').value;
+   
       const typeSelect = document.getElementById('type');
       let draw,snap;
       var sp_1ShortLangLot = [];
@@ -366,12 +370,16 @@
           UtmToLangLotConverter(splittedPolygon.features[0].geometry.coordinates,sp_1ShortLangLot);
           const sp_area_1_polygon = turf.polygon([sp_1ShortLangLot]);
           const area_sp_1 = turf.area(sp_area_1_polygon);
-          document.getElementById('sA_1').innerHTML =  (area_sp_1*0.00002295684113).toFixed(4) + " acre";
+          //TotalPlotArea
+          var firstPlotPercent = (area_sp_1/TotalPlotArea)*100;
+          //document.getElementById('sA_1').innerHTML =  (area_sp_1*0.00002295684113).toFixed(4) + " acre";
+          document.getElementById('sA_1').innerHTML = firstPlotPercent.toFixed(2)  + " %";
           document.getElementById('sp_area_1').value = sp_area_1_polygon;
           UtmToLangLotConverter(splittedPolygon.features[1].geometry.coordinates,sp_2ShortLangLot);
           const sp_area_2_polygon = turf.polygon([sp_2ShortLangLot]);
           const area_sp_2 = turf.area(sp_area_2_polygon);
-          document.getElementById('sA_2').innerHTML =  (area_sp_2*0.00002295684113).toFixed(4) + " acre ";
+          //document.getElementById('sA_2').innerHTML =  (area_sp_2*0.00002295684113).toFixed(4) + " acre ";
+          document.getElementById('sA_2').innerHTML =  (100-firstPlotPercent).toFixed(2) + "  %";
           document.getElementById('sp_area_2').value = sp_area_2_polygon;
         });
       
