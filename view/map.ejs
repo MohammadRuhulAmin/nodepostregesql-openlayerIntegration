@@ -58,17 +58,10 @@
           <!-- <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly1()"> Plot 1 </button>
           <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly2()"> Plot 2</button> -->
           <button type="button" class="btn btn-primary m-1" onclick="removeLastVectorString()"> CLR</button>
-
-         <form action="/savePlot" method="post">
-            <input type="hidden" id="spGeoJson_1" name="spGeoJson_1"  />
-            <input type="hidden" id="spGeoJson_2" name="spGeoJson_2" />
-            <input type="hidden"  name="plotId" value="<%=plotId %>" />
-            <input type="hidden" name="sp_area_1" id="sp_area_1" />
-            <input type="hidden" name="sp_area_2" id="sp_area_2" />
-            <input type="hidden" name="sp_arm_1" id="sp_arm_1" value="1000"/>
-            <input type="hidden" name="sp_arm_2" id="sp_arm_2" value="2000" />
-            <button type="submit" onclick="attachToSaveSplittedGeoJson()" class="btn btn-primary m-1">Save </button>
-         </form>
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmSave">
+            <i style="font-size:24px" class="fa">&#xf0c7;</i>
+          </button>
+        
         </div>
         
        
@@ -352,7 +345,7 @@
                 draw.on("drawend",function(e){
                     var writer = new ol.format.GeoJSON();
                     LineSplitterGeoJson = writer.writeFeatures([e.feature]);
-                    //console.log(JSON.parse(LineSplitterGeoJson));
+                   
                     dynamicAreaDisplay()
                     
                 });           
@@ -413,7 +406,7 @@
             var unionedLines =  turf.union(polyAsLine,makeLineGeoJson);
             const polygonized = turf.polygonize(unionedLines);
             splittedPolygon = polygonized;
-            console.log("splitted operation called")
+           
            
         }
     </script>
@@ -729,7 +722,38 @@
           
         }
     </script>
- 
+
+
+<!-- Modal -->
+<div class="modal fade" id="confirmSave" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Save Confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <b class="text-justify">Do you Want to Save the New Splitted  Plots ? </b>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <form action="/savePlot" method="post">
+          <input type="hidden" id="spGeoJson_1" name="spGeoJson_1"  />
+          <input type="hidden" id="spGeoJson_2" name="spGeoJson_2" />
+          <input type="hidden"  name="plotId" value="<%=plotId %>" />
+          <input type="hidden" name="sp_area_1" id="sp_area_1" />
+          <input type="hidden" name="sp_area_2" id="sp_area_2" />
+          <input type="hidden" name="sp_arm_1" id="sp_arm_1" value="1000"/>
+          <input type="hidden" name="sp_arm_2" id="sp_arm_2" value="2000" />
+          <button type="submit" onclick="attachToSaveSplittedGeoJson()" class="btn btn-primary m-1">Save </button>
+       </form>
+        <!-- <button type="button" class="btn btn-primary">Save </button> -->
+      </div>
+    </div>
+  </div>
+</div>
   </body>
 </html>
 
