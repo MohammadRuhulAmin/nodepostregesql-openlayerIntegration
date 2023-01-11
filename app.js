@@ -64,6 +64,7 @@ app.get('/searchplot',(req,res)=>{
            
         }
         else{
+           // res.send(details)
             res.render('map',
             {
                 plotId:plot_no_en,
@@ -74,6 +75,7 @@ app.get('/searchplot',(req,res)=>{
                 subDistrict:details.m_name_en,
                 jlNo:details.jl_no_en,
                 plotNo:details.plot_no_en,
+                parent_plot:details.parent_plot
                
                 
             });

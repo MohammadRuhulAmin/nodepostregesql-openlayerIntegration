@@ -22,6 +22,7 @@
     <div id="map" class="map">
       
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        
         <a href="/" class="btn btn-success" > <i style="font-size:24px" class="fa">&#xf0a8;</i> </a>
         <button type="button" class="btn btn-primary m-1" data-toggle="modal" data-target="#exampleModalCenter">
           <i style="font-size:24px" class="fa">&#xf05a;</i>
@@ -117,6 +118,10 @@
                   <td>Plot No</td>
                   <td><%=plotNo %></td>
                 </tr>
+                <tr>
+                  <td>Parent Plot </td>
+                  <td><%=parent_plot %></td>
+                </tr>
                
             </table>
           </div>
@@ -204,16 +209,15 @@
           style: new ol.style.Style({
               stroke: new ol.style.Stroke({
                 color: 'black',
-                width: 4
+                width: 1,
+                opacity: 0.5,
               })
             })
          
         })
       );
       map.getView().fit(geometry);
-      function DisplayGridLayer(){
-       
-      }
+     
    </script>
 
    <!-- labeling for parent plot  -->
@@ -348,7 +352,8 @@
                 draw.on("drawend",function(e){
                     var writer = new ol.format.GeoJSON();
                     LineSplitterGeoJson = writer.writeFeatures([e.feature]);
-                    console.log(JSON.parse(LineSplitterGeoJson));
+                    //console.log(JSON.parse(LineSplitterGeoJson));
+                    dynamicAreaDisplay()
                     
                 });           
             }
@@ -367,6 +372,10 @@
           sp_2ShortLangLot = [];
           var format = new ol.format["GeoJSON"]();
           LineSplitterGeoJson = format.writeFeatures(source.getFeatures());
+          dynamicAreaDisplay()
+        });
+        
+        function dynamicAreaDisplay(){
           splitOperationWithTurf();
           UtmToLangLotConverter(splittedPolygon.features[0].geometry.coordinates,sp_1ShortLangLot);
           const sp_area_1_polygon = turf.polygon([sp_1ShortLangLot]);
@@ -382,8 +391,7 @@
           //document.getElementById('sA_2').innerHTML =  (area_sp_2*0.00002295684113).toFixed(4) + " acre ";
           document.getElementById('sA_2').innerHTML =  (100-firstPlotPercent).toFixed(2)+ "  %";
           document.getElementById('sp_area_2').value = sp_area_2_polygon;
-        });
-      
+        }
      
 
         var splittedPolygon;
@@ -405,7 +413,7 @@
             var unionedLines =  turf.union(polyAsLine,makeLineGeoJson);
             const polygonized = turf.polygonize(unionedLines);
             splittedPolygon = polygonized;
-            
+            console.log("splitted operation called")
            
         }
     </script>
@@ -463,7 +471,8 @@
                   style: new ol.style.Style({
                       stroke: new ol.style.Stroke({
                         color: 'black',
-                        width: 4
+                        width: 1,
+                        opacity:0.5
                       })
                   })
          
@@ -608,7 +617,8 @@
               style: new ol.style.Style({
                       stroke: new ol.style.Stroke({
                         color: 'black',
-                        width: 4
+                        width: 1,
+                        opacity:0.5
                       })
                   })
             })
