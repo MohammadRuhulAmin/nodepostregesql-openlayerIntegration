@@ -378,13 +378,13 @@
           //TotalPlotArea
           var firstPlotPercent = (area_sp_1/TotalPlotArea)*100;
           //document.getElementById('sA_1').innerHTML =  (area_sp_1*0.00002295684113).toFixed(4) + " acre";
-          document.getElementById('sA_1').innerHTML = firstPlotPercent.toFixed(2)  + " %" + " (" + (area_sp_1*0.00002295684113).toFixed(2) +" acre)";
+          document.getElementById('sA_1').innerHTML = firstPlotPercent.toFixed(2)  + " %" + " (" + (area_sp_1*0.00002295684113).toFixed(4) +" acre)";
           document.getElementById('sp_area_1').value = sp_area_1_polygon;
           UtmToLangLotConverter(splittedPolygon.features[1].geometry.coordinates,sp_2ShortLangLot);
           const sp_area_2_polygon = turf.polygon([sp_2ShortLangLot]);
           const area_sp_2 = turf.area(sp_area_2_polygon);
           //document.getElementById('sA_2').innerHTML =  (area_sp_2*0.00002295684113).toFixed(4) + " acre ";
-          document.getElementById('sA_2').innerHTML =  (100-firstPlotPercent).toFixed(2)+ "  %" + " (" + (area_sp_2*0.00002295684113).toFixed(2) +" acre)";
+          document.getElementById('sA_2').innerHTML =  (100-firstPlotPercent).toFixed(2)+ "  %" + " (" + (area_sp_2*0.00002295684113).toFixed(4) +" acre)";
           document.getElementById('sp_area_2').value = sp_area_2_polygon;
         }
      
