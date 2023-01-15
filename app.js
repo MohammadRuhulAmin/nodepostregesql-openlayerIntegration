@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const pool = require('./connection');
 const PORT = 3000;
-
+const url = require('url');
 app.set("view engine", "ejs");
 app.set("views", "./view")
 app.use(express.static(__dirname + "/public"))
@@ -60,7 +60,14 @@ app.get('/searchplot',(req,res)=>{
         
         
         if(details.archrive_plot == 'y'){
-            res.render('return');
+            let qry9 = "select plot_no_en from borolekh order by plot_no_en asc";
+                pool.query(qry9, (err, results) => {
+                    if (err) throw err
+                        else {
+                            var plotList = results.rows;
+                            res.render('index',{plotList:results.rows,Message:"Archrived"});
+                        }
+                    });
            
         }
         else{
@@ -140,7 +147,14 @@ app.post('/savePlot', (req,res)=>{
                                                                                         pool.query(qry6,['y',pd.plot_no_en],(err,result)=>{
                                                                                             if(err) throw err;
                                                                                             else{
-                                                                                                res.redirect("/");
+                                                                                                let qry9 = "select plot_no_en from borolekh order by plot_no_en asc";
+                                                                                                pool.query(qry9, (err, results) => {
+                                                                                                    if (err) throw err
+                                                                                                    else {
+                                                                                                        var plotList = results.rows;
+                                                                                                        res.render('index',{plotList:results.rows});
+                                                                                                    }
+                                                                                                });
                                                                                             }
                                                                                         })
                                                                                         

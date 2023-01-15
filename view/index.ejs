@@ -22,6 +22,9 @@
  
     
     <div class="container m-2">
+        <% if(locals.Message == "Archrived") { %>
+            <div class="alert alert-danger" role="alert"><p>THis plot Has Been Archrived </p></div>
+        <% } %>
         <label class="display-6">Mouza : Borolekh </label>
         <br><br>
         <label class="text-primary">Select Plot : </label>
