@@ -185,6 +185,7 @@
             view: new ol.View()
         });
       var geometry = new ol.format.GeoJSON().readGeometry(plotGeo);
+      console.log(plotGeo)
       function removeLastVectorString(){
         var features_lineString = vector_string.getSource().getFeatures();
         features_lineString.forEach((feature) => {

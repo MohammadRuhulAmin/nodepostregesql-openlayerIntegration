@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/css/ol.css" type="text/css">
+    <style>
+      html, body, .map {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/build/ol.js"></script>
+  </head>
+  <body>
+    <div id="map" class="map"></div>
+    <script type="text/javascript">
+
+      var map = new ol.Map({
+        target: 'map',
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.OSM()
+          })
+        ],
+        view: new ol.View()
+      });
+
+     var data = {"type":"MultiPoint","coordinates":[[4098.497230841,-2944.346407649],[4031.73395048,-2527.637675182],[3853.81448768,-2795.293917935],[4065.150156595,-2700.790917607],[4080.503039529,-2570.305715526],[3997.666366632,-2904.775540467],[3713.12684441,-2816.104372216],[3784.769928207,-2847.959947342],[3965.639367582,-2586.964065232],[4175.338515424,-2878.46731582],[4098.416644602,-2868.315289036],[4090.666553438,-2469.356257072]]}
+      var geometry = new ol.format.GeoJSON().readGeometry(data);
+
+      map.addLayer(
+        new ol.layer.Vector({
+          source: new ol.source.Vector({
+            features: [new ol.Feature(geometry)]
+          })
+        })
+      );
+
+      map.getView().fit(geometry);
+
+    </script>
+  </body>
+</html>
+
+
+
+<!-- 
+    Special Query :=> 
+With Query AS (SELECT geom as GeomData FROM borolekh WHERE plot_no_en = 1)
+select ST_AsGeoJSON(ST_GeneratePoints(GeomData,100)) FROM Query;
+-->
+
+
+<!-- With P AS(SELECT geom as plotGeo FROM borolekh Where plot_no_en = 1),
+Q AS (SELECT ST_Buffer(P.plotGeo,100,'endcap=round join=round') AS BufferValue FROM P)
+SELECT ST_AsGeoJSON(ST_GeneratePoints(Q.BufferValue,12,1996))FROM Q  -->
