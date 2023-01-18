@@ -144,7 +144,32 @@
     <div id="map_sp_2" class="map">
       <p id="area_sp_2"></p>
     </div>
+     <!-- Script for labeling on Coordinates  -->
+  
+     <script>
+      function labelOnVectorCoordinates(coordinatesArray,mapName){
+        
+        var vscl = new ol.source.Vector({
+          coordinatesArray 
+        });
+        var vlcl = new ol.layer.Vector({
+          source: vscl,
+          style: new ol.style.Style({
+            image: new ol.style.Circle({
+              radius: 2,
+              fill: new ol.style.Fill({color: 'blue'})
+            })
+          })
+        })
+        map.addLayer(
+           vlcl 
+        );
+        
+      
+        console.log("ok")
+      }
     
+    </script>
     <!-- script for display parent plot  -->
    <script type="text/javascript">
       const source = new ol.source.Vector({wrapX: false});
@@ -185,7 +210,7 @@
             view: new ol.View()
         });
       var geometry = new ol.format.GeoJSON().readGeometry(plotGeo);
-      console.log(plotGeo)
+      
       function removeLastVectorString(){
         var features_lineString = vector_string.getSource().getFeatures();
         features_lineString.forEach((feature) => {
@@ -214,6 +239,10 @@
          
         })
       );
+      
+      
+     
+       
       map.getView().fit(geometry);
      
    </script>
@@ -282,13 +311,9 @@
       
       // function to add label : 
       function displayLabelForParentPlot(coordx,coordy,distance){
-            const utm = "+proj=utm +zone=32";
-            const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
-            const coord = proj4(utm,wgs84,[coordx, coordy])
             const labelFeature = new ol.Feature({
                 geometry: new ol.geom.Point([coordx,coordy]),
             });
-
             const labelonly = new ol.style.Style({
                 text: new ol.style.Text({
                     font: '14px sans-serif',
@@ -296,7 +321,11 @@
                     fill: new ol.style.Fill({
                         color: 'red'
                     }),
-                })
+                }),
+                // image: new ol.style.Circle({
+                //     radius: 2,
+                //     fill: new ol.style.Fill({color: 'blue'})
+                // })
             });
 
             labelFeature.setStyle(labelonly);
@@ -312,11 +341,44 @@
                 })
             );
         }
+      //start 
+      function StyleCoordinatesOnParentPlot(coordx,coordy){
+        const labelFeature = new ol.Feature({
+                geometry: new ol.geom.Point([coordx,coordy]),
+            });
+            const labelonly = new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 4,
+                    fill: new ol.style.Fill({color: 'blue'})
+                })
+            });
 
-       for(let i = 0;i<midPointArray_parent.length;i++){
-        if(coordinateDistance_parent[i]>0)
-          displayLabelForParentPlot(midPointArray_parent[i][0]+4,midPointArray_parent[i][1]+4, coordinateDistance_parent[i]);
+            labelFeature.setStyle(labelonly);
+            const vectorSource_for_parent_label = new ol.source.Vector({
+                features: [labelFeature]
+            });
+            map.addLayer(
+                new ol.layer.Vector({
+                    source: vectorSource_for_parent_label
+                })
+            );
+      }
+      var parentVartex = data.coordinates[0][0];
+       for(let i = 0;i<parentVartex.length;i++){
+          StyleCoordinatesOnParentPlot(parentVartex[i][0],parentVartex[i][1]);
        }
+      //end 
+       
+       for(let i = 0;i<midPointArray_parent.length;i++){
+        if(coordinateDistance_parent[i]>0){
+          displayLabelForParentPlot(midPointArray_parent[i][0],midPointArray_parent[i][1], coordinateDistance_parent[i]);
+        }
+         
+       }
+       
+       
+      
+      
    </script>
 
    <!-- cut parent polygon & modify line string  -->
@@ -581,10 +643,38 @@
                     })
                 );
             }
+               //start 
+      function StyleCoordinatesOnSp_plot_1(coordx,coordy){
+        const labelFeature_sp_1 = new ol.Feature({
+                geometry: new ol.geom.Point([coordx,coordy]),
+            });
+            const labelonly_sp_1 = new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 4,
+                    fill: new ol.style.Fill({color: 'blue'})
+                })
+            });
 
-            for(let i = 0;i<midPointArray_sp_plot_1.length;i++){
+            labelFeature_sp_1.setStyle(labelonly_sp_1);
+            const vectorSource_for_sp_1_label = new ol.source.Vector({
+                features: [labelFeature_sp_1]
+            });
+            map_sp_1.addLayer(
+                new ol.layer.Vector({
+                    source: vectorSource_for_sp_1_label
+                })
+            );
+      }
+      
+       var spVartex_1 =splittedPolygon.features[0].geometry.coordinates[0];
+       
+       for(let i = 0;i<spVartex_1.length;i++){
+          StyleCoordinatesOnSp_plot_1(spVartex_1[i][0],spVartex_1[i][1]);
+       }
+
+          for(let i = 0;i<midPointArray_sp_plot_1.length;i++){
             if(coordinateDistance_sp_plot_1[i]>0)
-              displayLabelFor_sp_plot_1(midPointArray_sp_plot_1[i][0]+4,midPointArray_sp_plot_1[i][1]+4, coordinateDistance_sp_plot_1[i]);
+              displayLabelFor_sp_plot_1(midPointArray_sp_plot_1[i][0],midPointArray_sp_plot_1[i][1], coordinateDistance_sp_plot_1[i]);
             }
           }
     </script>
@@ -736,10 +826,37 @@
                     })
                 );
             }
+                           //start 
+      function StyleCoordinatesOnSp_plot_2(coordx,coordy){
+        const labelFeature_sp_2 = new ol.Feature({
+                geometry: new ol.geom.Point([coordx,coordy]),
+            });
+            const labelonly_sp_2 = new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 4,
+                    fill: new ol.style.Fill({color: 'blue'})
+                })
+            });
 
-            for(let i = 0;i<midPointArray_sp_plot_2.length;i++){
+            labelFeature_sp_2.setStyle(labelonly_sp_2);
+            const vectorSource_for_sp_2_label = new ol.source.Vector({
+                features: [labelFeature_sp_2]
+            });
+            map_sp_2.addLayer(
+                new ol.layer.Vector({
+                    source: vectorSource_for_sp_2_label
+                })
+            );
+      }
+      
+       var spVartex_2 =splittedPolygon.features[1].geometry.coordinates[0];
+       
+       for(let i = 0;i<spVartex_2.length;i++){
+          StyleCoordinatesOnSp_plot_2(spVartex_2[i][0],spVartex_2[i][1]);
+       }
+          for(let i = 0;i<midPointArray_sp_plot_2.length;i++){
             if(coordinateDistance_sp_plot_2[i]>0)
-              displayLabelFor_sp_plot_2(midPointArray_sp_plot_2[i][0]+2,midPointArray_sp_plot_2[i][1]+2, coordinateDistance_sp_plot_2[i]);
+              displayLabelFor_sp_plot_2(midPointArray_sp_plot_2[i][0],midPointArray_sp_plot_2[i][1], coordinateDistance_sp_plot_2[i]);
             }
                //  for saving perpous
                document.getElementById('spGeoJson_2').value =JSON.stringify(spGeoJson_2)
@@ -762,6 +879,8 @@
         document.getElementById("saveButton").disabled = false;
       }
     </script>
+  
+ 
 
 <!-- Modal -->
 <div class="modal fade" id="confirmSave" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
