@@ -237,10 +237,6 @@ app.get('/experiment-map-label',(req,res)=>{
 })
 
 
-app.get('/test-point',(req,res)=>{
-    res.render('Experiment/point');
-})
-
 app.listen(PORT,()=>{
     console.log(`PORT is listen on ${PORT}`);
 })

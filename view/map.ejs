@@ -51,11 +51,11 @@
           </ul>
          
         </div>
-        <select id="type" class="btn  float-right">
+         <button class="btn btn-success" id="type" onclick="typeSelectFunction();typeSelectOnChange()">Line</button> 
+        <!-- <select id="type" class="btn  float-right">
           <option value="None">Draw  </option>
-       
           <option class="btn" value="LineString">LineString</option>
-        </select>
+        </select> -->
         <div class="btn-group" role="group" aria-label="Basic example">
           <button type="button" id="cutButton" class="btn btn-success m-1" onclick="splitOperationWithTurf();DisplaySplitPoly1();DisplaySplitPoly2();buttonEnableDisable();displayCutMessage()" > Split </button>
           <!-- <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly1()"> Plot 1 </button>
@@ -144,32 +144,9 @@
     <div id="map_sp_2" class="map">
       <p id="area_sp_2"></p>
     </div>
-     <!-- Script for labeling on Coordinates  -->
+   
   
-     <script>
-      function labelOnVectorCoordinates(coordinatesArray,mapName){
-        
-        var vscl = new ol.source.Vector({
-          coordinatesArray 
-        });
-        var vlcl = new ol.layer.Vector({
-          source: vscl,
-          style: new ol.style.Style({
-            image: new ol.style.Circle({
-              radius: 2,
-              fill: new ol.style.Fill({color: 'blue'})
-            })
-          })
-        })
-        map.addLayer(
-           vlcl 
-        );
-        
-      
-        console.log("ok")
-      }
-    
-    </script>
+
     <!-- script for display parent plot  -->
    <script type="text/javascript">
       const source = new ol.source.Vector({wrapX: false});
@@ -321,11 +298,8 @@
                     fill: new ol.style.Fill({
                         color: 'red'
                     }),
-                }),
-                // image: new ol.style.Circle({
-                //     radius: 2,
-                //     fill: new ol.style.Fill({color: 'blue'})
-                // })
+                })
+             
             });
 
             labelFeature.setStyle(labelonly);
@@ -390,8 +364,8 @@
       var splittedPolygon = {
         features : []
       };
+    
       
-      const typeSelect = document.getElementById('type');
       let draw,snap;
       var sp_1ShortLangLot = [];
       var sp_2ShortLangLot = [];
@@ -404,24 +378,30 @@
                
               }
           }
+      var typeSelect = "None";
+      console.log(typeSelect);
+      function typeSelectFunction(){
+        typeSelect = "LineString";
+        document.getElementById('type').disabled = true; 
+        console.log(typeSelect);
+      }
       function addInteraction() {
-        const value = typeSelect.value;
+        const value = typeSelect;
                 if (value !== 'None') {
                     draw = new ol.interaction.Draw({
-                          source: source,
-                          type: typeSelect.value,
+                            source: source,
+                            type: typeSelect,
                           });
                 map.addInteraction(draw);
                 draw.on("drawend",function(e){
                     var writer = new ol.format.GeoJSON();
                     LineSplitterGeoJson = writer.writeFeatures([e.feature]);
-                    
                     dynamicAreaDisplay()
                     
                 });           
             }
       }
-        typeSelect.onchange = function () {
+        var typeSelectOnChange = function () {
           document.getElementById("cutButton").disabled = false;
             map.removeInteraction(draw);
             map.removeInteraction(snap);
