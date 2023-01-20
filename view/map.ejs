@@ -944,10 +944,20 @@
           });
           clippedVoronoiPolygons = turf.featureCollection(clippedVoronoiPolygons);
           var dividedPolygonFeatures = new ol.format.GeoJSON().readFeatures(clippedVoronoiPolygons,{dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'});
-          
-          document.getElementById("NSplittedGeoJsons").value = JSON.stringify(dividedPolygonFeatures);
+          var nGeoJSON = [];
+          for(let i = 0;i<dividedPolygonFeatures.length;i++){
+            nGeoJSON.push(toGeoJSONFormatNPolygons(dividedPolygonFeatures[i].getGeometry().getCoordinates()));
+          }
+          document.getElementById("NSplittedGeoJsons").value = JSON.stringify(nGeoJSON);
           return(dividedPolygonFeatures);
 
+      }
+      function toGeoJSONFormatNPolygons(coordinates){
+        var tempPolyGeoJson = {
+          "type":"Polygon",
+          "coordinates":coordinates
+        }
+        return tempPolyGeoJson;
       }
       function get_random_rgb(opacity) {
         var rgb = [Math.floor(Math.random() * 256),Math.floor(Math.random() * 256),Math.floor(Math.random() * 256)];

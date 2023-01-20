@@ -239,7 +239,10 @@ app.get('/experiment-map-label',(req,res)=>{
 
 app.post('/saveEqualSplitedPolygon',(req,res)=>{
     const {NSplittedGeoJsons} = req.body;
-    res.send(NSplittedGeoJsons)
+    const dividedSpFeatures = JSON.parse(NSplittedGeoJsons);
+    res.send(dividedSpFeatures)
+    
+    
 })
 
 app.listen(PORT,()=>{
