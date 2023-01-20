@@ -53,7 +53,7 @@
         </div>
         <button class="btn btn-success" id="type" onclick="typeSelectFunction();typeSelectOnChange()"><b>/</b></button> 
         
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#NequalSplitPolygon"> N Div </button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" onclick="map_sp_3Div();" data-target="#NequalSplitPolygon"> N Div </button>
        
         <div class="btn-group" role="group" aria-label="Basic example">
           <button type="button" id="cutButton" class="btn btn-success m-1" onclick="splitOperationWithTurf();DisplaySplitPoly1();DisplaySplitPoly2();buttonEnableDisable();displayCutMessage()" > Split </button>
@@ -127,6 +127,13 @@
       </div>
     </div>
     <!-- modal end  -->
+    <br><br>
+    <br><br>
+    <br><br>
+    <br><br>
+    <div id="map_sp_3" class="map">
+      <p id="area_sp_3"> </p>
+    </div>
     <br>
     <br>
   
@@ -143,16 +150,11 @@
       <p id="area_sp_2"></p>
     </div>
    
-    <br><br>
-    <br><br>
-    <br><br>
-    <br><br>
-    <div id="map_sp_3" class="map">
-      <p id="area_sp_3">Test </p>
-    </div>
+   
 
     <!-- script for display parent plot  -->
    <script type="text/javascript">
+      document.getElementById('map_sp_3').hidden = true;
       const source = new ol.source.Vector({wrapX: false});
       const vector_string = new ol.layer.Vector({
             source:source,
@@ -990,20 +992,18 @@
           })
         });
         vectorLayer.getSource().addFeatures(polygons);
-       
-     
-       
-    
-       
-   
-      
-         
       }
 
       
     
     </script>
      
+    <script>
+      function map_sp_3Div(){
+        document.getElementById('map_sp_3').hidden = false;
+      }
+    </script>
+  
  
 
 <!-- Modal -->
@@ -1029,7 +1029,7 @@
           <input type="hidden" name="sp_area_2" id="sp_area_2" />
           <input type="hidden" name="sp_arm_1" id="sp_arm_1" value="1000"/>
           <input type="hidden" name="sp_arm_2" id="sp_arm_2" value="2000" />
-          <button type="submit"  class="btn btn-primary m-1">Save </button>
+          <button type="submit"  class="btn btn-primary m-1" data-mdb-dismiss="modal" >Save </button>
        </form>
         <!-- <button type="button" class="btn btn-primary">Save </button> -->
       </div>
@@ -1056,8 +1056,8 @@
         <input type="text" id="nDivision"  class="form-control" />
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button class="btn btn-success m-1"  onclick="nDivisionLayer()"> ES    </button> 
+        
+        <button class="btn btn-success m-1"  data-dismiss="modal"  onclick="nDivisionLayer();"> ES    </button> 
       </div>
     </div>
   </div>
