@@ -52,8 +52,9 @@
          
         </div>
         <button class="btn btn-success" id="type" onclick="typeSelectFunction();typeSelectOnChange()"><b>/</b></button> 
-        <button class="btn btn-success m-1"  onclick="nDivisionLayer()"> ES    </button> 
-        <!--  -->
+        
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#NequalSplitPolygon"> N Div </button>
+       
         <div class="btn-group" role="group" aria-label="Basic example">
           <button type="button" id="cutButton" class="btn btn-success m-1" onclick="splitOperationWithTurf();DisplaySplitPoly1();DisplaySplitPoly2();buttonEnableDisable();displayCutMessage()" > Split </button>
           <!-- <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly1()"> Plot 1 </button>
@@ -899,12 +900,8 @@
 
     <!-- polygon split into n equal section  -->
     <script>
-
-      var nDivisions = 3;
-      var colors = [];
-      for (var i = 0; i < nDivisions; i++) {
-        colors.push(get_random_rgb(0.5));
-      }
+      
+     
       function polygonNDivision(nDivisions,colors){
         
         var  polygon = turf.polygon([parentCoordinatesLangLot]);
@@ -953,6 +950,11 @@
 
       
       function nDivisionLayer(){
+      var nDivisions = document.getElementById('nDivision').value;
+      var colors = [];
+      for (var i = 0; i < nDivisions; i++) {
+        colors.push(get_random_rgb(0.5));
+      }
          function style(feature) {
           var style = new ol.style.Style({
           stroke: new ol.style.Stroke({
@@ -1034,6 +1036,33 @@
     </div>
   </div>
 </div>
+
+
+<!-- Modal for N Equal Splitted polygon  -->
+<!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="NequalSplitPolygon" tabindex="-1" role="dialog" aria-labelledby="nEqualPolygon" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="nEqualPolygon">Input Polygon Number </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="nDivision"  class="form-control" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button class="btn btn-success m-1"  onclick="nDivisionLayer()"> ES    </button> 
+      </div>
+    </div>
+  </div>
+</div>
+
   </body>
 </html>
 
