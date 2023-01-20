@@ -237,6 +237,11 @@ app.get('/experiment-map-label',(req,res)=>{
 })
 
 
+app.post('/saveEqualSplitedPolygon',(req,res)=>{
+    const {NSplittedGeoJsons} = req.body;
+    res.send(NSplittedGeoJsons)
+})
+
 app.listen(PORT,()=>{
     console.log(`PORT is listen on ${PORT}`);
 })

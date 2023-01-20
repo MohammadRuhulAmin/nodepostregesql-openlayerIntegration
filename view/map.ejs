@@ -53,7 +53,7 @@
         </div>
         <button class="btn btn-success" id="type" onclick="typeSelectFunction();typeSelectOnChange()"><b>/</b></button> 
         
-        <button type="button" class="btn btn-primary" data-toggle="modal" onclick="map_sp_3Div();" data-target="#NequalSplitPolygon"> N Div </button>
+        <button type="button" class="btn btn-primary m-1" data-toggle="modal" onclick="map_sp_3Div();" data-target="#NequalSplitPolygon"> N Div </button>
        
         <div class="btn-group" role="group" aria-label="Basic example">
           <button type="button" id="cutButton" class="btn btn-success m-1" onclick="splitOperationWithTurf();DisplaySplitPoly1();DisplaySplitPoly2();buttonEnableDisable();displayCutMessage()" > Split </button>
@@ -63,6 +63,11 @@
           <button id = "saveButton" type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmSave">
             Save 
           </button>
+
+          <form action="/saveEqualSplitedPolygon" method="post">
+            <input type="hidden" id="NSplittedGeoJsons" value="xxxxx" name="NSplittedGeoJsons" />
+            <button type="submit" class="btn btn-danger m-1 btn-small">Save_ES</button>
+          </form>
         
         </div>
         
@@ -940,7 +945,7 @@
           clippedVoronoiPolygons = turf.featureCollection(clippedVoronoiPolygons);
           var dividedPolygonFeatures = new ol.format.GeoJSON().readFeatures(clippedVoronoiPolygons,{dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'});
           
-          
+          document.getElementById("NSplittedGeoJsons").value = JSON.stringify(dividedPolygonFeatures);
           return(dividedPolygonFeatures);
 
       }
