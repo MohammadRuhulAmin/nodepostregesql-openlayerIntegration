@@ -900,7 +900,7 @@
     <!-- polygon split into n equal section  -->
     <script>
 
-      var nDivisions = 10;
+      var nDivisions = 3;
       var colors = [];
       for (var i = 0; i < nDivisions; i++) {
         colors.push(get_random_rgb(0.5));
@@ -909,7 +909,7 @@
         
         var  polygon = turf.polygon([parentCoordinatesLangLot]);
         var polygonBbox = turf.bbox(polygon);
-        var randomPoints = turf.randomPoint(5000, {bbox: polygonBbox});
+        var randomPoints = turf.randomPoint(100000, {bbox: polygonBbox});
         randomPoints.features = randomPoints.features.filter((feature) => {
           return(turf.booleanPointInPolygon(feature.geometry.coordinates, polygon));
         });
@@ -940,7 +940,7 @@
           });
           clippedVoronoiPolygons = turf.featureCollection(clippedVoronoiPolygons);
           var dividedPolygonFeatures = new ol.format.GeoJSON().readFeatures(clippedVoronoiPolygons,{dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'});
-          //console.log(dividedPolygonFeatures[1].getGeometry().getCoordinates())
+          
           
           return(dividedPolygonFeatures);
 
@@ -949,7 +949,11 @@
         var rgb = [Math.floor(Math.random() * 256),Math.floor(Math.random() * 256),Math.floor(Math.random() * 256)];
         return('rgb('+rgb.join(', ') + ', ' + opacity + ')');
       }
-      function style(feature) {
+     
+
+      
+      function nDivisionLayer(){
+         function style(feature) {
           var style = new ol.style.Style({
           stroke: new ol.style.Stroke({
               color: [0, 0, 255, 0.8],
@@ -965,51 +969,32 @@
           return(style);
       }
       
-
-      polygonNDivision(nDivisions,colors);
-      function nDivisionLayer(){
-       var polygons =  polygonNDivision(nDivisions,colors);
-        console.log(polygons[0].getGeometry().getCoordinates());
-        var tempPolyGeoJson = {
-          "type":"Polygon",
-          "coordinates":polygons[0].getGeometry().getCoordinates()
-        }
-              // start
-        const source_eq = new ol.source.Vector({wrapX: false});
-        const vector_eq = new ol.layer.Vector({
-              source:source_eq,
-              style: new ol.style.Style({
-                fill: new ol.style.Fill({
-                  color: 'rgba(255, 255, 255, 0.9)'
-                }),
-                stroke: new ol.style.Stroke({
-                  color: '#FFA500',
-                  width: 4
-                })
-              })
-          });
-        // end
-       
-        var map_sp_3 = new ol.Map({
-            target: 'map_sp_3',
-            layers: [
-            new ol.layer.Tile({
-              source: new ol.source.OSM()
-            })
-            ],
-            view: new ol.View()
+        var polygons =  polygonNDivision(nDivisions,colors);
+        let latLong = polygons[0].getGeometry().getCoordinates()[0][0];
+        var raster = new ol.layer.Tile({
+          source: new ol.source.OSM()
         });
-    
-        var geometry_eq = new ol.format.GeoJSON().readGeometry(tempPolyGeoJson);
-        map_sp_3.addLayer(
-        new ol.layer.Vector({
-          source: new ol.source.Vector({
-            features: [new ol.Feature(geometry_eq)]
-          })
-        })
-      );
+        var vectorLayer = new ol.layer.Vector({
+          source: new ol.source.Vector(),
+          style: style
+        });
 
-        map_sp_3.getView().fit(geometry_eq);
+        var map_es = new ol.Map({
+          layers: [vectorLayer],
+          target: 'map_sp_3',
+          view: new ol.View({
+            center: latLong,
+            zoom: 18
+          })
+        });
+        vectorLayer.getSource().addFeatures(polygons);
+       
+     
+       
+    
+       
+   
+      
          
       }
 
