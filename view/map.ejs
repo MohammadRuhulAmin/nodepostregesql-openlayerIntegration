@@ -52,8 +52,8 @@
          
         </div>
         <button class="btn btn-success" id="type" onclick="typeSelectFunction();typeSelectOnChange()"><b>/</b></button> 
-        <button class="btn btn-success m-1"  onclick="nDivisionLayer()"> Equal Split     </button> 
-        <button class="btn btn-danger m-1" id="dsb"  onclick="DynamicSplitOperation()"> Alignment    </button>
+        <button class="btn btn-success m-1"  onclick="nDivisionLayer()"> ES    </button> 
+        <!--  -->
         <div class="btn-group" role="group" aria-label="Basic example">
           <button type="button" id="cutButton" class="btn btn-success m-1" onclick="splitOperationWithTurf();DisplaySplitPoly1();DisplaySplitPoly2();buttonEnableDisable();displayCutMessage()" > Split </button>
           <!-- <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly1()"> Plot 1 </button>
@@ -224,7 +224,7 @@
 
    <!-- labeling for parent plot  -->
    <script>
-      document.getElementById('dsb').disabled = true;
+      
       var vector_sp_1;
       var data = JSON.parse(plotGeo)
        // getting distance 
@@ -401,7 +401,7 @@
             }
       }
         var typeSelectOnChange = function () {
-          document.getElementById('dsb').disabled = false ;
+         
           document.getElementById("cutButton").disabled = false;
             map.removeInteraction(draw);
             map.removeInteraction(snap);
@@ -865,46 +865,7 @@
     </script>
 
     <!-- automated Line String  -->
-    <script>
-      function DynamicSplitOperation(){
-        
-        var lineString = JSON.parse(LineSplitterGeoJson);
-        var plotString = JSON.parse(plotGeo);
-        
-      
-        // console.log(plotString.coordinates[0][0]);
-        var newLineString = {
-              "type": "LineString",
-             
-                "coordinates": [
-                  plotString.coordinates[0][0][0],
-                  plotString.coordinates[0][0][plotString.coordinates[0][0].length-4]
-                ],
-              
-      
-            }
-        var lineGeom  = new ol.format.GeoJSON().readGeometry(newLineString);
-            map.addLayer(
-                new ol.layer.Vector({
-                  source: new ol.source.Vector({
-                    features: [new ol.Feature(lineGeom)]
-                  }),
-                  style: new ol.style.Style({
-                      stroke: new ol.style.Stroke({
-                        color: 'black',
-                        width: 1,
-                        opacity:0.5
-                      })
-                  })
-         
-                })
-              );
-       
-       
-        Alignment();
-
-      }
-    </script>
+  
 
     <!-- Equal Split Polygon Feature  -->
     <script>
@@ -1038,32 +999,7 @@
             ],
             view: new ol.View()
         });
-        var dataxx  =  {"type":"MultiPolygon","coordinates":[[[              
-    [
-              87.17948208453089,
-              26.845563182304147
-            ],
-            [
-              87.76538001763998,
-              24.86276031716659
-            ],
-            [
-              88.63467583419157,
-              18.61826084955659
-            ],
-            [
-              95.20309440744973,
-              19.468704986079473
-            ],
-            [
-              94.02897546168685,
-              26.87001973963629
-            ],
-            [
-              87.17948208453089,
-              26.845563182304147
-            ]
-          ]]]};
+    
         var geometry_eq = new ol.format.GeoJSON().readGeometry(tempPolyGeoJson);
         map_sp_3.addLayer(
         new ol.layer.Vector({
