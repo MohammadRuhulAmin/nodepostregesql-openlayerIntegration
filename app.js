@@ -37,6 +37,7 @@ app.get('/searchplot',(req,res)=>{
         else{
             var details = result.rows[0];
             pool.query(query3,[plot_no_en],(err,result)=>{
+                var queryPlot = plot_no_en;
                 if(err)throw err;
                 else{
                     var stleng= result.rows[0];
@@ -54,14 +55,43 @@ app.get('/searchplot',(req,res)=>{
                             
                             
                             if(details.archrive_plot == 'y'){
-                                let qry9 = "select plot_no_en from borolekh order by plot_no_en asc";
-                                    pool.query(qry9, (err, results) => {
-                                        if (err) throw err
-                                            else {
-                                                var plotList = results.rows;
-                                                res.render('index',{plotList:results.rows,Message:"Archrived"});
-                                            }
-                                        });
+                               
+                                let qryc1 = "SELECT ST_AsGeoJSON(geom) FROM borolekh Where plot_no_en = $1";
+                                    pool.query(qryc1,[queryPlot],(err,results)=>{
+                                        if(err)throw err;
+                                        else{
+                                            var parentChildGeoJsonList = [];
+                                            var parentPlotGeoJson = results.rows[0];
+                                            parentChildGeoJsonList.push(parentPlotGeoJson.st_asgeojson);
+                                           // res.send(parentChildGeoJsonList)
+                                            let qryc2 = "SELECT ST_AsGeoJSON(geom) FROM borolekh Where parent_plot = $1";
+                                            pool.query(qryc2,[queryPlot],(err,results)=>{
+                                                if(err)throw err;
+                                                else{
+                                                    var childPlotsGeoJson = results.rows;
+                                                    for(let i = 0;i<childPlotsGeoJson.length;i++){
+                                                        parentChildGeoJsonList.push(childPlotsGeoJson[i].st_asgeojson)
+                                                    }
+                                                    let qryc3 = "select plot_no_en from borolekh where parent_plot = $1";
+                                                    pool.query(qryc3,[queryPlot],(err,results)=>{
+                                                        if(err)throw err;
+                                                        else{
+                                                            let plotsList = results.rows;
+                                                            var plotIdList = {
+                                                                plotId0 : queryPlot,
+                                                                plotId1 : plotsList[0].plot_no_en,
+                                                                plotId2 : plotsList[1].plot_no_en 
+                                                            }
+                                                            res.render('parentAndChildPlot',{parentChildPlotGeoList:JSON.stringify(parentChildGeoJsonList),plotIdList:JSON.stringify(plotIdList)});
+                                                            
+                                                        }
+                                                    })
+                                                   
+                                                }
+                                            })
+                                        }
+                                    });
+                              
                                
                             }
                             else{

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+      <!-- bootstrap start  -->
+   
+      <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+      <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.slim.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+      <!-- bootstrap end  -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/css/ol.css" type="text/css">
+    <style>
+  .map {
+  
+    margin: 1px;
+    padding: 0;
+    width: 300px;
+    height: 300px;
+  
+ 
+} 
+
+.container{
+    border: 1px;
+    border-style: solid;
+}
+
+
+     
+    </style>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/build/ol.js"></script>
+  </head>
+  <body>
+
+    <input type="hidden" id="plotGeoJsonList" value="<%=parentChildPlotGeoList %>" />
+    <input type="hidden" id="plotIdList" value="<%=plotIdList %>" />
+
+        <div class="row">
+            <div id="map_parent" class="map m-1 container col-lg">
+                <label > <span class="badge text-danger" id="parent_plot"> </span> </label>
+            </div>
+            <div id="map_child_1" class="map m-1 container col-lg">
+                <label > <span class="badge text-danger" id="child_plot_1"></span> </label>
+            </div>
+            <div id="map_child_2" class="map m-1 container col-lg">
+                <label > <span class="badge text-danger" id="child_plot_2"> </span> </label>
+            </div>
+        </div>
+        <p class="text text-danger">This plot has been Archrived </p>
+        <a class="btn btn-success m-1" href="/">Back </a>
+      <script type="text/javascript">
+        var plotIdList = document.getElementById('plotIdList').value;
+        plotIdList = JSON.parse(plotIdList);
+        console.log(plotIdList);
+        document.getElementById('parent_plot').innerHTML = "Parent Plot : "+ plotIdList.plotId0;
+        document.getElementById('child_plot_1').innerHTML = "Child Plot No : "+ plotIdList.plotId1;
+        document.getElementById('child_plot_2').innerHTML = "Child Plot No : "+ plotIdList.plotId2;
+        var map_parent = new ol.Map({
+          target: 'map_parent',
+          layers: [
+           
+          ],
+          view: new ol.View()
+        });
+  
+       var jsonsString = document.getElementById('plotGeoJsonList').value;
+        let parsedGeoJSONList =  JSON.parse(jsonsString)
+        
+        var geometry_parent = new ol.format.GeoJSON().readGeometry(parsedGeoJSONList[0]);
+  
+        map_parent.addLayer(
+          new ol.layer.Vector({
+            source: new ol.source.Vector({
+              features: [new ol.Feature(geometry_parent)]
+            })
+          })
+        );
+  
+        map_parent.getView().fit(geometry_parent);
+  
+  
+        //------------------------------------
+  var geometry_childPlot_1 = new ol.format.GeoJSON().readGeometry(parsedGeoJSONList[1]);
+  var map_child_1 = new ol.Map({
+          target: 'map_child_1',
+          layers: [
+           
+          ],
+          view: new ol.View()
+        });
+  map_child_1.addLayer(
+    new ol.layer.Vector({
+      source: new ol.source.Vector({
+        features: [new ol.Feature(geometry_childPlot_1)]
+      })
+    })
+  );
+  
+      map_child_1.getView().fit(geometry_childPlot_1);
+  
+        //------------------------------------
+        var geometry_childPlot_2 = new ol.format.GeoJSON().readGeometry(parsedGeoJSONList[2]);
+  var map_child_2 = new ol.Map({
+          target: 'map_child_2',
+          layers: [
+   
+          ],
+          view: new ol.View()
+        });
+          map_child_2.addLayer(
+          new ol.layer.Vector({
+              source: new ol.source.Vector({
+              features: [new ol.Feature(geometry_childPlot_2)]
+              })
+              
+          })
+          );
+  
+      map_child_2.getView().fit(geometry_childPlot_2);
+  
+      </script>
+
+
+  </body>
+</html>
+
+
