@@ -64,10 +64,10 @@
             Save 
           </button>
 
-          <form action="/saveEqualSplitedPolygon" method="post">
+         <!-- <form action="/saveEqualSplitedPolygon" method="post">
             <input type="hidden" id="NSplittedGeoJsons" value="xxxxx" name="NSplittedGeoJsons" />
             <button type="submit" class="btn btn-danger m-1 btn-small">Save_ES</button>
-          </form>
+          </form>   -->
         
         </div>
         
@@ -948,7 +948,7 @@
           for(let i = 0;i<dividedPolygonFeatures.length;i++){
             nGeoJSON.push(toGeoJSONFormatNPolygons(dividedPolygonFeatures[i].getGeometry().getCoordinates()));
           }
-          document.getElementById("NSplittedGeoJsons").value = JSON.stringify(nGeoJSON);
+          //document.getElementById("NSplittedGeoJsons").value = JSON.stringify(nGeoJSON);
           return(dividedPolygonFeatures);
 
       }
@@ -981,9 +981,9 @@
           fill: new ol.style.Fill({
               color: feature.get('color'),
           }),
-          text: new ol.style.Text({
-            text: Math.floor(feature.get('percentage') * 100) + '%'
-          })
+          // text: new ol.style.Text({
+          //   text: Math.floor(feature.get('percentage') * 100) + '%'
+          // })
         });
           return(style);
       }
@@ -1003,7 +1003,7 @@
           target: 'map_sp_3',
           view: new ol.View({
             center: latLong,
-            zoom: 18
+            zoom: 20
           })
         });
         vectorLayer.getSource().addFeatures(polygons);
@@ -1072,7 +1072,7 @@
       </div>
       <div class="modal-footer">
         
-        <button class="btn btn-success m-1"  data-dismiss="modal"  onclick="nDivisionLayer();"> ES    </button> 
+        <button class="btn btn-success m-1"  data-dismiss="modal"  onclick="nDivisionLayer();"> Equal Split  </button> 
       </div>
     </div>
   </div>
