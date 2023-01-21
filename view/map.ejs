@@ -18,77 +18,70 @@
   </head>
   <body>
  
-   
-    <div id="map" class="map">
-      
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
         
         
-        <form action="/" method="get">
-          <button type="submit"> Back </button>
-        </form>
-        <button type="submit" class="btn btn-primary m-1" data-toggle="modal" data-target="#exampleModalCenter">
-          Details 
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav align-content-end">
-            <li class="nav-item active">
-              <p class="nav-link">Total area : <%=(parseFloat(plotArea)*0.00002295684113).toFixed(2)  %> acre <span class="sr-only">(current)</span></p>
-            </li>
-            <li class="nav-item">
-              <p class="nav-link active" >Shp Leng : <%=(parseFloat(plotLeng)*3.28084).toFixed(2)  %> ft</p>
-            </li>
-            <li class="nav-item">
-              <p class="nav-link active" >area 1 : <span id="sA_1"></span></p>
-            </li>
-            <li class="nav-item">
-              <p class="nav-link active" > area 2 : <span id="sA_2"></span></p>
-            </li>
-            <li class="nav-item ">
-              
-             
-            </li>
-          </ul>
-         
-        </div>
-        <button class="btn btn-success" id="type" onclick="typeSelectFunction();typeSelectOnChange()"><b>/</b></button> 
-        
-        <button type="button" class="btn btn-primary m-1" data-toggle="modal" onclick="map_sp_3Div();" data-target="#NequalSplitPolygon"> N Div </button>
-       
-        <div class="btn-group" role="group" aria-label="Basic example">
-          <button type="button" id="cutButton" class="btn btn-success m-1" onclick="splitOperationWithTurf();DisplaySplitPoly1();DisplaySplitPoly2();buttonEnableDisable();displayCutMessage()" > Split </button>
-          <!-- <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly1()"> Plot 1 </button>
-          <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly2()"> Plot 2</button> -->
-          <button type="button" class="btn btn-primary m-1" onclick="clearPage()"> Reset </button>
-          <button id = "saveButton" type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmSave">
-            Save 
-          </button>
+      <form action="/" method="get">
+        <button type="submit"> Home </button>
+      </form>
+      <button type="submit" class="btn btn-primary m-1" data-toggle="modal" data-target="#exampleModalCenter">
+        Details 
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <h2> &nbsp; &nbsp; Mutation: Map Splitting Demo</h2>
 
-         <!-- <form action="/saveEqualSplitedPolygon" method="post">
-            <input type="hidden" id="NSplittedGeoJsons" value="xxxxx" name="NSplittedGeoJsons" />
-            <button type="submit" class="btn btn-danger m-1 btn-small">Save_ES</button>
-          </form>   -->
-        
-        </div>
-        
+      </div>
+      
+      <button class="btn btn-success" id="type" onclick="typeSelectFunction();typeSelectOnChange()"><b>/</b></button> 
+      
+      <button type="button" class="btn btn-primary m-1" data-toggle="modal" onclick="map_sp_3Div();" data-target="#NequalSplitPolygon"> Equal Split  </button>
+      
+      <div class="btn-group" role="group" aria-label="Basic example">
+        <button type="button" id="cutButton" class="btn btn-success m-1" onclick="splitOperationWithTurf();DisplaySplitPoly1();DisplaySplitPoly2();buttonEnableDisable();displayCutMessage()" > Split </button>
+        <!-- <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly1()"> Plot 1 </button>
+        <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly2()"> Plot 2</button> -->
+        <button type="button" class="btn btn-primary m-1" onclick="clearPage()"> Reset </button>
+        <button id = "saveButton" type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmSave">
+          Save 
+        </button>
+
+       <!-- <form action="/saveEqualSplitedPolygon" method="post">
+          <input type="hidden" id="NSplittedGeoJsons" value="xxxxx" name="NSplittedGeoJsons" />
+          <button type="submit" class="btn btn-danger m-1 btn-small">Save_ES</button>
+        </form>   -->
+      
+      </div>
+    </nav>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav align-content-end">
+          <li class="nav-item active">
+            <p class="nav-link">Total area : <%=(parseFloat(plotArea)*0.00002295684113).toFixed(2)  %> acre <span class="sr-only">(current)</span></p>
+          </li>
+          <li class="nav-item">
+            <p class="nav-link active" >Shp Leng : <%=(parseFloat(plotLeng)*3.28084).toFixed(2)  %> ft</p>
+          </li>
+          <li class="nav-item">
+            <p class="nav-link active" >area 1 : <span id="sA_1"></span></p>
+          </li>
+          <li class="nav-item">
+            <p class="nav-link active" > area 2 : <span id="sA_2"></span></p>
+          </li>
+         
+        </ul>
        
-      </nav>
-    
-    
-    
-      
-      
-    
+      </div>
+    </nav>
+    <div id="map" class="map">
+
     </div>
    
-    <br><br>
+    <br/>
     <input id="plotInfo" type="hidden" value="<%=plotInfo %>"/>
     <input type="hidden" id="plotTotalArea" value="<%=plotArea %>" />
     
     
-    <br>
-    <br>
-  
+   
 
    
     <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -132,33 +125,23 @@
       </div>
     </div>
     <!-- modal end  -->
-    <br><br>
-    <br><br>
-    <br><br>
-    <br><br>
-    <div id="map_sp_3" class="map">
-      <p id="area_sp_3"> </p>
-    </div>
-    <br>
-    <br>
-  
-    <br>
-    <br>
-    <div id="map_sp_1" class="map">
+    <div id="map_sp_1" class="map2">
       <p id="area_sp_1"></p>
     </div>
-    <br><br>
-    <br><br>
-    <br><br>
-    <br><br>
-    <div id="map_sp_2" class="map">
+    <br/>
+    <div id="map_sp_2" class="map2">
       <p id="area_sp_2"></p>
     </div>
-   
+    <div id="map_sp_3" class="map3">
+      
+    </div>
    
 
     <!-- script for display parent plot  -->
    <script type="text/javascript">
+      //const utm = "+proj=cass";
+      const utm = "+proj=utm +zone=32";
+      const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
       document.getElementById('map_sp_3').hidden = true;
       const source = new ol.source.Vector({wrapX: false});
       const vector_string = new ol.layer.Vector({
@@ -168,8 +151,8 @@
                 color: 'rgba(255, 255, 255, 0.9)'
               }),
               stroke: new ol.style.Stroke({
-                color: '#FFA500',
-                width: 4
+                color: 'red',
+                width: 1
               })
             })
         });
@@ -242,8 +225,10 @@
       var parentCoordinatesLangLot = [];
       function parentCoordinateLangLotConverter(){
           for(let i = 0;i<data.coordinates[0][0].length;i++){
-             const utm = "+proj=utm +zone=32";
-             const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+
+            // const utm = "+proj=cass +lon_0=92.0 +lat_0=24.5 +ellps=bessel +units=m"
+             //const utm = "+proj=utm +zone=32";
+             //const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
              const coord = proj4(utm,wgs84,[data.coordinates[0][0][i][0],data.coordinates[0][0][i][1]])
              parentCoordinatesLangLot.push(coord);
           }
@@ -378,8 +363,9 @@
       var sp_2ShortLangLot = [];
       function UtmToLangLotConverter(coordinates,array){
           for(let i = 0;i<coordinates[0].length;i++){
-              const utm = "+proj=utm +zone=32";
-              const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+              //const utm = "+proj=utm +zone=32";
+              //const utm = "+proj=cass +lon_0=92.0 +lat_0=24.5 +ellps=bessel +units=m"
+              //const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
               const coord = proj4(utm,wgs84,[coordinates[0][i][0],coordinates[0][i][1]])
               array.push(coord);
                
@@ -495,8 +481,9 @@
         }
         function sp_1CoordinateLangLotConverter(){
               for(let i = 0;i<spGeoJson_1.coordinates[0][0].length;i++){
-                const utm = "+proj=utm +zone=32";
-                const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+                //const utm = "+proj=utm +zone=32";
+                //const utm = "+proj=cass +lon_0=92.0 +lat_0=24.5 +ellps=bessel +units=m"
+                //const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
                 const coord = proj4(utm,wgs84,[spGeoJson_1.coordinates[0][0][i][0],spGeoJson_1.coordinates[0][0][i][1]])
                 sp_1CoordinatesLangLot.push(coord);
               }
@@ -603,8 +590,9 @@
 
           // function to add label :
           function displayLabelFor_sp_plot_1(coordx,coordy,distance){       
-                const utm = "+proj=utm +zone=32";
-                const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+                //const utm = "+proj=utm +zone=32";
+                //const utm = "+proj=cass +lon_0=92.0 +lat_0=24.5 +ellps=bessel +units=m"
+                //const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
                 const coord = proj4(utm,wgs84,[coordx, coordy])
                 const labelFeature_sp_plot_1 = new ol.Feature({
                     geometry: new ol.geom.Point([coordx,coordy]),
@@ -747,8 +735,9 @@
         
           function sp_2CoordinateLangLotConverter(){
               for(let i = 0;i<spGeoJson_2.coordinates[0][0].length;i++){
-                const utm = "+proj=utm +zone=32";
-                const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+                //const utm = "+proj=utm +zone=32";
+                //const utm = "+proj=cass +lon_0=92.0 +lat_0=24.5 +ellps=bessel +units=m"
+                //const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
                 const coord = proj4(utm,wgs84,[spGeoJson_2.coordinates[0][0][i][0],spGeoJson_2.coordinates[0][0][i][1]])
                 sp_2CoordinatesLangLot.push(coord);
               }
@@ -787,9 +776,10 @@
 
           // function to add label :
           function displayLabelFor_sp_plot_2(coordx,coordy,distance){
+            //const utm = "+proj=cass +lon_0=92.0 +lat_0=24.5 +ellps=bessel +units=m"
+                //const utm = "+proj=utm +zone=32";
                 
-                const utm = "+proj=utm +zone=32";
-                const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+                //const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
                 const coord = proj4(utm,wgs84,[coordx, coordy])
                 const labelFeature_sp_plot_2= new ol.Feature({
                     geometry: new ol.geom.Point([coordx,coordy]),
@@ -948,7 +938,6 @@
           for(let i = 0;i<dividedPolygonFeatures.length;i++){
             nGeoJSON.push(toGeoJSONFormatNPolygons(dividedPolygonFeatures[i].getGeometry().getCoordinates()));
           }
-          //document.getElementById("NSplittedGeoJsons").value = JSON.stringify(nGeoJSON);
           return(dividedPolygonFeatures);
 
       }
@@ -1077,7 +1066,9 @@
     </div>
   </div>
 </div>
-
+  <div >
+    <p align="center">Copyright © Business Automation Ltd. 2023</p>
+  </div>
   </body>
 </html>
 
