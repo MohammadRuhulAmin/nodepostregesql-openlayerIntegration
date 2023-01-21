@@ -956,7 +956,7 @@
 
       
       function nDivisionLayer(){
-      var nDivisions = document.getElementById('nDivision').value;
+      var nDivisions = document.getElementById('nDivision').value || 1;
       var colors = [];
       for (var i = 0; i < nDivisions; i++) {
         colors.push(get_random_rgb(0.5));
