@@ -28,7 +28,7 @@
         Details 
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <h2> &nbsp; &nbsp; Mutation: Map Splitting Demo</h2>
+        <h2> &nbsp; &nbsp; Mutation: Map Splitting Demo </h2>
 
       </div>
       
@@ -38,6 +38,7 @@
       
       <div class="btn-group" role="group" aria-label="Basic example">
         <button type="button" id="cutButton" class="btn btn-success m-1" onclick="splitOperationWithTurf();DisplaySplitPoly1();DisplaySplitPoly2();buttonEnableDisable();displayCutMessage()" > Split </button>
+        <button type="button" onclick="Adjustment()" class="btn btn-danger btn-sm">Adjust</button>
         <!-- <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly1()"> Plot 1 </button>
         <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly2()"> Plot 2</button> -->
         <button type="button" class="btn btn-primary m-1" onclick="clearPage()"> Reset </button>
@@ -139,6 +140,7 @@
 
     <!-- script for display parent plot  -->
    <script type="text/javascript">
+      var childPlotArea1,childPlotArea2;
       //const utm = "+proj=cass";
       const utm = "+proj=utm +zone=32";
       const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
@@ -184,14 +186,8 @@
         features_lineString.forEach((feature) => {
           vector_string.getSource().removeFeature(feature);
          });
-      
-         var features_spPlot_1 = vector_sp_1.getSource().getFeatures();
-         features_spPlot_1.forEach((feature) => {
-          vector_sp_1.getSource().removeFeature(feature);
-         });
-          
-        
       }
+      
       map.addLayer(
         new ol.layer.Vector({
           source: new ol.source.Vector({
@@ -390,6 +386,8 @@
                     var writer = new ol.format.GeoJSON();
                     LineSplitterGeoJson = writer.writeFeatures([e.feature]);
                     dynamicAreaDisplay()
+                    //for intersected coordinates labeling 
+                    interSectedCoordinatesLabel()
                     
                 });           
             }
@@ -411,6 +409,8 @@
           var format = new ol.format["GeoJSON"]();
           LineSplitterGeoJson = format.writeFeatures(source.getFeatures());
           dynamicAreaDisplay()
+          //for intersected coordinates labeling 
+          interSectedCoordinatesLabel()
         });
         
         function dynamicAreaDisplay(){
@@ -433,6 +433,8 @@
               //document.getElementById('sA_2').innerHTML =  (area_sp_2*0.00002295684113).toFixed(4) + " acre ";
               document.getElementById('sA_2').innerHTML =  (100-firstPlotPercent).toFixed(2)+ "  %" + " (" + (area_sp_2*0.00002295684113).toFixed(4) +" acre)";
               document.getElementById('sp_area_2').value = sp_area_2_polygon;
+              childPlotArea1 = (area_sp_1*0.00002295684113).toFixed(4) 
+              childPlotArea2 = (area_sp_2*0.00002295684113).toFixed(4) 
           }
           else{
             clearPage();
@@ -865,36 +867,71 @@
     <!-- automated Line String  -->
   
 
-    <!-- Equal Split Polygon Feature  -->
+    <!-- labeling for dynamic line String coordinates intersection   -->
     <script>
-    function Alignment(){
-      var polygonArea = document.getElementById('plotTotalArea').value;
-      let splitPercent_1 = 60/100;
-      let splitPercent_2 = 40/100;
-      var polyArea_1 = polygonArea*splitPercent_1;
-      var polyArea_2 = polygonArea - polyArea_1;
-      var plotGeom = JSON.parse(plotGeo);
-      let plotCoordinates = plotGeom.coordinates[0][0];
-      let line = JSON.parse(LineSplitterGeoJson);
-      let lineCoordinates = line.features[0].geometry.coordinates;
-      overlappingPolygonCoordinates(lineCoordinates ,plotCoordinates);
+      function interSectedCoordinatesLabel(){
+        const coordinatesNList = [];
+        const plot = JSON.parse(plotGeo)
+        const lineCoordinates = JSON.parse(LineSplitterGeoJson).features[0].geometry.coordinates;
+        let lineString = turf.lineString(lineCoordinates);
+        let intersectsArray = [];
+        let plotCoordinates = plot.coordinates[0][0];
+        for(let i = 1;i<plotCoordinates.length;i++){
+          let x1 = plotCoordinates[i-1][0];
+          let x2 = plotCoordinates[i][0];
+          let y1 = plotCoordinates[i-1][1];
+          let y2 = plotCoordinates[i][1];
+          let polyLineString = turf.lineString([[x1,y1],[x2,y2]]);
+          intersectsArray.push(turf.lineIntersect(lineString, polyLineString)) ;
+          
+        }
+        for(let i = 0;i<intersectsArray.length;i++){
+          if(intersectsArray[i].features[0]){
+            const coordi = intersectsArray[i].features[0].geometry.coordinates;
+            StyleCoordinatesInterceted(coordi[0],coordi[1])
+          }
+        }
+
+          
+        
+        console.log("-------------THE END--------------");
+        
+      
+       
        
 
 
-    }
+        
 
-    function overlappingPolygonCoordinates(lineCoordinates ,plotCoordinates){
-        for(let i = 0;i<lineCoordinates.length;i++){
-          let coordx = lineCoordinates[i][0];
-          let coordy = lineCoordinates[i][1];
-         
+      }
+     
+      function StyleCoordinatesInterceted(coordx,coordy){
+        const labelFeature = new ol.Feature({
+                geometry: new ol.geom.Point([coordx,coordy]),
+            });
+            const labelonly = new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 4,
+                    fill: new ol.style.Fill({color: 'red'})
+                })
+            });
 
-          
-        }  
-    }
+            labelFeature.setStyle(labelonly);
+            const vectorSource = new ol.source.Vector({
+                features: [labelFeature]
+            });
+            map.addLayer(
+                new ol.layer.Vector({
+                    source: vectorSource
+                })
+            );
+      }
+
+    
+
 
     </script>
-
+  
     <!-- polygon split into n equal section  -->
     <script>
       
