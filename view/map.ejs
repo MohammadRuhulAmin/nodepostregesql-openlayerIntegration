@@ -392,6 +392,8 @@
                     dynamicAreaDisplay()
                     //for intersected coordinates labeling 
                     interSectedCoordinatesLabel()
+                    // for removing a last layer 
+                   //RemoveSpecificLayer();
                     
                 });           
             }
@@ -415,6 +417,8 @@
           dynamicAreaDisplay()
           //for intersected coordinates labeling 
           interSectedCoordinatesLabel()
+          // for removing a layer
+          RemoveSpecificLayer()
         });
         
         function dynamicAreaDisplay(){
@@ -908,11 +912,11 @@
         
 
       }
-     
+      
       function StyleCoordinatesInterceted(coordx,coordy){
         const labelFeature = new ol.Feature({
                 geometry: new ol.geom.Point([coordx,coordy]),
-            });
+         });
             const labelonly = new ol.style.Style({
                 image: new ol.style.Circle({
                     radius: 4,
@@ -1038,15 +1042,27 @@
         });
         vectorLayer.getSource().addFeatures(polygons);
       }
-
-      
-    
     </script>
      
     <script>
       function map_sp_3Div(){
         document.getElementById('map_sp_3').hidden = false;
       }
+    </script>
+
+    <!-- Removing specific layer function  -->
+    <script>
+      function RemoveSpecificLayer(){
+          let layersList =  map.getLayers().getArray();
+          let initial= layersList.length-4;
+          for(let i = initial;i<layersList.length-2;i++){
+            map.getLayers().getArray()[i].setVisible(false)
+          }
+        
+          
+                  
+      }
+     //RemoveSpecificLayer();
     </script>
   
  
