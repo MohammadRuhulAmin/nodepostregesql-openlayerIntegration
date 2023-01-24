@@ -68,14 +68,13 @@
           <li class="nav-item">
             <p class="nav-link active" > area 2 : <span id="sA_2"></span></p>
           </li>
-         
         </ul>
-       
+      </div>
+      <div>
+        <button class="btn btn-sm btn-success" onclick="displayOnClickParentPlot()">Display Lable </button>
       </div>
     </nav>
-    <div id="map" class="map">
-
-    </div>
+    <div id="map" class="map"></div>
    
     <br/>
     <input id="plotInfo" type="hidden" value="<%=plotInfo %>"/>
@@ -126,12 +125,14 @@
       </div>
     </div>
     <!-- modal end  -->
-    <div id="map_sp_1" class="map2">
-      <p id="area_sp_1"></p>
-    </div>
-    <br/>
-    <div id="map_sp_2" class="map2">
-      <p id="area_sp_2"></p>
+    <div class="row m-3">
+     
+      <div id="map_sp_1" class="map2 m-1 container col-lg">
+        <badge id="area_sp_1"></badge>
+      </div>
+      <div id="map_sp_2" class="map2 m-1 container col-lg">
+        <badge id="area_sp_2"></badge>
+      </div>
     </div>
     <div id="map_sp_3" class="map3">
       
@@ -281,11 +282,12 @@
             });
             const labelonly = new ol.style.Style({
                 text: new ol.style.Text({
-                    font: '14px sans-serif',
+                    font: '10px sans-serif',
                     text:`${distance.toFixed(1)} ft`,
                     fill: new ol.style.Fill({
                         color: 'red'
                     }),
+                    
                 })
              
             });
@@ -330,13 +332,15 @@
           StyleCoordinatesOnParentPlot(parentVartex[i][0],parentVartex[i][1]);
        }
       //end 
-       
-       for(let i = 0;i<midPointArray_parent.length;i++){
-        if(coordinateDistance_parent[i]>0){
-          displayLabelForParentPlot(midPointArray_parent[i][0],midPointArray_parent[i][1], coordinateDistance_parent[i]);
-        }
+       function displayOnClickParentPlot(){
+        for(let i = 0;i<midPointArray_parent.length;i++){
+          if(coordinateDistance_parent[i]>0){
+            displayLabelForParentPlot(midPointArray_parent[i][0],midPointArray_parent[i][1], coordinateDistance_parent[i]);
+          }
          
+        }
        }
+       
        
        
       
@@ -602,7 +606,7 @@
 
                 const labelonly_sp_plot_1 = new ol.style.Style({
                     text: new ol.style.Text({
-                        font: '14px sans-serif',
+                        font: '10px sans-serif',
                         text:`${distance.toFixed(1)} ft`,
                         fill: new ol.style.Fill({
                             color: 'red'
@@ -789,7 +793,7 @@
 
                 const labelonly_sp_plot_2 = new ol.style.Style({
                     text: new ol.style.Text({
-                        font: '14px sans-serif',
+                        font: '10px sans-serif',
                         text:`${distance.toFixed(1)} ft`,
                         fill: new ol.style.Fill({
                             color: 'red'
