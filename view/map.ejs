@@ -71,7 +71,7 @@
         </ul>
       </div>
       <div>
-        <button class="btn btn-sm btn-success" onclick="displayOnClickParentPlot()">Display Lable </button>
+        <!-- <button class="btn btn-sm btn-success" onclick="displayOnClickParentPlot()">Display Lable </button> -->
       </div>
     </nav>
     <div id="map" class="map"></div>
@@ -222,10 +222,6 @@
       var parentCoordinatesLangLot = [];
       function parentCoordinateLangLotConverter(){
           for(let i = 0;i<data.coordinates[0][0].length;i++){
-
-            // const utm = "+proj=cass +lon_0=92.0 +lat_0=24.5 +ellps=bessel +units=m"
-             //const utm = "+proj=utm +zone=32";
-             //const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
              const coord = proj4(utm,wgs84,[data.coordinates[0][0][i][0],data.coordinates[0][0][i][1]])
              parentCoordinatesLangLot.push(coord);
           }
@@ -271,7 +267,6 @@
           midPointArray.push([midx,midy]);
         }
         midPointArray.push([(coord[0][0] + coord[coord.length - 1][0])/2,(coord[0][1] + coord[coord.length-1][1])/2]);
-        
       }
       midPointOfCoordinates(data,midPointArray_parent);
       
@@ -332,14 +327,15 @@
           StyleCoordinatesOnParentPlot(parentVartex[i][0],parentVartex[i][1]);
        }
       //end 
-       function displayOnClickParentPlot(){
+      //  function displayOnClickParentPlot(){
         for(let i = 0;i<midPointArray_parent.length;i++){
           if(coordinateDistance_parent[i]>0){
             displayLabelForParentPlot(midPointArray_parent[i][0],midPointArray_parent[i][1], coordinateDistance_parent[i]);
           }
          
         }
-       }
+        
+      //  }
        
        
        
@@ -414,11 +410,13 @@
           sp_2ShortLangLot = [];
           var format = new ol.format["GeoJSON"]();
           LineSplitterGeoJson = format.writeFeatures(source.getFeatures());
+          // for removing a layer
+          RemoveSpecificLayer()
           dynamicAreaDisplay()
           //for intersected coordinates labeling 
           interSectedCoordinatesLabel()
-          // for removing a layer
-          RemoveSpecificLayer()
+          
+          
         });
         
         function dynamicAreaDisplay(){
@@ -893,28 +891,67 @@
           intersectsArray.push(turf.lineIntersect(lineString, polyLineString)) ;
           
         }
+        let intersectedLineCoordinates = [];
         for(let i = 0;i<intersectsArray.length;i++){
           if(intersectsArray[i].features[0]){
             const coordi = intersectsArray[i].features[0].geometry.coordinates;
+            intersectedLineCoordinates.push(coordi);
             StyleCoordinatesInterceted(coordi[0],coordi[1])
           }
         }
-
-          
-        
-        console.log("-------------THE END--------------");
-        
-      
-       
-       
-
-
-        
-
+        console.log(intersectedLineCoordinates)
+        let newLineDistance =  lineStringDistance(intersectedLineCoordinates);
+        let mid   = midPoint(intersectedLineCoordinates[0][0],intersectedLineCoordinates[1][0],intersectedLineCoordinates[0][1],intersectedLineCoordinates[1][1]);
+        addLineDistanceLabel(mid[0],mid[1],newLineDistance);
       }
-      
-      function StyleCoordinatesInterceted(coordx,coordy){
+
+      function ToLatLong(coordx,coordy){
+        let utm_x = "+proj=utm +zone=32";
+        let wgs84_x = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+        return proj4(utm_x,wgs84_x,[coordx, coordy]);
+      }
+
+      function lineStringDistance(intersectedLineCoordinates){
+        let lat1 = ToLatLong(intersectedLineCoordinates[0][0],intersectedLineCoordinates[0][1]);
+        let lat2 = ToLatLong(intersectedLineCoordinates[1][0],intersectedLineCoordinates[1][1]);
+        return distance(lat1[0],lat2[0],lat1[1],lat2[1]);
+      }
+      function midPoint(x1,x2,y1,y2){
+        let x = (x1+x2)/2;
+        let y = (y1+y2)/2;
+        return [x,y];
+      }
+ 
+
+      function addLineDistanceLabel(coordx,coordy,distance){
         const labelFeature = new ol.Feature({
+                geometry: new ol.geom.Point([coordx,coordy]),
+         });
+            const labelonly = new ol.style.Style({
+              text: new ol.style.Text({
+                    font: '10px sans-serif',
+                    text:`${(distance).toFixed(1)} ft`,
+                    fill: new ol.style.Fill({
+                        color: 'black'
+                    }),
+                    
+                })
+            });
+
+            labelFeature.setStyle(labelonly);
+            const vectorSource = new ol.source.Vector({
+                features: [labelFeature]
+            });
+            map.addLayer(
+                new ol.layer.Vector({
+                    source: vectorSource
+                })
+            );
+      }
+
+
+      function StyleCoordinatesInterceted(coordx,coordy){
+          const labelFeature = new ol.Feature({
                 geometry: new ol.geom.Point([coordx,coordy]),
          });
             const labelonly = new ol.style.Style({
@@ -1054,15 +1091,16 @@
     <script>
       function RemoveSpecificLayer(){
           let layersList =  map.getLayers().getArray();
-          let initial= layersList.length-4;
-          for(let i = initial;i<layersList.length-2;i++){
-            map.getLayers().getArray()[i].setVisible(false)
+          let initial= layersList.length;
+          let count = 1;
+          for(let i = layersList.length-1;count<=3;i--){
+            map.getLayers().getArray()[i].setVisible(false);
+            count++;
           }
         
           
                   
       }
-     //RemoveSpecificLayer();
     </script>
   
  
