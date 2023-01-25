@@ -192,7 +192,7 @@
               stroke: new ol.style.Stroke({
                 color: 'black',
                 width: 1,
-                opacity: 0.5,
+                opacity: 0.25
               })
             })
          
@@ -870,11 +870,12 @@
     <!-- labeling for dynamic line String coordinates intersection   -->
     <script>
       var selectedCoordinates = [];
+      var lineCoordinates;
       function interSectedCoordinatesLabel(){
         selectedCoordinates = [];
         const coordinatesNList = [];
         const plot = JSON.parse(plotGeo);
-        const lineCoordinates = JSON.parse(LineSplitterGeoJson).features[0].geometry.coordinates;
+        lineCoordinates = JSON.parse(LineSplitterGeoJson).features[0].geometry.coordinates;
         let lineString = turf.lineString(lineCoordinates);
         let intersectsArray = [];
         let plotCoordinates = plot.coordinates[0][0];
@@ -975,7 +976,61 @@
             );
       }
     </script>
-  
+     <!-- function for line string percentage  -->
+     <script>
+      function lineStringPercentageBreakDown(){
+        let inter1 = ToLatLong(selectedCoordinates[0][2][0],selectedCoordinates[0][2][1]);
+        let interX1 = inter1[0];
+        let interY1 = inter1[1];
+        let inter2 = ToLatLong(selectedCoordinates[1][2][0],selectedCoordinates[1][2][1]);
+        let interX2 = inter2[0];
+        let interY2 = inter2[1];
+        let latlong11 = ToLatLong(selectedCoordinates[0][0][0],selectedCoordinates[0][0][1]);
+        let latlong12 = ToLatLong(selectedCoordinates[0][1][0],selectedCoordinates[0][1][1]);
+
+        let latlong21 = ToLatLong(selectedCoordinates[1][0][0],selectedCoordinates[1][0][1]);
+        let latlong22 = ToLatLong(selectedCoordinates[1][1][0],selectedCoordinates[1][1][1]);
+
+        
+        let distCoord_1 = distance(latlong11[0],latlong12[0],latlong11[1],latlong12[1]);
+        let distCoord_2 = distance(latlong21[0],latlong22[0],latlong21[1],latlong22[1]);
+        let distCoord_1Intersected = distance(latlong11[0],interX1,latlong11[1],interY1);
+        let distCoord_2Intercected = distance(latlong21[0],interX2,latlong22[1],interY2);
+        let percentDistance1 = parseInt(100*distCoord_1Intersected/distCoord_1);
+        let percentDistance2 = parseInt(100*distCoord_2Intercected/distCoord_2);
+        console.log();
+        displayLabelForLineStringPercentageBreakDown(lineCoordinates[0][0]+2,lineCoordinates[0][1]+2,percentDistance2);
+        displayLabelForLineStringPercentageBreakDown(lineCoordinates[1][0]+2,lineCoordinates[1][1]+2,percentDistance1);
+        
+      }
+
+      function displayLabelForLineStringPercentageBreakDown(coordx,coordy,percent){
+        const labelFeature_bd = new ol.Feature({
+                geometry: new ol.geom.Point([coordx,coordy]),
+          });
+            const labelonly_bd = new ol.style.Style({
+              text: new ol.style.Text({
+                        font: '10px sans-serif',
+                        text:`${percent} % From top`,
+                        fill: new ol.style.Fill({
+                            color: 'black'
+                        }),
+              })
+            });
+
+            labelFeature_bd.setStyle(labelonly_bd);
+            const vectorSource_bd  = new ol.source.Vector({
+                features: [labelFeature_bd]
+            });
+            map.addLayer(
+                new ol.layer.Vector({
+                    source: vectorSource_bd
+                })
+            );
+            
+      }
+    </script>
+ 
     <!-- polygon split into n equal section  -->
     <script>
       function polygonNDivision(nDivisions,colors){
@@ -1096,62 +1151,6 @@
         
           
                   
-      }
-    </script>
-    <!-- function for line string percentage  -->
-    <script>
-      function lineStringPercentageBreakDown(){
-        let inter1 = ToLatLong(selectedCoordinates[0][2][0],selectedCoordinates[0][2][1]);
-        let interX1 = inter1[0];
-        let interY1 = inter1[1];
-        let inter2 = ToLatLong(selectedCoordinates[1][2][0],selectedCoordinates[1][2][1]);
-        let interX2 = inter2[0];
-        let interY2 = inter2[1];
-        let latlong11 = ToLatLong(selectedCoordinates[0][0][0],selectedCoordinates[0][0][1]);
-        let latlong12 = ToLatLong(selectedCoordinates[0][1][0],selectedCoordinates[0][1][1]);
-
-        let latlong21 = ToLatLong(selectedCoordinates[1][0][0],selectedCoordinates[1][0][1]);
-        let latlong22 = ToLatLong(selectedCoordinates[1][1][0],selectedCoordinates[1][1][1]);
-
-        
-        let distCoord_1 = distance(latlong11[0],latlong12[0],latlong11[1],latlong12[1]);
-        let distCoord_2 = distance(latlong21[0],latlong22[0],latlong21[1],latlong22[1]);
-        let distCoord_1Intersected = distance(latlong11[0],interX1,latlong11[1],interY1);
-        let distCoord_2Intercected = distance(latlong21[0],interX2,latlong22[1],interY2);
-        console.log(distCoord_1Intersected)
-        console.log(distCoord_2Intercected);
-        let percentDistance1 = parseInt(100*distCoord_1Intersected/distCoord_1);
-        let percentDistance2 = parseInt(100*distCoord_2Intercected/distCoord_2);
-        console.log(percentDistance1);
-        console.log(percentDistance2);
-        displayLabelForLineStringPercentageBreakDown(selectedCoordinates[0][2][0]+1,selectedCoordinates[0][2][1]+1,percentDistance1);
-        displayLabelForLineStringPercentageBreakDown(selectedCoordinates[1][2][0]+1,selectedCoordinates[1][2][1]+1,percentDistance2);
-      }
-
-      function displayLabelForLineStringPercentageBreakDown(coordx,coordy,percent){
-        const labelFeature_bd = new ol.Feature({
-                geometry: new ol.geom.Point([coordx,coordy]),
-          });
-            const labelonly_bd = new ol.style.Style({
-              text: new ol.style.Text({
-                        font: '10px sans-serif',
-                        text:`${percent} % From top`,
-                        fill: new ol.style.Fill({
-                            color: 'black'
-                        }),
-              })
-            });
-
-            labelFeature_bd.setStyle(labelonly_bd);
-            const vectorSource_bd  = new ol.source.Vector({
-                features: [labelFeature_bd]
-            });
-            map.addLayer(
-                new ol.layer.Vector({
-                    source: vectorSource_bd
-                })
-            );
-            
       }
     </script>
  
