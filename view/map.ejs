@@ -907,7 +907,8 @@
         let newLineDistance =  lineStringDistance(intersectedLineCoordinates);
         let mid   = midPoint(intersectedLineCoordinates[0][0],intersectedLineCoordinates[1][0],intersectedLineCoordinates[0][1],intersectedLineCoordinates[1][1]);
         addLineDistanceLabel(mid[0],mid[1],newLineDistance);
-        lineStringPercentageBreakDownHorizontal();
+        //lineStringPercentageBreakDownHorizontal();
+        selectDirection();
       }
 
       function ToLatLong(coordx,coordy){
@@ -979,8 +980,27 @@
     </script>
      <!-- function for line string percentage Horizontal  -->
      <script>
+      function selectDirection(){
+        console.log("Degree");
+        let y2 = lineCoordinates[1][1];
+        let y1 = lineCoordinates[0][1];
+        let x2 = lineCoordinates[1][0];
+        let x1 = lineCoordinates[0][0];
+        let m = (y2-y1)/(x2-x1);
+        let angle = Math.atan(m)*57.2958;
+        console.log(lineCoordinates);
+        let angularDistanceX = angle - 0;
+        let angularDistanceY = 90-angle;
+        if(angularDistanceY>=angularDistanceX){
+          lineStringPercentageBreakDownHorizontal();
+        }
+        
+        else{
+          console.log("Working")
+        }
+      }
       function lineStringPercentageBreakDownHorizontal(){
-        console.log(selectedCoordinates);
+
         let cX1,cY1;
         let cX2,cY2;
         if(selectedCoordinates[0][0][1]>selectedCoordinates[0][1][1]){
