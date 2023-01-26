@@ -891,6 +891,7 @@
             let xo = tx.features[0].geometry.coordinates[0];
             let yo = tx.features[0].geometry.coordinates[1];
             selectedCoordinates.push([[x1,y1],[x2,y2],[xo,yo]]);
+            
           }
           intersectsArray.push(tx);
         }
@@ -906,7 +907,7 @@
         let newLineDistance =  lineStringDistance(intersectedLineCoordinates);
         let mid   = midPoint(intersectedLineCoordinates[0][0],intersectedLineCoordinates[1][0],intersectedLineCoordinates[0][1],intersectedLineCoordinates[1][1]);
         addLineDistanceLabel(mid[0],mid[1],newLineDistance);
-        lineStringPercentageBreakDown();
+        lineStringPercentageBreakDownHorizontal();
       }
 
       function ToLatLong(coordx,coordy){
@@ -976,33 +977,103 @@
             );
       }
     </script>
-     <!-- function for line string percentage  -->
+     <!-- function for line string percentage Horizontal  -->
      <script>
-      function lineStringPercentageBreakDown(){
+      function lineStringPercentageBreakDownHorizontal(){
+        console.log(selectedCoordinates);
+        let cX1,cY1;
+        let cX2,cY2;
+        if(selectedCoordinates[0][0][1]>selectedCoordinates[0][1][1]){
+          cX1 = selectedCoordinates[0][0][0];
+          cY1 = selectedCoordinates[0][0][1];
+        }
+        else {
+          cX1 = selectedCoordinates[0][1][0];
+          cY1 = selectedCoordinates[0][1][1];
+        }
+
+        if(selectedCoordinates[1][0][1] > selectedCoordinates[1][1][1]){
+          cX2 = selectedCoordinates[1][0][0];
+          cY2 = selectedCoordinates[1][0][1];
+        }
+        else {
+          cX2 = selectedCoordinates[1][1][0];
+          cY2 = selectedCoordinates[1][1][1];
+        }
+        let cF = ToLatLong(cX1,cY1);
+        let cS = ToLatLong(cX2,cY2);
         let inter1 = ToLatLong(selectedCoordinates[0][2][0],selectedCoordinates[0][2][1]);
         let interX1 = inter1[0];
         let interY1 = inter1[1];
         let inter2 = ToLatLong(selectedCoordinates[1][2][0],selectedCoordinates[1][2][1]);
         let interX2 = inter2[0];
         let interY2 = inter2[1];
+        let distCoord_1Intersected = distance(cF[0],interX1,cF[1],interY1);
+        let distCoord_2Intercected = distance(cS[0],interX2,cS[1],interY2);
         let latlong11 = ToLatLong(selectedCoordinates[0][0][0],selectedCoordinates[0][0][1]);
         let latlong12 = ToLatLong(selectedCoordinates[0][1][0],selectedCoordinates[0][1][1]);
-
         let latlong21 = ToLatLong(selectedCoordinates[1][0][0],selectedCoordinates[1][0][1]);
         let latlong22 = ToLatLong(selectedCoordinates[1][1][0],selectedCoordinates[1][1][1]);
-
-        
         let distCoord_1 = distance(latlong11[0],latlong12[0],latlong11[1],latlong12[1]);
         let distCoord_2 = distance(latlong21[0],latlong22[0],latlong21[1],latlong22[1]);
-        let distCoord_1Intersected = distance(latlong11[0],interX1,latlong11[1],interY1);
-        let distCoord_2Intercected = distance(latlong21[0],interX2,latlong22[1],interY2);
         let percentDistance1 = parseInt(100*distCoord_1Intersected/distCoord_1);
         let percentDistance2 = parseInt(100*distCoord_2Intercected/distCoord_2);
-        console.log();
-        displayLabelForLineStringPercentageBreakDown(lineCoordinates[0][0]+2,lineCoordinates[0][1]+2,percentDistance2);
-        displayLabelForLineStringPercentageBreakDown(lineCoordinates[1][0]+2,lineCoordinates[1][1]+2,percentDistance1);
+        let l1,l2;
+   
+
+        if(cX1>cX2){
+          if(lineCoordinates[0][0]>lineCoordinates[1][0]){
+            l1 = [lineCoordinates[1][0]+2,lineCoordinates[1][1]+2]
+            l2 = [lineCoordinates[0][0]+2,lineCoordinates[0][1]+2]
+            }
+            else{
+              l1 = [lineCoordinates[0][0]+2,lineCoordinates[0][1]+2]
+              l2 = [lineCoordinates[1][0]+2,lineCoordinates[1][1]+2]
+            }
+          displayLabelForLineStringPercentageBreakDown(l1[0],l1[1],percentDistance2);
+          displayLabelForLineStringPercentageBreakDown(l2[0],l2[1],percentDistance1);
+        }
+        else{
+          if(lineCoordinates[0][0]>lineCoordinates[1][0]){
+            l1 = [lineCoordinates[1][0]+2,lineCoordinates[1][1]+2]
+            l2 = [lineCoordinates[0][0]+2,lineCoordinates[0][1]+2]
+            }
+            else{
+              l1 = [lineCoordinates[0][0]+2,lineCoordinates[0][1]+2]
+              l2 = [lineCoordinates[1][0]+2,lineCoordinates[1][1]+2]
+            }
+            displayLabelForLineStringPercentageBreakDown(l1[0],l1[1],percentDistance1);
+            displayLabelForLineStringPercentageBreakDown(l2[0],l2[1],percentDistance2);
+        }
+
+       
+        StyleCoordinatesPecentage(cX1,cY1);
+        StyleCoordinatesPecentage(cX2,cY2);
         
+
       }
+      function StyleCoordinatesPecentage(coordx,coordy){
+          const labelFeature = new ol.Feature({
+                geometry: new ol.geom.Point([coordx,coordy]),
+          });
+            const labelonly = new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 5,
+                    fill: new ol.style.Fill({color: 'black'})
+                })
+            });
+
+            labelFeature.setStyle(labelonly);
+            const vectorSource = new ol.source.Vector({
+                features: [labelFeature]
+            });
+            map.addLayer(
+                new ol.layer.Vector({
+                    source: vectorSource
+                })
+            );
+      };
+      
 
       function displayLabelForLineStringPercentageBreakDown(coordx,coordy,percent){
         const labelFeature_bd = new ol.Feature({
@@ -1011,7 +1082,7 @@
             const labelonly_bd = new ol.style.Style({
               text: new ol.style.Text({
                         font: '10px sans-serif',
-                        text:`${percent} % From top`,
+                        text:`(${percent} % From black Point)`,
                         fill: new ol.style.Fill({
                             color: 'black'
                         }),
@@ -1027,7 +1098,6 @@
                     source: vectorSource_bd
                 })
             );
-            
       }
     </script>
  
@@ -1144,7 +1214,7 @@
           let layersList =  map.getLayers().getArray();
           let initial= layersList.length;
           let count = 1;
-          for(let i = layersList.length-1;count<=5;i--){
+          for(let i = layersList.length-1;count<=7;i--){
             map.getLayers().getArray()[i].setVisible(false);
             count++;
           }
