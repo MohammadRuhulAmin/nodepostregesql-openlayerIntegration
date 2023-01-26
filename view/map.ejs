@@ -981,7 +981,6 @@
      <!-- function for line string percentage Horizontal  -->
      <script>
       function selectDirection(){
-        console.log("Degree");
         let y2 = lineCoordinates[1][1];
         let y1 = lineCoordinates[0][1];
         let x2 = lineCoordinates[1][0];
@@ -994,13 +993,16 @@
         if(angularDistanceY>=angularDistanceX){
           lineStringPercentageBreakDownHorizontal();
         }
-        
         else{
-          console.log("Working")
+          lineStringPercentageBreakDownVertical();
         }
       }
+      function lineStringPercentageBreakDownVertical(){
+        let cX1,cY1;
+        let cX2,cY2;
+        
+      }
       function lineStringPercentageBreakDownHorizontal(){
-
         let cX1,cY1;
         let cX2,cY2;
         if(selectedCoordinates[0][0][1]>selectedCoordinates[0][1][1]){
