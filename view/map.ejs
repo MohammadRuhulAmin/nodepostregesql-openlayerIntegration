@@ -67,6 +67,9 @@
           <li class="nav-item">
             <p class="nav-link active" > area 2 : <span id="sA_2"></span></p>
           </li>
+          <li class="nav-item">
+            <p class="nav-link active" id="closeAxis"></p>
+          </li>
         </ul>
       </div>
       <div>
@@ -987,43 +990,46 @@
         let x1 = lineCoordinates[0][0];
         let m = (y2-y1)/(x2-x1);
         let angle = Math.atan(m)*57.2958;
-        console.log(lineCoordinates);
+        console.log("Degree : "+ angle);
+        //console.log(lineCoordinates);
         let angularDistanceX = angle - 0;
         let angularDistanceY = 90-angle;
-        if(angularDistanceY>=angularDistanceX){
+        let closeToAxis = "";
+        if(angle<70 && angle>-70){
+          closeToAxis = "Close to X axis";
+          document.getElementById('closeAxis').innerHTML = closeToAxis;
           lineStringPercentageBreakDownHorizontal();
         }
         else{
+          closeToAxis = "Close to Y axis";
+          document.getElementById('closeAxis').innerHTML = closeToAxis;
           lineStringPercentageBreakDownVertical();
         }
       }
       function lineStringPercentageBreakDownVertical(){
         let cX1,cY1;
         let cX2,cY2;
-        
-      }
-      function lineStringPercentageBreakDownHorizontal(){
-        let cX1,cY1;
-        let cX2,cY2;
-        if(selectedCoordinates[0][0][1]>selectedCoordinates[0][1][1]){
+        if(selectedCoordinates[0][0][0] < selectedCoordinates[0][1][0]){
           cX1 = selectedCoordinates[0][0][0];
-          cY1 = selectedCoordinates[0][0][1];
+          cY1 = selectedCoordinates[0][0][1]; 
         }
-        else {
+        else{
           cX1 = selectedCoordinates[0][1][0];
           cY1 = selectedCoordinates[0][1][1];
         }
 
-        if(selectedCoordinates[1][0][1] > selectedCoordinates[1][1][1]){
+        if(selectedCoordinates[1][0][0] < selectedCoordinates[1][1][0]){
           cX2 = selectedCoordinates[1][0][0];
-          cY2 = selectedCoordinates[1][0][1];
+          cY2 = selectedCoordinates[1][0][1]; 
         }
-        else {
+        else{
           cX2 = selectedCoordinates[1][1][0];
-          cY2 = selectedCoordinates[1][1][1];
+          cY2 = selectedCoordinates[1][1][1]; 
         }
+        
         let cF = ToLatLong(cX1,cY1);
         let cS = ToLatLong(cX2,cY2);
+        
         let inter1 = ToLatLong(selectedCoordinates[0][2][0],selectedCoordinates[0][2][1]);
         let interX1 = inter1[0];
         let interY1 = inter1[1];
@@ -1041,16 +1047,63 @@
         let percentDistance1 = parseInt(100*distCoord_1Intersected/distCoord_1);
         let percentDistance2 = parseInt(100*distCoord_2Intercected/distCoord_2);
         let l1,l2;
-   
+       
+     
+        StyleCoordinatesPecentage(cX1,cY1);
+        displayLabelForLineStringPercentageBreakDown(cX1+4,cY1+4,percentDistance1)
+        displayLabelForLineStringPercentageBreakDown(cX2+4,cY2+4,percentDistance2)
+        StyleCoordinatesPecentage(cX2,cY2);
+
+      }
+
+      function lineStringPercentageBreakDownHorizontal(){
+        let cX1,cY1;
+        let cX2,cY2;
+        if(selectedCoordinates[0][0][1]>selectedCoordinates[0][1][1]){
+          cX1 = selectedCoordinates[0][0][0];
+          cY1 = selectedCoordinates[0][0][1];
+        }
+        else {
+          cX1 = selectedCoordinates[0][1][0];
+          cY1 = selectedCoordinates[0][1][1];
+        }
+        if(selectedCoordinates[1][0][1] > selectedCoordinates[1][1][1]){
+          cX2 = selectedCoordinates[1][0][0];
+          cY2 = selectedCoordinates[1][0][1];
+        }
+        else {
+          cX2 = selectedCoordinates[1][1][0];
+          cY2 = selectedCoordinates[1][1][1];
+        }
+        let cF = ToLatLong(cX1,cY1);
+        let cS = ToLatLong(cX2,cY2);
+
+        let inter1 = ToLatLong(selectedCoordinates[0][2][0],selectedCoordinates[0][2][1]);
+        let interX1 = inter1[0];
+        let interY1 = inter1[1];
+        let inter2 = ToLatLong(selectedCoordinates[1][2][0],selectedCoordinates[1][2][1]);
+        let interX2 = inter2[0];
+        let interY2 = inter2[1];
+        let distCoord_1Intersected = distance(cF[0],interX1,cF[1],interY1);
+        let distCoord_2Intercected = distance(cS[0],interX2,cS[1],interY2);
+        let latlong11 = ToLatLong(selectedCoordinates[0][0][0],selectedCoordinates[0][0][1]);
+        let latlong12 = ToLatLong(selectedCoordinates[0][1][0],selectedCoordinates[0][1][1]);
+        let latlong21 = ToLatLong(selectedCoordinates[1][0][0],selectedCoordinates[1][0][1]);
+        let latlong22 = ToLatLong(selectedCoordinates[1][1][0],selectedCoordinates[1][1][1]);
+        let distCoord_1 = distance(latlong11[0],latlong12[0],latlong11[1],latlong12[1]);
+        let distCoord_2 = distance(latlong21[0],latlong22[0],latlong21[1],latlong22[1]);
+        let percentDistance1 = parseInt(100*distCoord_1Intersected/distCoord_1);
+        let percentDistance2 = parseInt(100*distCoord_2Intercected/distCoord_2);
+        let l1,l2;
 
         if(cX1>cX2){
           if(lineCoordinates[0][0]>lineCoordinates[1][0]){
-            l1 = [lineCoordinates[1][0]+2,lineCoordinates[1][1]+2]
-            l2 = [lineCoordinates[0][0]+2,lineCoordinates[0][1]+2]
+            l1 = [lineCoordinates[1][0]+2,lineCoordinates[1][1]+2];
+            l2 = [lineCoordinates[0][0]+2,lineCoordinates[0][1]+2];
             }
             else{
-              l1 = [lineCoordinates[0][0]+2,lineCoordinates[0][1]+2]
-              l2 = [lineCoordinates[1][0]+2,lineCoordinates[1][1]+2]
+              l1 = [lineCoordinates[0][0]+2,lineCoordinates[0][1]+2];
+              l2 = [lineCoordinates[1][0]+2,lineCoordinates[1][1]+2];
             }
           displayLabelForLineStringPercentageBreakDown(l1[0],l1[1],percentDistance2);
           displayLabelForLineStringPercentageBreakDown(l2[0],l2[1],percentDistance1);
@@ -1239,10 +1292,7 @@
           for(let i = layersList.length-1;count<=7;i--){
             map.getLayers().getArray()[i].setVisible(false);
             count++;
-          }
-        
-          
-                  
+          }        
       }
     </script>
  
