@@ -1217,7 +1217,6 @@
             nGeoJSON.push(toGeoJSONFormatNPolygons(dividedPolygonFeatures[i].getGeometry().getCoordinates()));
           }
           return(dividedPolygonFeatures);
-
       }
       function toGeoJSONFormatNPolygons(coordinates){
         var tempPolyGeoJson = {
@@ -1230,15 +1229,13 @@
         var rgb = [Math.floor(Math.random() * 256),Math.floor(Math.random() * 256),Math.floor(Math.random() * 256)];
         return('rgb('+rgb.join(', ') + ', ' + opacity + ')');
       }
-     
-
-      
+           
       function nDivisionLayer(){
-      var nDivisions = document.getElementById('nDivision').value || 1;
-      var colors = [];
-      for (var i = 0; i < nDivisions; i++) {
-        colors.push(get_random_rgb(0.5));
-      }
+        var nDivisions = document.getElementById('nDivision').value || 1;
+        var colors = [];
+        for (var i = 0; i < nDivisions; i++) {
+          colors.push(get_random_rgb(0.5));
+        }
          function style(feature) {
           var style = new ol.style.Style({
           stroke: new ol.style.Stroke({
@@ -1248,9 +1245,9 @@
           fill: new ol.style.Fill({
               color: feature.get('color'),
           }),
-          // text: new ol.style.Text({
-          //   text: Math.floor(feature.get('percentage') * 100) + '%'
-          // })
+          text: new ol.style.Text({
+            text: Math.floor(feature.get('percentage') * 100) + '%'
+          })
         });
           return(style);
       }
@@ -1295,7 +1292,7 @@
           }        
       }
     </script>
- 
+
 
 <!-- Modal -->
 <div class="modal fade" id="confirmSave" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

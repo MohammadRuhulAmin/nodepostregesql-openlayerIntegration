@@ -10,12 +10,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@turf/turf": "^6.5.0",
     "body-parser": "^1.20.1",
     "ejs": "^3.1.8",
     "express": "^4.18.2",
     "path": "^0.12.7",
     "pg": "^8.8.0",
-    "url": "^0.11.0"
+    "proj4": "^2.8.1",
+    "url": "^0.11.0",
+    "utm-latlng": "^1.0.7"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"

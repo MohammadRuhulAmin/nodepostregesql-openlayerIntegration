@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const pool = require('./connection');
 const PORT = 3000;
+const turf = require('@turf/turf');
 const url = require('url');
 app.set("view engine", "ejs");
 app.set("views", "./view")
@@ -239,28 +240,64 @@ app.post('/addnew-plot',(req,res)=>{
 })  
 
 
-
 app.get('/view-mouza',(req,res)=>{
-    let qry = "SELECT ST_AsGeoJSON(geom) FROM borolekh limit 2000";
+    res.render('mapWithLabel');
+});
+
+app.get('/mapGeojson-api',(req,res)=>{
+    //let qry = "SELECT ST_ASGeoJSON(geom),plot_no_en FROM borolekh  limit 2000 ";
+    let qry = "select ST_AsGeoJSON(geom),plot_no_en  from borolekh Where archrive_plot  IS NULL";
     pool.query(qry,(err,result)=>{
         if(err)throw err;
-        else{
-            var result = result.rows;
-           
-            var mouzaMap = {
-                "type" : "MultiPolygon",
-                 "coordinates":[[]]
-
-            };
+        else {
+            var result =  result.rows;
+            let mapGeoJson = {"type":"FeatureCollection","features":[]};
             for(let i = 0;i<result.length;i++){
-               mouzaMap.coordinates[0].push(JSON.parse(result[i].st_asgeojson).coordinates[0][0]);
+                let jsonData = JSON.parse(result[i].st_asgeojson);
+                let plotGeoJson =  {"type":"Feature","properties":{"plot_no_en":""},"geometry":{"type":"Polygon","coordinates":[]}};
+                plotGeoJson.properties = {"plot_no_en" : result[i].plot_no_en.toString()};
+                //plotGeoJson.geometry.coordinates = jsonData.coordinates[0]
+               
+                let tempCoordinates = [];
+                for(let i = 0;i<jsonData.coordinates[0][0].length;i++){
+                    let utm = turf.point([jsonData.coordinates[0][0][i][0], jsonData.coordinates[0][0][i][1]]);
+                    let latlong = turf.toWgs84(utm);
+                    //console.log(latlong.geometry.coordinates)
+                    tempCoordinates.push(latlong.geometry.coordinates);
+                }
+                plotGeoJson.geometry.coordinates = [tempCoordinates]
+                mapGeoJson.features.push(plotGeoJson);
             }
-           //var plot =  {"type":"MultiPolygon","coordinates":[[[[4046.137459764,-2878.714050774],[4014.873859615,-2873.018287875],[3971.718316001,-2867.722415084],[3939.301623603,-2865.072573053],[3914.316827077,-2859.209277177],[3846.534808558,-2846.816429934],[3802.442194746,-2836.671482232],[3822.019875457,-2796.044405241],[3848.384732795,-2732.099802185],[3874.151042427,-2676.253161509],[3895.026300793,-2611.971703364],[3918.28929954,-2553.516381049],[3947.169831119,-2486.771113005],[4004.175654468,-2503.78604411],[4064.735942756,-2522.756743693],[4102.229970925,-2537.668629483],[4101.264122211,-2547.624798289],[4102.267962026,-2581.728831568],[4103.472529562,-2621.230148818],[4106.034159702,-2646.297371179],[4107.286034321,-2658.547781159],[4111.296041379,-2695.657545389],[4113.600949346,-2721.897436354],[4115.104193936,-2760.055480338],[4119.452871125,-2838.399779034],[4119.038017056,-2868.697578841],[4061.185116927,-2877.200944262],[4046.137459764,-2878.714050774]]]]};
-            //res.send(mouzaMap);
-            res.render('mouzaMap',{GeoJSON:JSON.stringify(mouzaMap)});
+            res.send(mapGeoJson);
+            //res.render('mapWithLabel',{mapJson:JSON.stringify(mapGeoJson)});
+           
         }
-    })
+    });
 })
+
+// app.get('/view-mouza',(req,res)=>{
+//     let qry = "SELECT ST_AsGeoJSON(geom) FROM borolekh limit 2000";
+//     pool.query(qry,(err,result)=>{
+//         if(err)throw err;
+//         else{
+//             var result = result.rows;
+           
+//             var mouzaMap = {
+//                 "type" : "MultiPolygon",
+//                  "coordinates":[[]]
+
+//             };
+//             for(let i = 0;i<result.length;i++){
+//                mouzaMap.coordinates[0].push(JSON.parse(result[i].st_asgeojson).coordinates[0][0]);
+//             }
+//            //var plot =  {"type":"MultiPolygon","coordinates":[[[[4046.137459764,-2878.714050774],[4014.873859615,-2873.018287875],[3971.718316001,-2867.722415084],[3939.301623603,-2865.072573053],[3914.316827077,-2859.209277177],[3846.534808558,-2846.816429934],[3802.442194746,-2836.671482232],[3822.019875457,-2796.044405241],[3848.384732795,-2732.099802185],[3874.151042427,-2676.253161509],[3895.026300793,-2611.971703364],[3918.28929954,-2553.516381049],[3947.169831119,-2486.771113005],[4004.175654468,-2503.78604411],[4064.735942756,-2522.756743693],[4102.229970925,-2537.668629483],[4101.264122211,-2547.624798289],[4102.267962026,-2581.728831568],[4103.472529562,-2621.230148818],[4106.034159702,-2646.297371179],[4107.286034321,-2658.547781159],[4111.296041379,-2695.657545389],[4113.600949346,-2721.897436354],[4115.104193936,-2760.055480338],[4119.452871125,-2838.399779034],[4119.038017056,-2868.697578841],[4061.185116927,-2877.200944262],[4046.137459764,-2878.714050774]]]]};
+//             //res.send(mouzaMap);
+//             res.render('mouzaMap',{GeoJSON:JSON.stringify(mouzaMap)});
+//         }
+//     })
+// })
+
+
 
 app.get('/experiment-map-label',(req,res)=>{
     res.render('experimentMap');
@@ -273,6 +310,12 @@ app.post('/saveEqualSplitedPolygon',(req,res)=>{
     res.send(dividedSpFeatures)
     
     
+})
+
+app.get('/turf',(req,res)=>{
+    var pt = turf.point([-7903683.846322424, 5012341.663847514]);
+    var converted = turf.toWgs84(pt);
+    console.log(converted)
 })
 
 app.listen(PORT,()=>{
