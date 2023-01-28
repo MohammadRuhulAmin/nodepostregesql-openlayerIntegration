@@ -1,9 +1,10 @@
 const express = require('express');
+const http = require('http');
+const url = require('url');
 const app = express();
 const pool = require('./connection');
 const PORT = 3000;
 const turf = require('@turf/turf');
-const url = require('url');
 app.set("view engine", "ejs");
 app.set("views", "./view")
 app.use(express.static(__dirname + "/public"))
@@ -255,8 +256,9 @@ app.get('/mapGeojson-api',(req,res)=>{
             for(let i = 0;i<result.length;i++){
                 let jsonData = JSON.parse(result[i].st_asgeojson);
                 let plotGeoJson =  {"type":"Feature","properties":{"plot_no_en":""},"geometry":{"type":"Polygon","coordinates":[]}};
+               
                 plotGeoJson.properties = {"plot_no_en" : result[i].plot_no_en.toString()};
-                //plotGeoJson.geometry.coordinates = jsonData.coordinates[0]
+               
                
                 let tempCoordinates = [];
                 for(let i = 0;i<jsonData.coordinates[0][0].length;i++){
@@ -269,7 +271,7 @@ app.get('/mapGeojson-api',(req,res)=>{
                 mapGeoJson.features.push(plotGeoJson);
             }
             res.send(mapGeoJson);
-            //res.render('mapWithLabel',{mapJson:JSON.stringify(mapGeoJson)});
+           
            
         }
     });
@@ -312,11 +314,13 @@ app.post('/saveEqualSplitedPolygon',(req,res)=>{
     
 })
 
-app.get('/turf',(req,res)=>{
-    var pt = turf.point([-7903683.846322424, 5012341.663847514]);
-    var converted = turf.toWgs84(pt);
-    console.log(converted)
+app.get('/print-url',(req,res)=>{
+    var hostname = req.headers.host; // hostname = 'localhost:8080'
+    var pathname = url.parse(req.url).pathname; // pathname = '/MyApp'
+    res.send('http://' + hostname)
 })
+
+
 
 app.listen(PORT,()=>{
     console.log(`PORT is listen on ${PORT}`);
