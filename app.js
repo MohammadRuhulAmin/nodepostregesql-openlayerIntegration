@@ -173,7 +173,7 @@ app.post('/savePlot', (req,res)=>{
                                                                 if(err)throw err;
                                                                 else {
                                                                     var geom2Length = result.rows[0];
-                                                                    console.log(geom2Length);
+                                                            
                                                                     let qry4 =  "INSERT INTO borolekh(pj_name_en,pj_name_bn,m_code,m_div_en,m_div_bn,m_dist_en,m_dist_bn,m_thana_en,m_thana_bn,m_name_en,m_name_bn,jl_no_en,jl_no_bn,sht_no_en,sht_no_bn,l_code_en,l_code_bn,l_name_en,l_name_bn,plot_no_en,plot_no_bn,sv_type_en,sv_type_bn,scale_en,scale_bn,sv_year_en,sv_year_bn,rev_no_en,rev_no_bn,geocode_en,remarks,filename,shape_leng,shape_area,geom,parent_plot) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34,$35,$36)";
                                                                     pool.query(qry4,[pd.pj_name_en,pd.pj_name_bn,pd.m_code,pd.m_div_en,pd.m_div_bn,pd.m_dist_en,pd.m_dist_bn,pd.m_thana_en,pd.m_thana_bn,pd.m_name_en,pd.m_name_bn,pd.jl_no_en,pd.jl_no_bn,pd.sht_no_en,pd.sht_no_bn,pd.l_code_en,pd.l_code_bn,pd.l_name_en,pd.l_name_bn,lastPlotId+1,lastPlotId+1,pd.sv_type_en,pd.sv_type_bn,pd.scale_en,pd.scale_bn,pd.sv_year_en,pd.sv_year_bn,pd.rev_no_en,pd.rev_no_bn,pd.geocode_en,pd.remarks,pd.filename,geom1Length.st_length,geom1Area.st_area,geom1.st_geomfromgeojson,pd.plot_no_en],(err,result)=>{
                                                                              if(err)throw err;
@@ -283,7 +283,7 @@ app.get('/mapGeojson-api',(req,res)=>{
                 for(let i = 0;i<jsonData.coordinates[0][0].length;i++){
                     let utm = turf.point([jsonData.coordinates[0][0][i][0], jsonData.coordinates[0][0][i][1]]);
                     let latlong = turf.toWgs84(utm);
-                    //console.log(latlong.geometry.coordinates)
+                
                     tempCoordinates.push(latlong.geometry.coordinates);
                 }
                 plotGeoJson.geometry.coordinates = [tempCoordinates]

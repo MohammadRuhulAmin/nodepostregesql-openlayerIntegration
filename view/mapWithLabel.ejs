@@ -20,7 +20,8 @@
  
    
     <div id="map" class="map"></div>
-    <input type="hidden" id="splittedPlots" value="<%=GeoJSON %>" />
+    <div id="info">&nbsp;</div>
+    <!-- <input type="hidden" id="splittedPlots" value="<%=GeoJSON %>" /> -->
      
   
     <!-- display map -->
@@ -86,10 +87,12 @@
               format: new ol.format.GeoJSON()
             }),
             style: new ol.style.Style({
-                  
+              fill: new ol.style.Fill({
+                color: 'rgba(0,255,0,0.1)'
+              }),
                   stroke: new ol.style.Stroke({
                     color: 'green',
-                    width: 4
+                    width: 2
                   })
                 })
           })
@@ -101,13 +104,12 @@
               format: new ol.format.GeoJSON()
             }),
             style: new ol.style.Style({
-              // fill: new ol.style.Fill({
-              //     color: "green",
-              //     opacity:10
-              // }),
+              fill: new ol.style.Fill({
+                color: 'rgba(0,255,0,0.1)'
+              }),
                   stroke: new ol.style.Stroke({
                     color: 'green',
-                    width: 4
+                    width: 2
                   })
                 })
           })
@@ -123,12 +125,80 @@ const displayFeatureInfo = function (pixel) {
 };
 //searchplot?plotNo=13
 
-map.on("click", function (evt) {
+map.on("dblclick", function (evt) {
   displayFeatureInfo(evt.pixel);
 });
     
-    </script>
+</script>
 
+<script>
+   var highlightStyle = new ol.style.Style({
+        stroke: new ol.style.Stroke({
+          color: '#f00',
+          width: 1
+        }),
+        fill: new ol.style.Fill({
+          color: 'rgba(255,0,0,0.1)'
+        }),
+        text: new ol.style.Text({
+          font: '12px Calibri,sans-serif',
+          fill: new ol.style.Fill({
+            color: '#000'
+          }),
+          stroke: new ol.style.Stroke({
+            color: '#f00',
+            width: 3
+          })
+        })
+      });
+
+      var featureOverlay = new ol.layer.Vector({
+        source: new ol.source.Vector(),
+        map: map,
+        style: function(feature) {
+          highlightStyle.getText().setText(feature.get('name'));
+          return highlightStyle;
+        }
+      });
+
+      var highlight;
+      var displayFeatureInfo_forHighLight = function(pixel) {
+
+        var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
+          return feature;
+        });
+
+        var info = document.getElementById('info');
+        if (feature) {
+          info.innerHTML = feature.getId() + ': ' + feature.get('name');
+        } else {
+          info.innerHTML = '&nbsp;';
+        }
+
+        if (feature !== highlight) {
+          if (highlight) {
+            featureOverlay.getSource().removeFeature(highlight);
+          }
+          if (feature) {
+            featureOverlay.getSource().addFeature(feature);
+          }
+          highlight = feature;
+        }
+
+      };
+
+      map.on('pointermove', function(evt) {
+        if (evt.dragging) {
+          return;
+        }
+        var pixel = map.getEventPixel(evt.originalEvent);
+        displayFeatureInfo_forHighLight(pixel);
+      });
+
+      map.on('click', function(evt) {
+        displayFeatureInfo_forHighLight(evt.pixel);
+      });
+</script>
 
 
 
