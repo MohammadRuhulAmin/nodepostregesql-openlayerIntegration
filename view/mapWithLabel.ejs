@@ -79,50 +79,56 @@
           zoom: 12
         })
       });
-    </script>
-    <script>
-      function displayLastMutatedPlot(){
-        var splittedPlots = JSON.parse(document.getElementById('splittedPlots').value);
-        console.log(splittedPlots.FirstPlot)
-      }
-      displayLastMutatedPlot();
-    </script>
-
-    <script>
       map.addLayer(
-        new ol.layer.Vector({
-        source: new ol.source.Vector({
-          url:window.location.origin + "/"+ "labeling-mutated-geojson-1",
-          format: new ol.format.GeoJSON()
-        }),
-        style: new ol.style.Style({
-              
-              stroke: new ol.style.Stroke({
-                color: 'red',
-                width: 4
-              })
-            })
-      })
-      );
-      map.addLayer(
-        new ol.layer.Vector({
-        source: new ol.source.Vector({
-          url:window.location.origin + "/"+ "labeling-mutated-geojson-2",
-          format: new ol.format.GeoJSON()
-        }),
-        style: new ol.style.Style({
-              
-              stroke: new ol.style.Stroke({
-                color: 'green',
-                width: 4
-              })
-            })
-      })
-      );
+            new ol.layer.Vector({
+            source: new ol.source.Vector({
+              url:window.location.origin + "/"+ "labeling-mutated-geojson-1",
+              format: new ol.format.GeoJSON()
+            }),
+            style: new ol.style.Style({
+                  
+                  stroke: new ol.style.Stroke({
+                    color: 'green',
+                    width: 4
+                  })
+                })
+          })
+          );
+          map.addLayer(
+            new ol.layer.Vector({
+            source: new ol.source.Vector({
+              url:window.location.origin + "/"+ "labeling-mutated-geojson-2",
+              format: new ol.format.GeoJSON()
+            }),
+            style: new ol.style.Style({
+              // fill: new ol.style.Fill({
+              //     color: "green",
+              //     opacity:10
+              // }),
+                  stroke: new ol.style.Stroke({
+                    color: 'green',
+                    width: 4
+                  })
+                })
+          })
+          );
 
+const displayFeatureInfo = function (pixel) {
+  const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
+    return feature;
+  });
+  if (feature) {
+    window.open( window.location.origin + "/searchplot?plotNo="+ feature.get("plot_no_en"));
+  }
+};
+//searchplot?plotNo=13
 
-    </script>
+map.on("click", function (evt) {
+  displayFeatureInfo(evt.pixel);
+});
     
+    </script>
+
 
 
 

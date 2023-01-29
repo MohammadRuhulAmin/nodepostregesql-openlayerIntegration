@@ -1134,7 +1134,7 @@
             const labelonly = new ol.style.Style({
                 image: new ol.style.Circle({
                     radius: 5,
-                    fill: new ol.style.Fill({color: 'black'})
+                    fill: new ol.style.Fill({color: 'green'})
                 })
             });
 
@@ -1156,8 +1156,8 @@
           });
             const labelonly_bd = new ol.style.Style({
               text: new ol.style.Text({
-                        font: '10px sans-serif',
-                        text:`(${percent} % From black Point)`,
+                        font: '12px sans-serif',
+                        text:`${percent} %`,
                         fill: new ol.style.Fill({
                             color: 'black'
                         }),
