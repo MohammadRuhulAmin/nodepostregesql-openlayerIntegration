@@ -81,28 +81,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <table class="table table-striped">
-                <tr>
-                  <td>District: </td>
-                  <td><%=district %></td>
-                </tr>
-                <tr>
-                  <td>Sub District :  </td>
-                  <td><%=subDistrict %></td>
-                </tr>
-                <tr>
-                  <td>JL No :  </td>
-                  <td><%=jlNo %></td>
-                </tr>
-                <tr>
-                  <td>Plot No : </td>
-                  <td><%=plotNo %></td>
-                </tr>
-                <tr>
-                  <td>Parent Plot :  </td>
-                  <td><%=parent_plot %></td>
-                </tr>
-            </table>
+            <div class="map" id="parentChildCombine"></div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -282,11 +261,6 @@
                 })
             );
         }
-      //start 
-
-      //test 
-          
-      //end
       function StyleCoordinatesOnParentPlot(coordx,coordy){
         const labelFeature = new ol.Feature({
                 geometry: new ol.geom.Point([coordx,coordy]),
@@ -297,9 +271,6 @@
                         stroke: new ol.style.Stroke({
                         color: 'rgba(0,0, 255, 1)',
                   }),
-                  // fill: new ol.style.Fill({
-                  //       color: 'rgba(0,0, 255, 0.2)',
-                  // }),
                 }),
               });
             labelFeature.setStyle(labelonly);
@@ -339,25 +310,25 @@
       var modify = new ol.interaction.Modify(
           {
             source: source,
-            style: new ol.style.Style({
-                  fill: new ol.style.Fill({
-                          color: 'rgba(255, 255, 255, 0.2)',
-                  }),
-                  stroke: new ol.style.Stroke({
-                        color: 'rgba(0, 0, 0, 0.5)',
-                         lineDash: [10, 10],
-                         width: 2,
-                  }),
-                  image: new ol.style.Circle({
-                        radius: 6,
-                        stroke: new ol.style.Stroke({
-                        color: 'rgba(0, 0, 0, 0.7)',
-                  }),
-                  fill: new ol.style.Fill({
-                        color: 'rgba(255, 255, 255, 0.2)',
-                  }),
-                }),
-            }),
+            // style: new ol.style.Style({
+            //       fill: new ol.style.Fill({
+            //               color: 'rgba(255, 255, 255, 0.2)',
+            //       }),
+            //       stroke: new ol.style.Stroke({
+            //             color: 'rgba(0, 0, 0, 0.5)',
+            //              lineDash: [10, 10],
+            //              width: 2,
+            //       }),
+            //       image: new ol.style.Circle({
+            //             radius: 6,
+            //             stroke: new ol.style.Stroke({
+            //             color: 'rgba(0, 0, 0, 0.7)',
+            //       }),
+            //       fill: new ol.style.Fill({
+            //             color: 'rgba(255, 255, 255, 0.2)',
+            //       }),
+            //     }),
+            // }),
           }
         );
               
@@ -393,25 +364,25 @@
                     draw = new ol.interaction.Draw({
                             source: source,
                             type: typeSelect,
-                            style: new ol.style.Style({
-                                fill: new ol.style.Fill({
-                                  color: 'rgba(255, 255, 255, 0.2)',
-                                }),
-                                stroke: new ol.style.Stroke({
-                                  color: 'rgba(0, 0, 0, 0.5)',
-                                  lineDash: [10, 10],
-                                  width: 2,
-                                }),
-                                image: new ol.style.Circle({
-                                  radius: 6,
-                                  stroke: new ol.style.Stroke({
-                                    color: 'rgba(0, 0, 0, 0.7)',
-                                  }),
-                                  fill: new ol.style.Fill({
-                                    color: 'rgba(255, 255, 255, 0.2)',
-                                  }),
-                                }),
-                              }),
+                            // style: new ol.style.Style({
+                            //     fill: new ol.style.Fill({
+                            //       color: 'rgba(255, 255, 255, 0.2)',
+                            //     }),
+                            //     stroke: new ol.style.Stroke({
+                            //       color: 'rgba(0, 0, 0, 0.5)',
+                            //       lineDash: [10, 10],
+                            //       width: 2,
+                            //     }),
+                            //     image: new ol.style.Circle({
+                            //       radius: 6,
+                            //       stroke: new ol.style.Stroke({
+                            //         color: 'rgba(0, 0, 0, 0.7)',
+                            //       }),
+                            //       fill: new ol.style.Fill({
+                            //         color: 'rgba(255, 255, 255, 0.2)',
+                            //       }),
+                            //     }),
+                            //   }),
                        
                           });
                 map.addInteraction(draw);
