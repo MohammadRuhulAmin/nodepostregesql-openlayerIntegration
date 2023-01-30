@@ -331,7 +331,8 @@ app.get('/view-mouza',(req,res)=>{
 
 app.get('/mapGeojson-api',(req,res)=>{
     //let qry = "SELECT ST_ASGeoJSON(geom),plot_no_en FROM borolekh  limit 2000 ";
-    let qry = "select ST_AsGeoJSON(ST_Simplify(geom,3)),plot_no_en  from borolekh Where archrive_plot  IS NULL";
+    //let qry = "select ST_AsGeoJSON(ST_Simplify(geom,3)),plot_no_en  from borolekh Where archrive_plot  IS NULL";
+    let qry = "select ST_AsGeoJSON(geom),plot_no_en  from borolekh Where archrive_plot  IS NULL"
     pool.query(qry,(err,result)=>{
         if(err)throw err;
         else {
