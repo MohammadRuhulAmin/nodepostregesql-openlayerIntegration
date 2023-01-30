@@ -49,8 +49,6 @@
 
       var vectorLayer = new ol.layer.Vector({
         source: new ol.source.Vector({
-          //url: 'https://openlayers.org/en/v4.6.5/examples/data/geojson/countries.geojson',
-          //url:'http://localhost:3000/mapGeojson-api',
           url:window.location.origin + "/"+ "mapGeojson-api",
           format: new ol.format.GeoJSON()
         }),
@@ -83,7 +81,7 @@
       map.addLayer(
             new ol.layer.Vector({
             source: new ol.source.Vector({
-              url:window.location.origin + "/"+ "labeling-mutated-geojson-1",
+              url:window.location.origin + "/"+ "labeling-last-mutated-geojson-1",
               format: new ol.format.GeoJSON()
             }),
             style: new ol.style.Style({
@@ -91,8 +89,8 @@
                 color: 'rgba(0,255,0,0.1)'
               }),
                   stroke: new ol.style.Stroke({
-                    color: 'green',
-                    width: 2
+                    color: 'red',
+                    width: 3
                   })
                 })
           })
@@ -100,7 +98,7 @@
           map.addLayer(
             new ol.layer.Vector({
             source: new ol.source.Vector({
-              url:window.location.origin + "/"+ "labeling-mutated-geojson-2",
+              url:window.location.origin + "/"+ "labeling-last-mutated-geojson-2",
               format: new ol.format.GeoJSON()
             }),
             style: new ol.style.Style({
@@ -108,15 +106,34 @@
                 color: 'rgba(0,255,0,0.1)'
               }),
                   stroke: new ol.style.Stroke({
-                    color: 'green',
-                    width: 2
+                    color: 'red',
+                    width: 3
                   })
                 })
           })
-          );
+        );
 
-const displayFeatureInfo = function (pixel) {
-  const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
+        map.addLayer(
+            new ol.layer.Vector({
+            source: new ol.source.Vector({
+              url:window.location.origin + "/"+ "all-mutated-plots-api",
+              format: new ol.format.GeoJSON()
+            }),
+            style: new ol.style.Style({
+              fill: new ol.style.Fill({
+                color: 'rgba(255,0,255,0.1)'
+              }),
+                  stroke: new ol.style.Stroke({
+                    color: 'green',
+                    width: 1
+                  })
+                })
+          })
+        );
+
+
+    const displayFeatureInfo = function (pixel) {
+    const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
     return feature;
   });
   if (feature) {
@@ -129,7 +146,8 @@ map.on("dblclick", function (evt) {
   displayFeatureInfo(evt.pixel);
 });
     
-</script>
+    </script>
+
 
 <script>
    var highlightStyle = new ol.style.Style({

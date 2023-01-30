@@ -294,7 +294,7 @@ app.get('/mapGeojson-api',(req,res)=>{
     });
 })
 
-app.get('/labeling-mutated-geojson-1',(req,res)=>{
+app.get('/labeling-last-mutated-geojson-1',(req,res)=>{
     let qry = "select ST_AsGeoJSON(geom),plot_no_en  from borolekh order by plot_no_en desc LIMIT 1";
     pool.query(qry,(err,result)=>{
         if(err)throw err;
@@ -321,7 +321,7 @@ app.get('/labeling-mutated-geojson-1',(req,res)=>{
     });
 });
 
-app.get('/labeling-mutated-geojson-2',(req,res)=>{
+app.get('/labeling-last-mutated-geojson-2',(req,res)=>{
     let qry = "select ST_AsGeoJSON(geom),plot_no_en  from borolekh order by plot_no_en desc limit 1 offset 1 ";
     pool.query(qry,(err,result)=>{
         if(err)throw err;
@@ -348,6 +348,33 @@ app.get('/labeling-mutated-geojson-2',(req,res)=>{
     });
 });
 
+
+app.get('/all-mutated-plots-api',(req,res)=>{
+    let qry = "SELECT ST_AsGeoJSON(geom),plot_no_en  from borolekh Where parent_plot  IS NOT NULL";
+    pool.query(qry,(err,result)=>{
+        if(err)throw err;
+        else {
+            var result =  result.rows;
+            let mapGeoJson = {"type":"FeatureCollection","features":[]};
+            for(let i = 0;i<result.length;i++){
+                let jsonData = JSON.parse(result[i].st_asgeojson);
+                let plotGeoJson =  {"type":"Feature","properties":{"plot_no_en":""},"geometry":{"type":"Polygon","coordinates":[]}};
+               
+                plotGeoJson.properties = {"plot_no_en" : result[i].plot_no_en.toString()};
+                let tempCoordinates = [];
+                for(let i = 0;i<jsonData.coordinates[0][0].length;i++){
+                    let utm = turf.point([jsonData.coordinates[0][0][i][0], jsonData.coordinates[0][0][i][1]]);
+                    let latlong = turf.toWgs84(utm);
+                    //console.log(latlong.geometry.coordinates)
+                    tempCoordinates.push(latlong.geometry.coordinates);
+                }
+                plotGeoJson.geometry.coordinates = [tempCoordinates]
+                mapGeoJson.features.push(plotGeoJson);
+            }
+            res.send(mapGeoJson);
+        }
+    })
+});
 
 
 app.get('/experiment-map-label',(req,res)=>{
