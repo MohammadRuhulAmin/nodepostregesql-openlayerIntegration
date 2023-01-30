@@ -24,8 +24,8 @@
       <form action="/" method="get">
         <button type="submit"> Home </button>
       </form>
-      <button type="submit" class="btn btn-primary m-1" data-toggle="modal" data-target="#exampleModalCenter">
-        Details 
+      <button type="submit" id="parentChildCombineGeoJson" onclick="combinParentChildPlotDisplay()" class="btn btn-primary m-1" data-toggle="modal" data-target="#exampleModalCenter">
+         Parent & Child Combine
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <h2> &nbsp; &nbsp; Mutation: Map Splitting Demo </h2>
@@ -69,13 +69,14 @@
       <li class="list-group-item">area 2 : <span id="sA_2"></li>
     </ul>
     <div id="map" class="map"></div>
+    <input type="text" id="combineGeoJson" value="<%=combineGeoJson %>" />
     <input id="plotInfo" type="hidden" value="<%=plotInfo %>"/>
     <input type="hidden" id="plotTotalArea" value="<%=plotArea %>" />
     <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title" id="exampleModalLongTitle">Location </h4>
+            <h6 class="modal-title" id="exampleModalLongTitle">Parent & Child Combine Plot   </h6>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -145,8 +146,8 @@
             ],
             view: new ol.View()
         });
-      var geometry = new ol.format.GeoJSON().readGeometry(plotGeo);
       
+      var geometry = new ol.format.GeoJSON().readGeometry(plotGeo);
       function removeLastVectorString(){
         var features_lineString = vector_string.getSource().getFeatures();
         features_lineString.forEach((feature) => {
@@ -352,11 +353,9 @@
               }
           }
       var typeSelect = "None";
-      console.log(typeSelect);
       function typeSelectFunction(){
         typeSelect = "LineString";
         document.getElementById('type').disabled = true; 
-        console.log(typeSelect);
       }
       function addInteraction() {
         const value = typeSelect;
@@ -1288,8 +1287,70 @@
             count++;
           }        
       }
+      console.log(plotGeo)
     </script>
+    
+    <!-- Display parent & child plot in combine form  -->
+    <script>
+      var combineGeoJson = JSON.parse(document.getElementById('combineGeoJson').value);
+      if(combineGeoJson.type == "EmptyGeoJSON" ){
+        document.getElementById('parentChildCombineGeoJson').style.visibility='hidden'
+      }
+      else{
+        function combinParentChildPlotDisplay(){
+            var combineGeoJson = JSON.parse(document.getElementById('combineGeoJson').value);
+              setTimeout(()=>{
+              var mapCombine = new ol.Map({
+                  target: 'parentChildCombine',
+                  layers: [
+                      new ol.layer.Graticule({
+                      // the style to use for the lines, optional.
+                      visible: true,
+                      strokeStyle: new ol.style.Stroke({
+                        color: 'rgba(255,120,0,0.9)',
+                        width: 1,
+                        lineDash: [10,10],
+                      }),
+                      showLabels: true ,
+                      wrapX: false ,
+                    }),
+                      
+                      
+                  ],
+                  view: new ol.View()
+              });
+            
+            var combineGeometry = new ol.format.GeoJSON().readGeometry(combineGeoJson);
+          
+            mapCombine.addLayer(
+              new ol.layer.Vector({
+                source: new ol.source.Vector({
+                  features: [new ol.Feature(combineGeometry)]
+                }),
+                style: new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                      color: 'black',
+                      width: 1,
+                      opacity: 0.25
+                    })
+                  })
+              
+              })
+            );
+          
 
+              mapCombine.getView().fit(combineGeometry);
+          },1000)
+      }
+    }
+    
+    
+      // parentChildCombine id 
+     
+    </script>
+    
+    <!-- parent & child combine plot display  -->
+   
 
 <!-- Modal -->
 <div class="modal fade" id="confirmSave" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

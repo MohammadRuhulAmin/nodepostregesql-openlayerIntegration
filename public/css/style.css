@@ -38,3 +38,9 @@ html,body {
   border-style: solid;
   border-color: blue;
 }
+
+
+.modalMap{
+  width:100%;
+  height:500px;
+}

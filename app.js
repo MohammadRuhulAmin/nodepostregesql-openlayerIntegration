@@ -27,6 +27,7 @@ app.get('/',(req,res)=>{
     });
 });
 
+
 app.get('/searchplot',(req,res)=>{
     const plot_no_en = req.query.plotNo;
     //var geoJson,stArea,stleng,details;
@@ -96,24 +97,73 @@ app.get('/searchplot',(req,res)=>{
                               
                                
                             }
-                            else{
-                                res.render('map',
-                                {
-                                    plotId:plot_no_en,
-                                    plotInfo:geoJson,
-                                    plotArea:stArea.shape_area,
-                                    plotLeng:stleng.shape_leng,
-                                    district :details.m_dist_en,
-                                    subDistrict:details.m_name_en,
-                                    jlNo:details.jl_no_en,
-                                    plotNo:details.plot_no_en,
-                                    parent_plot:details.parent_plot,
-                                    link:req.protocol+"://"+req.headers.host + "/" + "searchplot?plotNo=" + details.parent_plot
-                                   
+                            else{                         
+                                if(details.parent_plot != null){
+                                    let qryParent = "SELECT ST_AsGeoJSON(geom) FROM borolekh WHERE plot_no_en = $1";
+                                    pool.query(qryParent,[details.parent_plot],(err,result)=>{
+                                        if(err)throw err;
+                                        else{
+                                        
+                                            var result_parent = JSON.parse(result.rows[0].st_asgeojson);
+                                            var parentCoordinates = result_parent.coordinates[0][0];
+                                            let queryChild = "SELECT ST_AsGeoJSON(geom) FROM borolekh WHERE plot_no_en = $1";
+                                            pool.query(queryChild,[plot_no_en],(err,result)=>{
+                                                if(err)throw err;
+                                                else{
+                                                    var result_child = JSON.parse(result.rows[0].st_asgeojson);
+                                                    var childCoordinates = result_child.coordinates[0][0];
+                                                    var combineCoordinates = [];
+                                                    for(let i = 0;i<parentCoordinates.length;i++){
+                                                        combineCoordinates.push(parentCoordinates[i]);
+                                                    }
+                                                    for(let i = 0;i<childCoordinates.length;i++){
+                                                        combineCoordinates.push(childCoordinates[i]);
+                                                    }
+                                                   
+                                                    let combineGeoJson = {
+                                                        "type":"MultiPolygon",
+                                                        "coordinates":[[combineCoordinates]]
+                                                    }
+                                                    res.render('map',
+                                                    {
+                                                        plotId:plot_no_en,
+                                                        plotInfo:geoJson,
+                                                        plotArea:stArea.shape_area,
+                                                        plotLeng:stleng.shape_leng,
+                                                        district :details.m_dist_en,
+                                                        subDistrict:details.m_name_en,
+                                                        jlNo:details.jl_no_en,
+                                                        plotNo:details.plot_no_en,
+                                                        parent_plot:details.parent_plot,
+                                                        link:req.protocol+"://"+req.headers.host + "/" + "searchplot?plotNo=" + details.parent_plot,
+                                                        combineGeoJson:JSON.stringify(combineGeoJson)
+                                                    });
+                                                }
+                                            })
+                                        }
+                                    });
                                     
-                                });
+                                }
+                                else{
+                                   
+                                    res.render('map',
+                                    {
+                                        plotId:plot_no_en,
+                                        plotInfo:geoJson,
+                                        plotArea:stArea.shape_area,
+                                        plotLeng:stleng.shape_leng,
+                                        district :details.m_dist_en,
+                                        subDistrict:details.m_name_en,
+                                        jlNo:details.jl_no_en,
+                                        plotNo:details.plot_no_en,
+                                        parent_plot:details.parent_plot,
+                                        link:req.protocol+"://"+req.headers.host + "/" + "searchplot?plotNo=" + details.parent_plot,
+                                        combineGeoJson:JSON.stringify({
+                                            "type":"EmptyGeoJSON"
+                                        })
+                                    });
+                                }
                             }
-                          
                         });
                         }
                         
@@ -121,18 +171,38 @@ app.get('/searchplot',(req,res)=>{
                 }
                 
             });
-        }
-        
+        } 
     });
-   
-    
-
-    
-
-    
-  
-    
 });
+
+
+/**
+ *  pool.query(qry,(err,result)=>{
+        if(err)throw err;
+        else {
+            var result =  result.rows;
+            let mapGeoJson = {"type":"FeatureCollection","features":[]};
+            for(let i = 0;i<result.length;i++){
+                let jsonData = JSON.parse(result[i].st_asgeojson);
+                let plotGeoJson =  {"type":"Feature","properties":{"plot_no_en":""},"geometry":{"type":"Polygon","coordinates":[]}};
+               
+                plotGeoJson.properties = {"plot_no_en" : result[i].plot_no_en.toString()};
+                let tempCoordinates = [];
+                for(let i = 0;i<jsonData.coordinates[0][0].length;i++){
+                    let utm = turf.point([jsonData.coordinates[0][0][i][0], jsonData.coordinates[0][0][i][1]]);
+                    let latlong = turf.toWgs84(utm);
+                    //console.log(latlong.geometry.coordinates)
+                    tempCoordinates.push(latlong.geometry.coordinates);
+                }
+                plotGeoJson.geometry.coordinates = [tempCoordinates]
+                mapGeoJson.features.push(plotGeoJson);
+            }
+            res.send(mapGeoJson);
+        }
+    })
+ */
+
+
 
 app.post('/savePlot', (req,res)=>{
     const {spGeoJson_1,spGeoJson_2,plotId,sp_area_1,sp_area_2,sp_arm_1,sp_arm_2} = req.body;  
@@ -221,14 +291,6 @@ app.post('/savePlot', (req,res)=>{
             })
         }
     })
-   
-    
-            
-    
-      
-
-  
-   
 })
 
 app.post('/addnew-plot',(req,res)=>{
