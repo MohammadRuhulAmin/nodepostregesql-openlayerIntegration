@@ -38,7 +38,7 @@
         <label class="text-primary">Select Plot For Splitting: </label>
         <form action="/searchplot">
            
-            <select name="plotNo" class="form-select" id="plotsList" >
+            <select name="plotNo" class="form-select" id="plotsList" required>
                             <option></option>
                             <% for(let i = 0;i<plotList.length;i++){ %>
                                 <option><%= plotList[i].plot_no_en %></option>

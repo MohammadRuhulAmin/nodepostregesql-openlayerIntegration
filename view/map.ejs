@@ -1098,8 +1098,8 @@
 
         if(cX1>cX2){
           if(lineCoordinates[0][0]>lineCoordinates[1][0]){
-            l1 = [lineCoordinates[1][0]+2,lineCoordinates[1][1]+2];
-            l2 = [lineCoordinates[0][0]+2,lineCoordinates[0][1]+2];
+              l1 = [lineCoordinates[1][0]+2,lineCoordinates[1][1]+2];
+              l2 = [lineCoordinates[0][0]+2,lineCoordinates[0][1]+2];
             }
             else{
               l1 = [lineCoordinates[0][0]+2,lineCoordinates[0][1]+2];
@@ -1120,12 +1120,8 @@
             displayLabelForLineStringPercentageBreakDown(l1[0],l1[1],percentDistance1);
             displayLabelForLineStringPercentageBreakDown(l2[0],l2[1],percentDistance2);
         }
-
-       
         StyleCoordinatesPecentage(cX1,cY1);
         StyleCoordinatesPecentage(cX2,cY2);
-        
-
       }
       function StyleCoordinatesPecentage(coordx,coordy){
           const labelFeature = new ol.Feature({
@@ -1134,7 +1130,7 @@
             const labelonly = new ol.style.Style({
                 image: new ol.style.Circle({
                     radius: 5,
-                    fill: new ol.style.Fill({color: 'green'})
+                    fill: new ol.style.Fill({color: 'red'})
                 })
             });
 
