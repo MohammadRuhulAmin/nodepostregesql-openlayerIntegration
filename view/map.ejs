@@ -52,33 +52,22 @@
       
       </div>
     </nav>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav align-content-end">
-          <li class="nav-item active">
-            <p class="nav-link">Total area : <%=(parseFloat(plotArea)*0.00002295684113).toFixed(2)  %> acre <span class="sr-only">(current)</span></p>
-          </li>
-          <li class="nav-item">
-            <p class="nav-link active" >Shp Leng : <%=(parseFloat(plotLeng)*3.28084).toFixed(2)  %> ft</p>
-          </li>
-          <li class="nav-item">
-            <p class="nav-link active" >area 1 : <span id="sA_1"></span></p>
-          </li>
-          <li class="nav-item">
-            <p class="nav-link active" > area 2 : <span id="sA_2"></span></p>
-          </li>
-          <li class="nav-item">
-            <p class="nav-link active" id="closeAxis"></p>
-          </li>
-        </ul>
-      </div>
-      <div>
-        <!-- <button class="btn btn-sm btn-success" onclick="displayOnClickParentPlot()">Display Lable </button> -->
-      </div>
-    </nav>
+    <ul class="list-group list-group-horizontal m-2">
+      <li class="list-group-item">District : <%=district %></li>
+      <li class="list-group-item">Sub District : <%=subDistrict %></li>
+      <li class="list-group-item">JL No : <%=jlNo %></li>
+      <li class="list-group-item">Plot No : <%=plotNo %></li>
+      <% if (locals.parent_plot) { %>
+        <li class="list-group-item">Parent Plot :<%=parent_plot %></li>
+      <% } %>
+    </ul>
+    <ul class="list-group list-group-horizontal m-2">
+      <li class="list-group-item">Total area : <%=(parseFloat(plotArea)*0.00002295684113).toFixed(2)  %> acre</li>
+      <li class="list-group-item">Shape Length : <%=(parseFloat(plotLeng)*3.28084).toFixed(2)  %> ft</li>
+      <li class="list-group-item">area 1 : <span id="sA_1"></li>
+      <li class="list-group-item">area 2 : <span id="sA_2"></li>
+    </ul>
     <div id="map" class="map"></div>
-   
-    <br/>
     <input id="plotInfo" type="hidden" value="<%=plotInfo %>"/>
     <input type="hidden" id="plotTotalArea" value="<%=plotArea %>" />
     <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -93,26 +82,25 @@
           <div class="modal-body">
             <table class="table table-striped">
                 <tr>
-                  <td>District</td>
+                  <td>District: </td>
                   <td><%=district %></td>
                 </tr>
                 <tr>
-                  <td>Sub District </td>
+                  <td>Sub District :  </td>
                   <td><%=subDistrict %></td>
                 </tr>
                 <tr>
-                  <td>JL No </td>
+                  <td>JL No :  </td>
                   <td><%=jlNo %></td>
                 </tr>
                 <tr>
-                  <td>Plot No</td>
+                  <td>Plot No : </td>
                   <td><%=plotNo %></td>
                 </tr>
                 <tr>
-                  <td>Parent Plot </td>
+                  <td>Parent Plot :  </td>
                   <td><%=parent_plot %></td>
                 </tr>
-               
             </table>
           </div>
           <div class="modal-footer">
@@ -288,9 +276,6 @@
             const vectorSource_for_parent_label = new ol.source.Vector({
                 features: [labelFeature]
             });
-
-         
-            
             map.addLayer(
                 new ol.layer.Vector({
                     source: vectorSource_for_parent_label
@@ -1032,12 +1017,10 @@
         let closeToAxis = "";
         if(angle<70 && angle>-70){
           closeToAxis = "Close to X axis";
-          document.getElementById('closeAxis').innerHTML = closeToAxis;
           lineStringPercentageBreakDownHorizontal();
         }
         else{
           closeToAxis = "Close to Y axis";
-          document.getElementById('closeAxis').innerHTML = closeToAxis;
           lineStringPercentageBreakDownVertical();
         }
       }
