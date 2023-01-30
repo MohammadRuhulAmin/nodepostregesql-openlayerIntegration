@@ -107,7 +107,8 @@ app.get('/searchplot',(req,res)=>{
                                     subDistrict:details.m_name_en,
                                     jlNo:details.jl_no_en,
                                     plotNo:details.plot_no_en,
-                                    parent_plot:details.parent_plot
+                                    parent_plot:details.parent_plot,
+                                    link:req.protocol+"://"+req.headers.host + "/" + "searchplot?plotNo=" + details.parent_plot
                                    
                                     
                                 });

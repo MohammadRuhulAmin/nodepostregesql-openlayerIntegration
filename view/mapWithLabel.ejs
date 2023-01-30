@@ -185,7 +185,6 @@ map.on("dblclick", function (evt) {
         var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
           return feature;
         });
-
         var info = document.getElementById('info');
         if (feature) {
           info.innerHTML = '&nbsp;&nbsp;Plot No ' + ': ' + feature.get('plot_no_en');
