@@ -192,7 +192,6 @@ map.on("dblclick", function (evt) {
         } else {
           info.innerHTML = '&nbsp;';
         }
-
         if (feature !== highlight) {
           if (highlight) {
             featureOverlay.getSource().removeFeature(highlight);
@@ -202,7 +201,6 @@ map.on("dblclick", function (evt) {
           }
           highlight = feature;
         }
-
       };
 
       map.on('pointermove', function(evt) {
