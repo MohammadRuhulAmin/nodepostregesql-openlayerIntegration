@@ -174,7 +174,6 @@
           vector_string.getSource().removeFeature(feature);
          });
       }
-      
       map.addLayer(
         new ol.layer.Vector({
           source: new ol.source.Vector({
@@ -284,17 +283,25 @@
             );
         }
       //start 
+
+      //test 
+          
+      //end
       function StyleCoordinatesOnParentPlot(coordx,coordy){
         const labelFeature = new ol.Feature({
                 geometry: new ol.geom.Point([coordx,coordy]),
             });
             const labelonly = new ol.style.Style({
-                image: new ol.style.Circle({
-                    radius: 4,
-                    fill: new ol.style.Fill({color: 'blue'})
-                })
-            });
-
+              image: new ol.style.Circle({
+                        radius: 6,
+                        stroke: new ol.style.Stroke({
+                        color: 'rgba(0,0, 255, 1)',
+                  }),
+                  // fill: new ol.style.Fill({
+                  //       color: 'rgba(0,0, 255, 0.2)',
+                  // }),
+                }),
+              });
             labelFeature.setStyle(labelonly);
             const vectorSource_for_parent_label = new ol.source.Vector({
                 features: [labelFeature]
@@ -333,24 +340,24 @@
           {
             source: source,
             style: new ol.style.Style({
-                                fill: new ol.style.Fill({
-                                  color: 'rgba(255, 255, 255, 0.2)',
-                                }),
-                                stroke: new ol.style.Stroke({
-                                  color: 'rgba(0, 0, 0, 0.5)',
-                                  lineDash: [10, 10],
-                                  width: 2,
-                                }),
-                                image: new ol.style.Circle({
-                                  radius: 6,
-                                  stroke: new ol.style.Stroke({
-                                    color: 'rgba(0, 0, 0, 0.7)',
-                                  }),
-                                  fill: new ol.style.Fill({
-                                    color: 'rgba(255, 255, 255, 0.2)',
-                                  }),
-                                }),
-                              }),
+                  fill: new ol.style.Fill({
+                          color: 'rgba(255, 255, 255, 0.2)',
+                  }),
+                  stroke: new ol.style.Stroke({
+                        color: 'rgba(0, 0, 0, 0.5)',
+                         lineDash: [10, 10],
+                         width: 2,
+                  }),
+                  image: new ol.style.Circle({
+                        radius: 6,
+                        stroke: new ol.style.Stroke({
+                        color: 'rgba(0, 0, 0, 0.7)',
+                  }),
+                  fill: new ol.style.Fill({
+                        color: 'rgba(255, 255, 255, 0.2)',
+                  }),
+                }),
+            }),
           }
         );
               
@@ -986,10 +993,12 @@
           });
             const labelonly = new ol.style.Style({
                 image: new ol.style.Circle({
-                    radius: 4,
-                    fill: new ol.style.Fill({color: 'red'})
-                })
-            });
+                        radius: 6,
+                        stroke: new ol.style.Stroke({
+                        color: 'rgba(255,0,0, 1)',
+                  }),
+                }),
+              });
 
             labelFeature.setStyle(labelonly);
             const vectorSource = new ol.source.Vector({
@@ -1147,10 +1156,12 @@
                 geometry: new ol.geom.Point([coordx,coordy]),
           });
             const labelonly = new ol.style.Style({
-                image: new ol.style.Circle({
-                    radius: 5,
-                    fill: new ol.style.Fill({color: 'red'})
-                })
+              image: new ol.style.Circle({
+                        radius: 6,
+                        stroke: new ol.style.Stroke({
+                        color: 'rgba(255,0,0, 2)',
+                  }),
+                }),
             });
 
             labelFeature.setStyle(labelonly);
