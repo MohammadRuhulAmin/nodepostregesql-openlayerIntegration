@@ -1287,7 +1287,7 @@
             count++;
           }        
       }
-      console.log(plotGeo)
+      
     </script>
     
     <!-- Display parent & child plot in combine form  -->
@@ -1297,7 +1297,8 @@
         document.getElementById('parentChildCombineGeoJson').style.visibility='hidden'
       }
       else{
-        function combinParentChildPlotDisplay(){
+        function combinParentChildPlotDisplay(){     
+          document.getElementById('parentChildCombine').innerHTML = "";   
             var combineGeoJson = JSON.parse(document.getElementById('combineGeoJson').value);
               setTimeout(()=>{
               var mapCombine = new ol.Map({
