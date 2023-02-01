@@ -696,7 +696,6 @@
 
   
         var geometry_sp_2 = new ol.format.GeoJSON().readGeometry(splittedPolygon.features[1].geometry);
-        console.log("701");
         console.log(splittedPolygon.features[1].geometry);
         map_sp_2.addLayer(
             new ol.layer.Vector({
@@ -1004,6 +1003,7 @@
           lineStringPercentageBreakDownVertical();
         }
       }
+      var percentDistance1V,percentDistance2V;
       function lineStringPercentageBreakDownVertical(){
         let cX1,cY1;
         let cX2,cY2;
@@ -1042,18 +1042,21 @@
         let latlong22 = ToLatLong(selectedCoordinates[1][1][0],selectedCoordinates[1][1][1]);
         let distCoord_1 = distance(latlong11[0],latlong12[0],latlong11[1],latlong12[1]);
         let distCoord_2 = distance(latlong21[0],latlong22[0],latlong21[1],latlong22[1]);
-        let percentDistance1 = parseInt(100*distCoord_1Intersected/distCoord_1);
-        let percentDistance2 = parseInt(100*distCoord_2Intercected/distCoord_2);
+        percentDistance1V = parseInt(100*distCoord_1Intersected/distCoord_1);
+        percentDistance2V = parseInt(100*distCoord_2Intercected/distCoord_2);
         let l1,l2;
        
      
         StyleCoordinatesPecentage(cX1,cY1);
-        displayLabelForLineStringPercentageBreakDown(cX1-5,cY1-5,percentDistance1)
-        displayLabelForLineStringPercentageBreakDown(cX2-5,cY2+4,percentDistance2)
+        displayLabelForLineStringPercentageBreakDown(cX1-5,cY1-5,percentDistance1V)
+        displayLabelForLineStringPercentageBreakDown(cX2-5,cY2+4,percentDistance2V)
         StyleCoordinatesPecentage(cX2,cY2);
-
+        
       }
-
+      var percentDistance1H,percentDistance2H;
+      var coordinatesSelectedDatas = {
+        
+      }
       function lineStringPercentageBreakDownHorizontal(){
         let cX1,cY1;
         let cX2,cY2;
@@ -1075,7 +1078,7 @@
         }
         let cF = ToLatLong(cX1,cY1);
         let cS = ToLatLong(cX2,cY2);
-
+  
         let inter1 = ToLatLong(selectedCoordinates[0][2][0],selectedCoordinates[0][2][1]);
         let interX1 = inter1[0];
         let interY1 = inter1[1];
@@ -1090,10 +1093,9 @@
         let latlong22 = ToLatLong(selectedCoordinates[1][1][0],selectedCoordinates[1][1][1]);
         let distCoord_1 = distance(latlong11[0],latlong12[0],latlong11[1],latlong12[1]);
         let distCoord_2 = distance(latlong21[0],latlong22[0],latlong21[1],latlong22[1]);
-        let percentDistance1 = parseInt(100*distCoord_1Intersected/distCoord_1);
-        let percentDistance2 = parseInt(100*distCoord_2Intercected/distCoord_2);
+        percentDistance1H = parseInt(100*distCoord_1Intersected/distCoord_1);
+        percentDistance2H = parseInt(100*distCoord_2Intercected/distCoord_2);
         let l1,l2;
-
         if(cX1>cX2){
           if(lineCoordinates[0][0]>lineCoordinates[1][0]){
               l1 = [lineCoordinates[1][0]+2,lineCoordinates[1][1]+2];
@@ -1103,8 +1105,8 @@
               l1 = [lineCoordinates[0][0]+2,lineCoordinates[0][1]+2];
               l2 = [lineCoordinates[1][0]+2,lineCoordinates[1][1]+2];
             }
-          displayLabelForLineStringPercentageBreakDown(l1[0],l1[1],percentDistance2);
-          displayLabelForLineStringPercentageBreakDown(l2[0],l2[1],percentDistance1);
+          displayLabelForLineStringPercentageBreakDown(l1[0],l1[1],percentDistance2H);
+          displayLabelForLineStringPercentageBreakDown(l2[0],l2[1],percentDistance1H);
         }
         else{
           if(lineCoordinates[0][0]>lineCoordinates[1][0]){
@@ -1115,12 +1117,32 @@
               l1 = [lineCoordinates[0][0]+2,lineCoordinates[0][1]+2]
               l2 = [lineCoordinates[1][0]+2,lineCoordinates[1][1]+2]
             }
-            displayLabelForLineStringPercentageBreakDown(l1[0],l1[1],percentDistance1);
-            displayLabelForLineStringPercentageBreakDown(l2[0],l2[1],percentDistance2);
+            displayLabelForLineStringPercentageBreakDown(l1[0],l1[1],percentDistance1H);
+            displayLabelForLineStringPercentageBreakDown(l2[0],l2[1],percentDistance2H);
         }
+
         StyleCoordinatesPecentage(cX1,cY1);
         StyleCoordinatesPecentage(cX2,cY2);
+
+        
+        // coordinatesSelectedDatas.FirstCoordinates = {
+        //   firstPoint: [cX1,cY1],
+        //   firstPercent: percentDistance1H,
+        //   firstInterSect: [selectedCoordinates[0][2][0],selectedCoordinates[0][2][1]]           
+        // };
+
+        // coordinatesSelectedDatas.SecondCoordinates = {
+        //   secondPoint:[cX2,cY2],
+        //   secondPercent: percentDistance2H,
+        //   secondIntersect : [selectedCoordinates[1][2][0],selectedCoordinates[1][2][1]]
+        // };
+          
+          
+
       }
+
+
+
       function StyleCoordinatesPecentage(coordx,coordy){
           const labelFeature = new ol.Feature({
                 geometry: new ol.geom.Point([coordx,coordy]),
@@ -1345,14 +1367,85 @@
 
       }
     }
-    
-    
-      // parentChildCombine id 
-     
+       
     </script>
     
-    <!-- parent & child combine plot display  -->
+    <script>
+      function Adjustment(){
+           
+      var lineString = JSON.parse(LineSplitterGeoJson);
+      var plotString = JSON.parse(plotGeo);
+      let Point1 = plotString.coordinates[0][0][0]
+      let Point2 = plotString.coordinates[0][0][plotString.coordinates[0][0].length-4];
+      NewLineSplitterDisplay(Point1,Point2);
+       
+      }
+
+ 
+    </script>
+  <script>
+    function NewLineSplitterDisplay(Point1,Point2){
    
+      var newLineString = {
+            "type": "LineString",
+           
+              "coordinates": [
+                Point1,
+                Point2
+              ],
+            
+    
+          }
+      var lineGeom  = new ol.format.GeoJSON().readGeometry(newLineString);
+          map.addLayer(
+              new ol.layer.Vector({
+                source: new ol.source.Vector({
+                  features: [new ol.Feature(lineGeom)]
+                }),
+                style: new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                      color: 'black',
+                      width: 1,
+                      opacity:0.5
+                    })
+                })
+       
+              })
+            );
+    }
+  </script>
+    <!-- lang lot to utm -->
+    <script>
+
+function LangLotToUTM(coordx,coordy){
+    function utmzone_from_lon(lon_deg) {
+      return parseInt(((lon_deg+180)/6)%60)+1;
+    }
+    
+    function proj4_setdef(lon_deg) {
+      const utm_zone = utmzone_from_lon(lon_deg);
+      const zdef = `+proj=utm +zone=${utm_zone} +datum=WGS84 +units=m +no_defs`;
+      return zdef;
+    }
+    let lon_input = coordx;
+    let lat_input = coordy;
+   
+    const azone = utmzone_from_lon(lon_input);
+    proj4.defs([
+    [
+      "EPSG:4326",
+      "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees"
+    ],
+    ["EPSG:AUTO", proj4_setdef(lon_input)]]);
+    const en_m = proj4("EPSG:4326", "EPSG:AUTO", [lon_input, lat_input]);
+    const e4digits = en_m[0];
+    const n4digits = en_m[1];
+    const lonlat_chk = proj4("EPSG:AUTO", "EPSG:4326", en_m);
+    return [e4digits,n4digits];
+  }
+ 
+    </script>
+
 
 <!-- Modal -->
 <div class="modal fade" id="confirmSave" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
