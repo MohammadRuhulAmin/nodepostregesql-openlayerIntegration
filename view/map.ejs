@@ -36,7 +36,7 @@
     
       <div class="btn-group" role="group" aria-label="Basic example">
         <button type="button" id="cutButton" class="btn btn-success m-1" onclick="splitOperationWithTurf();DisplaySplitPoly1();DisplaySplitPoly2();buttonEnableDisable();displayCutMessage()" > Split </button>
-        <button type="button" disabled onclick="Adjustment()" class="btn btn-success btn-sm m-1">Adjust</button>
+        <button type="button"  onclick="Adjustment()" class="btn btn-success btn-sm m-1">Adjust</button>
         <button type="button" class="btn btn-warning m-1" data-toggle="modal" onclick="map_sp_3Div();" data-target="#NequalSplitPolygon"> Equal Split  </button>
         <!-- <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly1()"> Plot 1 </button>
         <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly2()"> Plot 2</button> -->
@@ -337,6 +337,9 @@
       var splittedPolygon = {
         features : []
       };
+      var splittedPolygonAdjust = {
+        features:[]
+      }
     
       
       let draw,snap;
@@ -1125,17 +1128,7 @@
         StyleCoordinatesPecentage(cX2,cY2);
 
         
-        // coordinatesSelectedDatas.FirstCoordinates = {
-        //   firstPoint: [cX1,cY1],
-        //   firstPercent: percentDistance1H,
-        //   firstInterSect: [selectedCoordinates[0][2][0],selectedCoordinates[0][2][1]]           
-        // };
-
-        // coordinatesSelectedDatas.SecondCoordinates = {
-        //   secondPoint:[cX2,cY2],
-        //   secondPercent: percentDistance2H,
-        //   secondIntersect : [selectedCoordinates[1][2][0],selectedCoordinates[1][2][1]]
-        // };
+ 
           
           
 
@@ -1371,25 +1364,55 @@
     </script>
     
     <script>
+      var secondPlotPercentAdj,firstPlotPercentAdj;
       function Adjustment(){
-          
+        let parentPlotArea = document.getElementById("plotTotalArea").value;
+        parentPlotArea = (parseFloat(parentPlotArea)*0.00002295684113).toFixed(2);
+        console.log(childPlotArea1);
+        console.log(childPlotArea2);
+        let p1 = (childPlotArea1/parentPlotArea)*100;
+        let p2 =(childPlotArea2/parentPlotArea)*100;
+        console.log(p1, " " , p2);
+        let nP1 = 50-p1;
+        let nP2 = 50-p2;
+        console.log(nP1 , " ", nP2);
+        if(p1>p2){
+          console.log("P1 is bigger")
+        }
+        else{
+          console.log("P2 i bigger");
+        }
 
+        let c = JSON.parse(LineSplitterGeoJson).features[0].geometry.coordinates;
+        let Point1 = [c[0][0],c[0][1]];
+        let Point2 = [c[1][0],c[1][1]];
 
+        
+        //let iPoint1 = [selectedCoordinates[0][2][0],selectedCoordinates[0][2][1]];
+        let iPoint1 = [selectedCoordinates[1][2][0],selectedCoordinates[1][2][1]];
+         
+        let i = 1;
+        while(true){
+          Point2 = [c[1][0]+i,c[1][1]+i];
+          autoDisplayArea(Point1,Point2);
+          NewLineSplitterDisplay(Point1,Point2);
+          console.log(firstPlotPercentAdj , " " , secondPlotPercentAdj);
+          if(parseInt(firstPlotPercentAdj) == parseInt(secondPlotPercentAdj)){
+            NewLineSplitterDisplay(iPoint1,Point2);
+            break;
+          }
+         
+          else if(i == 60)break;
 
-
-        var lineString = JSON.parse(LineSplitterGeoJson);
-        var plotString = JSON.parse(plotGeo);
-        let Point1 = plotString.coordinates[0][0][0]
-        let Point2 = plotString.coordinates[0][0][plotString.coordinates[0][0].length-4];
-        // NewLineSplitterDisplay(Point1,Point2);
-       
+          i++;
+        }
+     
       }
-
- 
     </script>
+
+
   <script>
     function NewLineSplitterDisplay(Point1,Point2){
-   
       var newLineString = {
             "type": "LineString",
            
@@ -1419,36 +1442,59 @@
     }
   </script>
     <!-- lang lot to utm -->
-    <script>
 
-function LangLotToUTM(coordx,coordy){
-    function utmzone_from_lon(lon_deg) {
-      return parseInt(((lon_deg+180)/6)%60)+1;
-    }
-    
-    function proj4_setdef(lon_deg) {
-      const utm_zone = utmzone_from_lon(lon_deg);
-      const zdef = `+proj=utm +zone=${utm_zone} +datum=WGS84 +units=m +no_defs`;
-      return zdef;
-    }
-    let lon_input = coordx;
-    let lat_input = coordy;
-   
-    const azone = utmzone_from_lon(lon_input);
-    proj4.defs([
-    [
-      "EPSG:4326",
-      "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees"
-    ],
-    ["EPSG:AUTO", proj4_setdef(lon_input)]]);
-    const en_m = proj4("EPSG:4326", "EPSG:AUTO", [lon_input, lat_input]);
-    const e4digits = en_m[0];
-    const n4digits = en_m[1];
-    const lonlat_chk = proj4("EPSG:AUTO", "EPSG:4326", en_m);
-    return [e4digits,n4digits];
-  }
- 
-    </script>
+<script>
+  function SplitOperationWithDynamicLineString(Point1,Point2){
+            var plotGeoJson = JSON.parse(plotGeo);
+            var poly = turf.polygon(plotGeoJson.coordinates[0]);
+            var poly_coordinates = poly.geometry.coordinates;
+            var polyAsLine = turf.polygonToLine(poly);
+            var makeLineGeoJson = {
+              "type":"feature",
+               "geometry":{
+                  "coordinates":[Point1,Point2],
+                  "type": "LineString"
+               }
+            };
+            var unionedLines =  turf.union(polyAsLine,makeLineGeoJson);
+            const polygonized = turf.polygonize(unionedLines);
+            splittedPolygonAdjust = polygonized;
+           //console.log(splittedPolygonAdjust);
+        }
+        function autoDisplayArea(Point1,Point2){
+          let x = Point1;
+          let y = Point2;
+          var sp_1ShortLangLotAdj = [];
+          var sp_2ShortLangLotAdj = [];
+          SplitOperationWithDynamicLineString(x,y);
+          // DisplaySplitPoly1();DisplaySplitPoly2();buttonEnableDisable();
+           if(splittedPolygonAdjust.features.length == 2){
+             UtmToLangLotConverter(splittedPolygonAdjust.features[0].geometry.coordinates,sp_1ShortLangLotAdj);
+               const sp_area_1_polygonAdj = turf.polygon([sp_1ShortLangLotAdj]);
+               const area_sp_1 = turf.area(sp_area_1_polygonAdj);
+               firstPlotPercentAdj = (area_sp_1/TotalPlotArea)*100;
+               document.getElementById('sA_1').innerHTML = firstPlotPercentAdj.toFixed(2)  + " %" + " (" + (area_sp_1*0.00002295684113).toFixed(4) +" acre)";
+               document.getElementById('sp_area_1').value = sp_area_1_polygonAdj;
+               UtmToLangLotConverter(splittedPolygonAdjust.features[1].geometry.coordinates,sp_2ShortLangLotAdj);
+               const sp_area_2_polygonAdj = turf.polygon([sp_2ShortLangLotAdj]);
+               const area_sp_2 = turf.area(sp_area_2_polygonAdj);
+               secondPlotPercentAdj = (100-firstPlotPercentAdj).toFixed(2)
+               document.getElementById('sA_2').innerHTML =  (100-firstPlotPercentAdj).toFixed(2)+ "  %" + " (" + (area_sp_2*0.00002295684113).toFixed(4) +" acre)";
+               document.getElementById('sp_area_2').value = sp_area_2_polygonAdj;
+               childPlotArea1 = (area_sp_1*0.00002295684113).toFixed(4) 
+               childPlotArea2 = (area_sp_2*0.00002295684113).toFixed(4) 
+           }
+           else{
+            //  clearPage();
+            console.log("This coordinate cannot be taken")
+           }
+        }
+</script>
+
+
+
+
+
 
 
 <!-- Modal -->
