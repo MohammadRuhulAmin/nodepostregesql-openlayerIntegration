@@ -36,7 +36,7 @@
     
       <div class="btn-group" role="group" aria-label="Basic example">
         <button type="button" id="cutButton" class="btn btn-success m-1" onclick="splitOperationWithTurf();DisplaySplitPoly1();DisplaySplitPoly2();buttonEnableDisable();displayCutMessage()" > Split </button>
-        <button type="button" onclick="Adjustment()" class="btn btn-success btn-sm m-1">Adjust</button>
+        <button type="button" disabled onclick="Adjustment()" class="btn btn-success btn-sm m-1">Adjust</button>
         <button type="button" class="btn btn-warning m-1" data-toggle="modal" onclick="map_sp_3Div();" data-target="#NequalSplitPolygon"> Equal Split  </button>
         <!-- <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly1()"> Plot 1 </button>
         <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly2()"> Plot 2</button> -->
@@ -63,7 +63,7 @@
       <% } %>
     </ul>
     <ul class="list-group list-group-horizontal m-2">
-      <li class="list-group-item">Total area : <%=(parseFloat(plotArea)*0.00002295684113).toFixed(2)  %> acre</li>
+      <li class="list-group-item">Shape Area : <%=(parseFloat(plotArea)*0.00002295684113).toFixed(2)  %> acre</li>
       <li class="list-group-item">Shape Length : <%=(parseFloat(plotLeng)*3.28084).toFixed(2)  %> ft</li>
       <li class="list-group-item">area 1 : <span id="sA_1"></li>
       <li class="list-group-item">area 2 : <span id="sA_2"></li>
@@ -1372,12 +1372,16 @@
     
     <script>
       function Adjustment(){
-           
-      var lineString = JSON.parse(LineSplitterGeoJson);
-      var plotString = JSON.parse(plotGeo);
-      let Point1 = plotString.coordinates[0][0][0]
-      let Point2 = plotString.coordinates[0][0][plotString.coordinates[0][0].length-4];
-      NewLineSplitterDisplay(Point1,Point2);
+          
+
+
+
+
+        var lineString = JSON.parse(LineSplitterGeoJson);
+        var plotString = JSON.parse(plotGeo);
+        let Point1 = plotString.coordinates[0][0][0]
+        let Point2 = plotString.coordinates[0][0][plotString.coordinates[0][0].length-4];
+        // NewLineSplitterDisplay(Point1,Point2);
        
       }
 
