@@ -72,7 +72,7 @@
       <li class="list-group-item">area 2 : <span id="sA_2"></li>
     </ul>
     <div id="map" class="map"></div>
-    <input type="text" id="combineGeoJson" value="<%=combineGeoJson %>" />
+    <input type="hidden" id="combineGeoJson" value="<%=combineGeoJson %>" />
     <input id="plotInfo" type="hidden" value="<%=plotInfo %>"/>
     <input type="hidden" id="plotTotalArea" value="<%=plotArea %>" />
     <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -97,10 +97,10 @@
     <div class="row m-3">
      
       <div id="map_sp_1" class="map2 m-1 container col-lg">
-        <badge id="area_sp_1"></badge>
+        <p>Upper Portion <badge id="area_sp_1"></badge></p>
       </div>
       <div id="map_sp_2" class="map2 m-1 container col-lg">
-        <badge id="area_sp_2"></badge>
+        <p>Lower portion <badge id="area_sp_2"></badge></p>
       </div>
     </div>
     <div id="map_sp_3" class="map3">
@@ -422,15 +422,12 @@
               const sp_area_1_polygon = turf.polygon([sp_1ShortLangLot]);
              
               const area_sp_1 = turf.area(sp_area_1_polygon);
-              //TotalPlotArea
               var firstPlotPercent = (area_sp_1/TotalPlotArea)*100;
-              //document.getElementById('sA_1').innerHTML =  (area_sp_1*0.00002295684113).toFixed(4) + " acre";
               document.getElementById('sA_1').innerHTML = firstPlotPercent.toFixed(2)  + " %" + " (" + (area_sp_1*0.00002295684113).toFixed(4) +" acre)";
               document.getElementById('sp_area_1').value = sp_area_1_polygon;
               UtmToLangLotConverter(splittedPolygon.features[1].geometry.coordinates,sp_2ShortLangLot);
               const sp_area_2_polygon = turf.polygon([sp_2ShortLangLot]);
               const area_sp_2 = turf.area(sp_area_2_polygon);
-              //document.getElementById('sA_2').innerHTML =  (area_sp_2*0.00002295684113).toFixed(4) + " acre ";
               document.getElementById('sA_2').innerHTML =  (100-firstPlotPercent).toFixed(2)+ "  %" + " (" + (area_sp_2*0.00002295684113).toFixed(4) +" acre)";
               document.getElementById('sp_area_2').value = sp_area_2_polygon;
               childPlotArea1 = (area_sp_1*0.00002295684113).toFixed(4) 
@@ -905,7 +902,7 @@
         console.log(intersectedLineCoordinates);
         let newLineDistance =  lineStringDistance(intersectedLineCoordinates);
         let mid   = midPoint(intersectedLineCoordinates[0][0],intersectedLineCoordinates[1][0],intersectedLineCoordinates[0][1],intersectedLineCoordinates[1][1]);
-        addLineDistanceLabel(mid[0],mid[1],newLineDistance);
+       // addLineDistanceLabel(mid[0],mid[1],newLineDistance);
         //lineStringPercentageBreakDownHorizontal();
         selectDirection();
       }
@@ -1046,10 +1043,10 @@
         let l1,l2;
        
 
-        StyleCoordinatesPecentage(cX1,cY1,0,255,255);
-        displayLabelForLineStringPercentageBreakDown(cX1-5,cY1-5,percentDistance1V)
-        displayLabelForLineStringPercentageBreakDown(cX2-5,cY2+4,percentDistance2V)
-        StyleCoordinatesPecentage(cX2,cY2,255,255,0);
+        //StyleCoordinatesPecentage(cX1,cY1,0,255,255);
+        //displayLabelForLineStringPercentageBreakDown(cX1-5,cY1-5,percentDistance1V)
+        //displayLabelForLineStringPercentageBreakDown(cX2-5,cY2+4,percentDistance2V)
+        //StyleCoordinatesPecentage(cX2,cY2,255,255,0);
         
       }
       var percentDistance1H,percentDistance2H;
@@ -1104,8 +1101,8 @@
               l1 = [lineCoordinates[0][0]+2,lineCoordinates[0][1]+2];
               l2 = [lineCoordinates[1][0]+2,lineCoordinates[1][1]+2];
             }
-          displayLabelForLineStringPercentageBreakDown(l1[0],l1[1],percentDistance2H);
-          displayLabelForLineStringPercentageBreakDown(l2[0],l2[1],percentDistance1H);
+         // displayLabelForLineStringPercentageBreakDown(l1[0],l1[1],percentDistance2H);
+         // displayLabelForLineStringPercentageBreakDown(l2[0],l2[1],percentDistance1H);
         }
         else{
           if(lineCoordinates[0][0]>lineCoordinates[1][0]){
@@ -1116,12 +1113,12 @@
               l1 = [lineCoordinates[0][0]+2,lineCoordinates[0][1]+2]
               l2 = [lineCoordinates[1][0]+2,lineCoordinates[1][1]+2]
             }
-            displayLabelForLineStringPercentageBreakDown(l1[0],l1[1],percentDistance1H);
-            displayLabelForLineStringPercentageBreakDown(l2[0],l2[1],percentDistance2H);
+           // displayLabelForLineStringPercentageBreakDown(l1[0],l1[1],percentDistance1H);
+           // displayLabelForLineStringPercentageBreakDown(l2[0],l2[1],percentDistance2H);
         }
 
-        StyleCoordinatesPecentage(cX1,cY1);
-        StyleCoordinatesPecentage(cX2,cY2);
+       // StyleCoordinatesPecentage(cX1,cY1);
+       // StyleCoordinatesPecentage(cX2,cY2);
 
         
  
@@ -1293,7 +1290,7 @@
           let layersList =  map.getLayers().getArray();
           let initial= layersList.length;
           let count = 1;
-          for(let i = layersList.length-1;count<=7;i--){
+          for(let i = layersList.length-1;count<3;i--){
             map.getLayers().getArray()[i].setVisible(false);
             count++;
           }        
@@ -1496,17 +1493,16 @@
       [selectedCoordinates[1][2][0]+4,selectedCoordinates[1][2][1]+4]
     ];
 
-    if(selectedCoordinates[0][2][0]<selectedCoordinates[1][2][0]){
+    if(selectedCoordinates[0][1][0]<selectedCoordinates[1][0][0]){
       array.sort(function(a, b) {
-      return a[0] - b[0];
-    });
+        return a[0] - b[0];
+      });
       vertices[0] = [array[0][0],array[0][1]];
       vertices[vertices.length-1] = [array[1][0],array[1][1]];
     }
-
-    else{
+    if(selectedCoordinates[0][1][1]< selectedCoordinates[1][1][1]){
       vertices[0] = [array[1][0],array[1][1]];
-      vertices[vertices.length-1] =[array[0][0],array[0][1]] ;
+      vertices[vertices.length-1] =[array[0][0],array[0][1]];
     }
     
     var overlays = [];
@@ -1533,7 +1529,7 @@
     let vartexNo = document.getElementById('variableCoordinates').value;
     let area1Percent = document.getElementById('spercent1').value;
     let area2Percent = document.getElementById('spercent2').value;
-    console.log(vartexNo , " ", area1Percent , " ", area2Percent)
+    
   }
 </script>
 
