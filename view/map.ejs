@@ -307,6 +307,7 @@
 
    <!-- cut parent polygon & modify line string  -->
     <script type="text/javascript">
+      var secondPlotPercentAdj,firstPlotPercentAdj; // for adjustment
       var LineSplitterGeoJson ;
       var modify = new ol.interaction.Modify(
           {
@@ -447,6 +448,8 @@
               document.getElementById('sp_area_2').value = sp_area_2_polygon;
               childPlotArea1 = (area_sp_1*0.00002295684113).toFixed(4) 
               childPlotArea2 = (area_sp_2*0.00002295684113).toFixed(4) 
+              firstPlotPercentAdj = firstPlotPercent;
+              secondPlotPercentAdj = 100-firstPlotPercent;
           }
           else{
             clearPage();
@@ -1364,7 +1367,7 @@
     </script>
     
     <script>
-      var secondPlotPercentAdj,firstPlotPercentAdj;
+      
       function Adjustment(){
         let parentPlotArea = document.getElementById("plotTotalArea").value;
         parentPlotArea = (parseFloat(parentPlotArea)*0.00002295684113).toFixed(2);
@@ -1375,14 +1378,6 @@
         console.log(p1, " " , p2);
         let nP1 = 50-p1;
         let nP2 = 50-p2;
-        console.log(nP1 , " ", nP2);
-        if(p1>p2){
-          console.log("P1 is bigger")
-        }
-        else{
-          console.log("P2 i bigger");
-        }
-
         let c = JSON.parse(LineSplitterGeoJson).features[0].geometry.coordinates;
         let Point1 = [c[0][0],c[0][1]];
         let Point2 = [c[1][0],c[1][1]];
@@ -1392,18 +1387,24 @@
         let iPoint1 = [selectedCoordinates[1][2][0],selectedCoordinates[1][2][1]];
          
         let i = 1;
+        let bigArea,smallArea;
+        console.log(firstPlotPercentAdj , " " , secondPlotPercentAdj)
+        if(firstPlotPercentAdj>secondPlotPercentAdj){
+          bigArea   = firstPlotPercentAdj;
+          smallArea = secondPlotPercentAdj;
+        }
+        else{
+          bigArea   = secondPlotPercentAdj;
+          smallArea = firstPlotPercentAdj;
+        }
+        let areaNeeded = bigArea - smallArea;
         while(true){
           Point2 = [c[1][0]+i,c[1][1]+i];
           autoDisplayArea(Point1,Point2);
-          NewLineSplitterDisplay(Point1,Point2);
-          console.log(firstPlotPercentAdj , " " , secondPlotPercentAdj);
-          if(parseInt(firstPlotPercentAdj) == parseInt(secondPlotPercentAdj)){
-            NewLineSplitterDisplay(iPoint1,Point2);
+          if(parseInt(secondPlotPercentAdj-firstPlotPercentAdj) == 0){
+            NewLineSplitterDisplay(Point1,Point2);
             break;
           }
-         
-          else if(i == 60)break;
-
           i++;
         }
      
@@ -1444,6 +1445,7 @@
     <!-- lang lot to utm -->
 
 <script>
+ 
   function SplitOperationWithDynamicLineString(Point1,Point2){
             var plotGeoJson = JSON.parse(plotGeo);
             var poly = turf.polygon(plotGeoJson.coordinates[0]);
@@ -1472,13 +1474,13 @@
              UtmToLangLotConverter(splittedPolygonAdjust.features[0].geometry.coordinates,sp_1ShortLangLotAdj);
                const sp_area_1_polygonAdj = turf.polygon([sp_1ShortLangLotAdj]);
                const area_sp_1 = turf.area(sp_area_1_polygonAdj);
-               firstPlotPercentAdj = (area_sp_1/TotalPlotArea)*100;
+               firstPlotPercentAdj = parseInt((area_sp_1/TotalPlotArea)*100);
                document.getElementById('sA_1').innerHTML = firstPlotPercentAdj.toFixed(2)  + " %" + " (" + (area_sp_1*0.00002295684113).toFixed(4) +" acre)";
                document.getElementById('sp_area_1').value = sp_area_1_polygonAdj;
                UtmToLangLotConverter(splittedPolygonAdjust.features[1].geometry.coordinates,sp_2ShortLangLotAdj);
                const sp_area_2_polygonAdj = turf.polygon([sp_2ShortLangLotAdj]);
                const area_sp_2 = turf.area(sp_area_2_polygonAdj);
-               secondPlotPercentAdj = (100-firstPlotPercentAdj).toFixed(2)
+               secondPlotPercentAdj = parseInt((100-firstPlotPercentAdj));
                document.getElementById('sA_2').innerHTML =  (100-firstPlotPercentAdj).toFixed(2)+ "  %" + " (" + (area_sp_2*0.00002295684113).toFixed(4) +" acre)";
                document.getElementById('sp_area_2').value = sp_area_2_polygonAdj;
                childPlotArea1 = (area_sp_1*0.00002295684113).toFixed(4) 
