@@ -41,6 +41,7 @@
         <!-- <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly1()"> Plot 1 </button>
         <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly2()"> Plot 2</button> -->
         <button type="button" class="btn btn-primary m-1" onclick="clearPage()"> Reset </button>
+        <button type="button" class="btn btn-primary m-1 btn-sm" onclick="lineCoordinatesLabeling()">Line Label </button>
         <button id = "saveButton" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#confirmSave">
           Save 
         </button>
@@ -312,25 +313,6 @@
       var modify = new ol.interaction.Modify(
           {
             source: source,
-            // style: new ol.style.Style({
-            //       fill: new ol.style.Fill({
-            //               color: 'rgba(255, 255, 255, 0.2)',
-            //       }),
-            //       stroke: new ol.style.Stroke({
-            //             color: 'rgba(0, 0, 0, 0.5)',
-            //              lineDash: [10, 10],
-            //              width: 2,
-            //       }),
-            //       image: new ol.style.Circle({
-            //             radius: 6,
-            //             stroke: new ol.style.Stroke({
-            //             color: 'rgba(0, 0, 0, 0.7)',
-            //       }),
-            //       fill: new ol.style.Fill({
-            //             color: 'rgba(255, 255, 255, 0.2)',
-            //       }),
-            //     }),
-            // }),
           }
         );
               
@@ -392,11 +374,13 @@
                 draw.on("drawend",function(e){
                     var writer = new ol.format.GeoJSON();
                     LineSplitterGeoJson = writer.writeFeatures([e.feature]);
+                    
                     dynamicAreaDisplay()
                     //for intersected coordinates labeling 
                     interSectedCoordinatesLabel()
                     // for removing a last layer 
                    //RemoveSpecificLayer();
+                  // lineCoordinatesLabeling();
                     
                 });           
             }
@@ -417,6 +401,7 @@
           sp_2ShortLangLot = [];
           var format = new ol.format["GeoJSON"]();
           LineSplitterGeoJson = format.writeFeatures(source.getFeatures());
+          //lineCoordinatesLabeling()
           // for removing a layer
           RemoveSpecificLayer()
           dynamicAreaDisplay()
@@ -478,6 +463,8 @@
             var unionedLines =  turf.union(polyAsLine,makeLineGeoJson);
             const polygonized = turf.polygonize(unionedLines);
             splittedPolygon = polygonized;
+            console.log("DDD");
+            console.log(splittedPolygon);
         }
     </script>
 
@@ -906,6 +893,10 @@
           if(intersectsArray[i].features[0]){
             const coordi = intersectsArray[i].features[0].geometry.coordinates;
             intersectedLineCoordinates.push(coordi);
+            function randomNumber(min, max) {
+              return Math.random() * (max - min) + min;
+            }
+            let col =  randomNumber(0, 255);
             StyleCoordinatesInterceted(coordi[0],coordi[1]);
           }
         }
@@ -968,9 +959,9 @@
           });
             const labelonly = new ol.style.Style({
                 image: new ol.style.Circle({
-                        radius: 6,
+                        radius: 5,
                         stroke: new ol.style.Stroke({
-                        color: 'rgba(255,0,0, 1)',
+                        color: `rgba(255,0,0,1)`,
                   }),
                 }),
               });
@@ -1002,11 +993,11 @@
         let closeToAxis = "";
         if(angle<70 && angle>-70){
           closeToAxis = "Close to X axis";
-          lineStringPercentageBreakDownHorizontal();
+          //lineStringPercentageBreakDownHorizontal();
         }
         else{
           closeToAxis = "Close to Y axis";
-          lineStringPercentageBreakDownVertical();
+          //lineStringPercentageBreakDownVertical();
         }
       }
       var percentDistance1V,percentDistance2V;
@@ -1052,11 +1043,11 @@
         percentDistance2V = parseInt(100*distCoord_2Intercected/distCoord_2);
         let l1,l2;
        
-     
-        StyleCoordinatesPecentage(cX1,cY1);
+
+        StyleCoordinatesPecentage(cX1,cY1,0,255,255);
         displayLabelForLineStringPercentageBreakDown(cX1-5,cY1-5,percentDistance1V)
         displayLabelForLineStringPercentageBreakDown(cX2-5,cY2+4,percentDistance2V)
-        StyleCoordinatesPecentage(cX2,cY2);
+        StyleCoordinatesPecentage(cX2,cY2,255,255,0);
         
       }
       var percentDistance1H,percentDistance2H;
@@ -1137,7 +1128,7 @@
 
       }
 
-
+      
 
       function StyleCoordinatesPecentage(coordx,coordy){
           const labelFeature = new ol.Feature({
@@ -1145,9 +1136,9 @@
           });
             const labelonly = new ol.style.Style({
               image: new ol.style.Circle({
-                        radius: 6,
+                        radius: 5,
                         stroke: new ol.style.Stroke({
-                        color: 'rgba(255,0,0, 2)',
+                        color: `rgba(255,0,0,5)`,
                   }),
                 }),
             });
@@ -1401,6 +1392,7 @@
         while(true){
           Point2 = [c[1][0]+i,c[1][1]+i];
           autoDisplayArea(Point1,Point2);
+          // NewLineSplitterDisplay(Point1,Point2);
           if(parseInt(secondPlotPercentAdj-firstPlotPercentAdj) == 0){
             NewLineSplitterDisplay(Point1,Point2);
             break;
@@ -1493,6 +1485,46 @@
         }
 </script>
 
+<script>
+  function lineCoordinatesLabeling(){
+    let lineString = JSON.parse(LineSplitterGeoJson);
+    vertices = lineString.features[0].geometry.coordinates;
+    let array = [
+      [selectedCoordinates[0][2][0]+4,selectedCoordinates[0][2][1]+4],
+      [selectedCoordinates[1][2][0]+4,selectedCoordinates[1][2][1]+4]
+    ];
+
+    if(selectedCoordinates[0][2][0]<selectedCoordinates[1][2][0]){
+      array.sort(function(a, b) {
+      return a[0] - b[0];
+    });
+      vertices[0] = [array[0][0],array[0][1]];
+      vertices[vertices.length-1] = [array[1][0],array[1][1]];
+    }
+
+    else{
+      vertices[0] = [array[1][0],array[1][1]];
+      vertices[vertices.length-1] =[array[0][0],array[0][1]] ;
+    }
+    
+    var overlays = [];
+      for (var i = 0; i < vertices.length; i++) {
+        var overlay = new ol.Overlay({
+          position: vertices[i],
+          positioning: 'center-center',
+          element: document.createElement('div'),
+          stopEvent: false
+        });
+        overlay.getElement().innerHTML = (i + 1).toString();
+        overlays.push(overlay);
+      }
+      for (var i = 0; i < overlays.length; i++) {
+        map.addOverlay(overlays[i]);
+       
+      }
+  }
+  
+</script>
 
 
 
