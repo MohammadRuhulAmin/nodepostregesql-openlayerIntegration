@@ -380,9 +380,7 @@
                     dynamicAreaDisplay()
                     //for intersected coordinates labeling 
                     interSectedCoordinatesLabel()
-                    // for removing a last layer 
-                   //RemoveSpecificLayer();
-                  // lineCoordinatesLabeling();
+                   
                     
                 });           
             }
@@ -434,6 +432,8 @@
               childPlotArea2 = (area_sp_2*0.00002295684113).toFixed(4) 
               firstPlotPercentAdj = firstPlotPercent;
               secondPlotPercentAdj = 100-firstPlotPercent;
+              document.getElementById('spercent1').value = parseInt(firstPlotPercent);
+              document.getElementById('spercent2').value = parseInt(100-firstPlotPercent);
           }
           else{
             clearPage();
@@ -1393,7 +1393,7 @@
           autoDisplayArea(Point1,Point2);
           // NewLineSplitterDisplay(Point1,Point2);
           if(parseInt(secondPlotPercentAdj-firstPlotPercentAdj) == 0){
-            NewLineSplitterDisplay(Point1,Point2);
+            //NewLineSplitterDisplay(Point1,Point2);
             break;
           }
           i++;
@@ -1403,36 +1403,7 @@
     </script>
 
 
-  <script>
-    function NewLineSplitterDisplay(Point1,Point2){
-      var newLineString = {
-            "type": "LineString",
-           
-              "coordinates": [
-                Point1,
-                Point2
-              ],
-            
-    
-          }
-      var lineGeom  = new ol.format.GeoJSON().readGeometry(newLineString);
-          map.addLayer(
-              new ol.layer.Vector({
-                source: new ol.source.Vector({
-                  features: [new ol.Feature(lineGeom)]
-                }),
-                style: new ol.style.Style({
-                    stroke: new ol.style.Stroke({
-                      color: 'black',
-                      width: 1,
-                      opacity:0.5
-                    })
-                })
-       
-              })
-            );
-    }
-  </script>
+  
     <!-- lang lot to utm -->
 
 <script>
@@ -1485,12 +1456,13 @@
 </script>
 
 <script>
+  var vertices  ;
   function lineCoordinatesLabeling(){
     let lineString = JSON.parse(LineSplitterGeoJson);
     vertices = lineString.features[0].geometry.coordinates;
     let array = [
-      [selectedCoordinates[0][2][0]+4,selectedCoordinates[0][2][1]+4],
-      [selectedCoordinates[1][2][0]+4,selectedCoordinates[1][2][1]+4]
+      [selectedCoordinates[0][2][0],selectedCoordinates[0][2][1]],
+      [selectedCoordinates[1][2][0],selectedCoordinates[1][2][1]]
     ];
 
     if(selectedCoordinates[0][1][0]<selectedCoordinates[1][0][0]){
@@ -1529,18 +1501,42 @@
     let vartexNo = document.getElementById('variableCoordinates').value;
     let area1Percent = document.getElementById('spercent1').value;
     let area2Percent = document.getElementById('spercent2').value;
-    
+    NewLineSplitterDisplay(vertices);
   }
 </script>
-
-
+<script>
+  function NewLineSplitterDisplay(coordinatesSet){
+    var newLineString = {
+          "type": "LineString",
+            "coordinates": coordinatesSet,
+        }
+        // console.log("The line String : ");
+        // console.log(newLineString);
+    var lineGeom  = new ol.format.GeoJSON().readGeometry(newLineString);
+        map.addLayer(
+            new ol.layer.Vector({
+              source: new ol.source.Vector({
+                features: [new ol.Feature(lineGeom)]
+              }),
+              style: new ol.style.Style({
+                  stroke: new ol.style.Stroke({
+                    color: 'black',
+                    width: 1,
+                    opacity:0.5
+                  })
+              })
+     
+            })
+          );
+  }
+</script>
 
 <!-- modal for adjust function  -->
 <div class="modal fade" id="Adjust" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+          <h5 class="modal-title" id="exampleModalCenterTitle">Adjustment Operation : </h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -1549,18 +1545,18 @@
           <table class="table">
             <tr>
               <td>First Splitted Plot</td>
-              <td><input type="number" id="spercent1" /></td>
+              <td><input type="number" required id="spercent1" /></td>
               <td><span > %</span></td>
             </tr>
             <tr>
               <td>Second Splitted Plot </td>
-              <td><input type="number" id="spercent2"/></td>
+              <td><input type="number" required id="spercent2"/></td>
               <td><span>%</span></td>
             </tr>
             <tr>
               <td>Changing Position of the Coordinates </td>
               <td>
-                <input type="number" id="variableCoordinates" />
+                <input type="number" required id="variableCoordinates" />
               </td>
             </tr>
           </table>
