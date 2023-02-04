@@ -312,7 +312,7 @@
       var lowerIndex = 1;
       var leftIndex = 0;
       var rightIndex = 1;
-      var horizontalSplitOperation = false;
+      var horizontalSplitOperation;
       var secondPlotPercentAdj,firstPlotPercentAdj; // for adjustment
       var LineSplitterGeoJson;
       var modify = new ol.interaction.Modify({
@@ -394,6 +394,7 @@
             
             let a1 = tempPolygonized.features[0].geometry.coordinates[0];
             let a2 = tempPolygonized.features[1].geometry.coordinates[0];
+            horizontalSplitOperation =  identifyDirection();
             if(horizontalSplitOperation){
              
         
@@ -1695,6 +1696,18 @@
       leftIndex = 1;
       rightIndex = 0;
     }
+    
+  }
+
+  function identifyDirection(){
+    console.log(LineSplitterGeoJson)
+    let l = JSON.parse(LineSplitterGeoJson).features[0].geometry.coordinates;
+    console.log(l.length);
+    if(l[0][1]>l[l.length-1][1]){
+     
+      return false;
+    } // horizontal direction activated;
+    else return true; // vertical direction activated;
     
   }
 
