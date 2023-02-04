@@ -307,7 +307,7 @@
 
    <!-- cut parent polygon & modify line string  -->
     <script type="text/javascript">
-      var ar1,ar2;
+      var tempPolygonized;
       var upperIndex = 0;
       var lowerIndex = 1;
       var area1u,area2d;
@@ -389,26 +389,30 @@
           splitOperationWithTurf();
 
           if(splittedPolygon.features.length == 2){
-        
             
+            let a1 = tempPolygonized.features[0].geometry.coordinates[0];
+            let a2 = tempPolygonized.features[1].geometry.coordinates[0];
+            AreaIdentifyHorizontalSplit(a1,a2);
+        
               area1u = "Upper Portion";
               area2d = "Lower Portion";
                 // for upper portion 
-                UtmToLangLotConverter(splittedPolygon.features[0].geometry.coordinates,sp_1ShortLangLot);
-                console.log(sp_1ShortLangLot)
+               
+              
+                //
+                UtmToLangLotConverter(splittedPolygon.features[upperIndex].geometry.coordinates,sp_1ShortLangLot);
                 const sp_area_1_polygon = turf.polygon([sp_1ShortLangLot]);
                 const area_sp_1 = turf.area(sp_area_1_polygon);
                 var firstPlotPercent = (area_sp_1/TotalPlotArea)*100;
                 document.getElementById('sp_area_1').value = sp_area_1_polygon;
                 // for lower portion  
-                UtmToLangLotConverter(splittedPolygon.features[1].geometry.coordinates,sp_2ShortLangLot);
+                UtmToLangLotConverter(splittedPolygon.features[lowerIndex].geometry.coordinates,sp_2ShortLangLot);
                 const sp_area_2_polygon = turf.polygon([sp_2ShortLangLot]);
                 const area_sp_2 = turf.area(sp_area_2_polygon);
                 document.getElementById('sp_area_2').value = sp_area_2_polygon;
                 
                 // //========================
-                AreaIdentifyHorizontalSplit();
-                if(upperIndex == 0){
+                 
                   document.getElementById('sA_1').innerHTML = (firstPlotPercent).toFixed(2)  + " %" + " (" + (area_sp_1*0.00002295684113).toFixed(4) +" acre)";
                   document.getElementById('sA_2').innerHTML =  (100-firstPlotPercent).toFixed(2)+ "  %" + " (" + (area_sp_2*0.00002295684113).toFixed(4) +" acre)";
                   document.getElementById('area1').innerHTML = area1u;
@@ -422,28 +426,7 @@
 
                   document.getElementById('spercent1').value = parseInt(firstPlotPercent);
                   document.getElementById('spercent2').value = parseInt(100-firstPlotPercent);
-                }
-                else{
-                  console.log("IMMMMm")
-                  document.getElementById('sA_1').innerHTML = (firstPlotPercent).toFixed(2)  + " %" + " (" + (area_sp_2*0.00002295684113).toFixed(4) +" acre)";
-                  document.getElementById('sA_2').innerHTML =  (100 - firstPlotPercent).toFixed(2)+ "  %" + " (" + (area_sp_1*0.00002295684113).toFixed(4) +" acre)";
-                  document.getElementById('area1').innerHTML = area2d;
-                  document.getElementById('area2').innerHTML = area1u;
-                  document.getElementById('a1').innerHTML = area2d;
-                  document.getElementById('a2').innerHTML = area1u;
-                  childPlotArea1 = (area_sp_2*0.00002295684113).toFixed(4) 
-                  childPlotArea2 = (area_sp_1*0.00002295684113).toFixed(4) 
-                  firstPlotPercentAdj = 100-firstPlotPercent;
-                  secondPlotPercentAdj = firstPlotPercent;
-
-                  document.getElementById('spercent1').value = parseInt(100-firstPlotPercent);
-                  document.getElementById('spercent2').value = parseInt(firstPlotPercent);
-                }
-              
                 
-                
-                
-
           }
           else{
             clearPage();
@@ -471,11 +454,10 @@
 
             var unionedLines =  turf.union(polyAsLine,makeLineGeoJson);
             var polygonized = turf.polygonize(unionedLines);
+            tempPolygonized = turf.polygonize(unionedLines);
             splittedPolygon = polygonized;
-            let x1 = splittedPolygon.features[upperIndex].geometry.coordinates[0]
-            let x2 = splittedPolygon.features[lowerIndex].geometry.coordinates[0];
-            ar1 = x1;
-             ar2 = x2;
+
+            
         }
     </script>
 
@@ -496,6 +478,9 @@
               }
           }
       function DisplaySplitPoly1(){
+        let index;
+        if(upperIndex == 0) index = 0;
+        else index = 1;
                 var source_sp_1 = new ol.source.Vector({wrapX: false});
                 vector_sp_1 = new ol.layer.Vector({
                     source: source_sp_1,
@@ -520,8 +505,8 @@
                     view: new ol.View()
                 });
            
-            var geometry_sp_1 = new ol.format.GeoJSON().readGeometry(splittedPolygon.features[0].geometry);
-            spGeoJson_1.coordinates = [splittedPolygon.features[0].geometry.coordinates];
+            var geometry_sp_1 = new ol.format.GeoJSON().readGeometry(splittedPolygon.features[index].geometry);
+            spGeoJson_1.coordinates = [splittedPolygon.features[index].geometry.coordinates];
             // for saving perpous
             document.getElementById('spGeoJson_1').value = JSON.stringify(spGeoJson_1);
             
@@ -555,7 +540,7 @@
               )
               map_sp_1.getView().fit(geometry_sp_1);
               sp_1ShortLangLot = []
-              UtmToLangLotConverter(splittedPolygon.features[0].geometry.coordinates,sp_1ShortLangLot);
+              UtmToLangLotConverter(splittedPolygon.features[index].geometry.coordinates,sp_1ShortLangLot);
               const sp_area_1_polygon = turf.polygon([sp_1ShortLangLot]);
               const area_sp_1 = turf.area(sp_area_1_polygon);
               document.getElementById('area_sp_1').innerHTML = "Area : " + (area_sp_1*0.00002295684113).toFixed(4)+ " acre ";
@@ -650,7 +635,7 @@
             );
       }
       
-       var spVartex_1 =splittedPolygon.features[0].geometry.coordinates[0];
+       var spVartex_1 =splittedPolygon.features[index].geometry.coordinates[0];
        
        for(let i = 0;i<spVartex_1.length;i++){
           StyleCoordinatesOnSp_plot_1(spVartex_1[i][0],spVartex_1[i][1]);
@@ -673,6 +658,8 @@
             "type":"MultiPolygon"
         }
        function DisplaySplitPoly2(){
+        let index = 0; 
+        if(lowerIndex == 1)index = 1;
           var source_sp_2 = new ol.source.Vector({wrapX: false});
           var vector_sp_2 = new ol.layer.Vector({
               source: source_sp_2,
@@ -699,8 +686,8 @@
     
 
   
-        var geometry_sp_2 = new ol.format.GeoJSON().readGeometry(splittedPolygon.features[1].geometry);
-        console.log(splittedPolygon.features[1].geometry);
+        var geometry_sp_2 = new ol.format.GeoJSON().readGeometry(splittedPolygon.features[index].geometry);
+        console.log(splittedPolygon.features[index].geometry);
         map_sp_2.addLayer(
             new ol.layer.Vector({
               source: new ol.source.Vector({
@@ -730,11 +717,11 @@
         
           )
           sp_2ShortLangLot = []
-          UtmToLangLotConverter(splittedPolygon.features[1].geometry.coordinates,sp_2ShortLangLot);
+          UtmToLangLotConverter(splittedPolygon.features[index].geometry.coordinates,sp_2ShortLangLot);
           const sp_area_2_polygon = turf.polygon([sp_2ShortLangLot]);
           const area_sp_2 = turf.area(sp_area_2_polygon);
           document.getElementById('area_sp_2').innerHTML = "Area : " + (area_sp_2*0.00002295684113).toFixed(4) + " acre ";
-          spGeoJson_2.coordinates = [splittedPolygon.features[1].geometry.coordinates];
+          spGeoJson_2.coordinates = [splittedPolygon.features[index].geometry.coordinates];
           // label for splitted polygon -2 
           var midPointArray_sp_plot_2 = [];
           var coordinateDistance_sp_plot_2 = [];
@@ -836,7 +823,7 @@
             );
       }
       
-       var spVartex_2 =splittedPolygon.features[1].geometry.coordinates[0];
+       var spVartex_2 =splittedPolygon.features[index].geometry.coordinates[0];
        
        for(let i = 0;i<spVartex_2.length;i++){
           StyleCoordinatesOnSp_plot_2(spVartex_2[i][0],spVartex_2[i][1]);
@@ -1633,24 +1620,24 @@
 </script>
 <script>
   
+  function columnStore(arr){
+    let carr = [];
+    for(let i = 0;i<arr.length;i++){
+      carr.push(arr[i][1]);
+    }
+    return carr;
+  }
 
-  function AreaIdentifyHorizontalSplit(){
-
-    ar1.sort(function(a,b){
-      return a[1] -b[1];
-    })
-    ar2.sort(function(a,b){
-      return a[1]-b[1];
-    })
-    console.log(ar1 , " " , ar2);
-    let yU_max = ar1[ar1.length-1][1];
-    let yD_max = ar2[ar2.length-1][1];
-    console.log("--" , yU_max , " " , yD_max)
-    if(yU_max < yD_max){
+  function AreaIdentifyHorizontalSplit(ct1,ct2){
+    console.log("ooooooooo")
+    
+    let p1 = columnStore(ct1).sort();
+    let p2 = columnStore(ct2).sort();
+    if(p1[0]<p2[0]){
       upperIndex = 1;
       lowerIndex = 0;
     }
-   
+    
 
   }
 </script>
