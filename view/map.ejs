@@ -32,8 +32,10 @@
 
       </div>
       
-      <button class="btn btn-success" id="type" onclick="typeSelectFunction();typeSelectOnChange()"><b>/</b></button> 
-    
+      <!-- <button class="btn btn-success" id="type" onclick="typeSelectFunction();typeSelectOnChange()"><b>/</b></button>  -->
+      <button type="button" id="type" class="btn btn-success" data-toggle="modal" data-target="#LineDraw">
+        <b>/</b>
+      </button>
       <div class="btn-group" role="group" aria-label="Basic example">
         <button type="button" id="cutButton" class="btn btn-success m-1" onclick="splitOperationWithTurf();DisplaySplitPoly1();DisplaySplitPoly2();buttonEnableDisable();displayCutMessage()" > Split </button>
         <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#Adjust">
@@ -422,6 +424,8 @@
                   document.getElementById('area2').innerHTML = area2d;
                   document.getElementById('a1').innerHTML = area1u;
                   document.getElementById('a2').innerHTML = area2d;
+                  document.getElementById('splitPortion1').innerHTML = area1u;
+                  document.getElementById('splitPortion2').innerHTML = area2d;
                   childPlotArea1 = (area_sp_1*0.00002295684113).toFixed(4) 
                   childPlotArea2 = (area_sp_2*0.00002295684113).toFixed(4) 
                   firstPlotPercentAdj = firstPlotPercent;
@@ -448,6 +452,8 @@
                   document.getElementById('sA_2').innerHTML =  (100-firstPlotPercent).toFixed(2)+ "  %" + " (" + (area_sp_2*0.00002295684113).toFixed(4) +" acre)";
                   document.getElementById('area1').innerHTML = area1L;
                   document.getElementById('area2').innerHTML = area2R;
+                  document.getElementById('splitPortion1').innerHTML = area1L;
+                  document.getElementById('splitPortion2').innerHTML = area2R;
                   document.getElementById('a1').innerHTML = area1L;
                   document.getElementById('a2').innerHTML = area2R;
                   childPlotArea1 = (area_sp_1*0.00002295684113).toFixed(4);
@@ -1700,15 +1706,17 @@
   }
 
   function identifyDirection(){
-    console.log(LineSplitterGeoJson)
-    let l = JSON.parse(LineSplitterGeoJson).features[0].geometry.coordinates;
-    console.log(l.length);
-    if(l[0][1]>l[l.length-1][1]){
-     
-      return false;
-    } // horizontal direction activated;
-    else return true; // vertical direction activated;
     
+    var ele = document.getElementsByName('LineSplitterType');
+    let temp ;
+    for(i = 0; i < ele.length; i++) {
+        if(ele[i].checked){
+           temp = ele[i].value;
+        }       
+    }
+    console.log(temp);
+    if(temp == "HorizontalLine")return true;
+    return false;
   }
 
 </script>
@@ -1725,12 +1733,12 @@
         <div class="modal-body">
           <table class="table">
             <tr>
-              <td>First Splitted Plot</td>
+              <td><span id="splitPortion1"></span></td>
               <td><input type="number" required id="spercent1" /></td>
               <td><span > %</span></td>
             </tr>
             <tr>
-              <td>Second Splitted Plot </td>
+              <td><span id="splitPortion2"></span> </td>
               <td><input type="number" required id="spercent2"/></td>
               <td><span>%</span></td>
             </tr>
@@ -1781,6 +1789,40 @@
 </div>
 
 
+
+
+<!-- Modal -->
+<div class="modal fade" id="LineDraw" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered" role="document">
+   <div class="modal-content">
+       <div class="modal-header">
+         <h5 class="modal-title" id="exampleModalCenterTitle">Line Type  </h5>
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+           <span aria-hidden="true">&times;</span>
+         </button>
+       </div>
+       <div class="modal-body">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="LineSplitterType" value="HorizontalLine" id="HorizontalLine"/>
+          <label class="form-check-label" for="flexRadioDefault1"> Horizontal Line </label>
+        </div>
+        
+        <!-- Default checked radio -->
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="LineSplitterType" value="VerticalLine" id="VerticalLine" checked/>
+          <label class="form-check-label" for="flexRadioDefault2"> Vertical Line </label>
+        </div>
+      
+       </div>
+       <div class="modal-footer">
+         
+         <button type="submit"  onclick="typeSelectFunction();typeSelectOnChange();" class="btn btn-primary" data-dismiss="modal"> Draw </button>
+       </div>
+   </div>
+ </div>
+</div>
+
+
 <!-- Modal for N Equal Splitted polygon  -->
 <!-- Button trigger modal -->
 
@@ -1800,7 +1842,7 @@
       </div>
       <div class="modal-footer">
         
-        <button class="btn btn-success m-1"  data-dismiss="modal"  onclick="nDivisionLayer();"> Equal Split  </button> 
+        <button class="btn btn-success m-1"  data-dismiss="modal"  onclick="nDivisionLayer();">ES  </button> 
       </div>
     </div>
   </div>
