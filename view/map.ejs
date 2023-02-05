@@ -394,7 +394,6 @@
           splitOperationWithTurf();
           
           if(splittedPolygon.features.length == 2){
-            
             let a1 = tempPolygonized.features[0].geometry.coordinates[0];
             let a2 = tempPolygonized.features[1].geometry.coordinates[0];
             horizontalSplitOperation =  identifyDirection();
@@ -429,8 +428,8 @@
                   document.getElementById('splitPortion2').innerHTML = area2d;
                   childPlotArea1 = (area_sp_1*0.00002295684113).toFixed(4) 
                   childPlotArea2 = (area_sp_2*0.00002295684113).toFixed(4) 
-                  firstPlotPercentAdj = firstPlotPercent;
-                  secondPlotPercentAdj = 100-firstPlotPercent;
+                  firstPlotPercentAdj = parseInt(firstPlotPercent);
+                  secondPlotPercentAdj = parseInt(100-firstPlotPercent);
 
                   document.getElementById('spercent1').value = parseInt(firstPlotPercent);
                   document.getElementById('spercent2').value = parseInt(100-firstPlotPercent);
@@ -1489,7 +1488,6 @@
                childPlotArea2 = (area_sp_2*0.00002295684113).toFixed(4) 
            }
            else{
-            //  clearPage();
             console.log("This coordinate cannot be taken")
            }
         }
@@ -1538,14 +1536,64 @@
 
 <script>
   function specificAdjustFunction(){
-   
+    
+    console.log(firstPlotPercentAdj , " " , secondPlotPercentAdj)
     let area1Percent = document.getElementById('spercent1').value;
     let areaType1 = document.getElementById('splitPortion1').innerText;
     let area2Percent = document.getElementById('spercent2').value;
     let areaType2 = document.getElementById('splitPortion2').innerText;
 
 
-    console.log(areaType1 , area1Percent, " " , areaType2, area2Percent);
+    let prevPercentJson = {
+      areaType1 : areaType1,
+      areaType1Percent : parseInt(firstPlotPercentAdj),
+      areaType2: areaType2,
+      areaType2Percent : parseInt(secondPlotPercentAdj)
+    };
+
+    var requiredPercentJson = {
+      areaType1 : areaType1,
+      areaType1Percent:parseInt(area1Percent),
+      areaType2 : areaType2,
+      areaType2Percent:  parseInt(area2Percent)
+    }
+
+    console.log(requiredPercentJson.areaType1)
+    let area1Status = requiredPercentJson.areaType1Percent - prevPercentJson.areaType1Percent;
+    let c = JSON.parse(LineSplitterGeoJson).features[0].geometry.coordinates;
+    if(LineType == "HorizontalLine"){
+      // upper portion condition 
+     
+      let point1 = [selectedCoordinates[0][2][0],selectedCoordinates[0][2][1]];
+      let point2 = [selectedCoordinates[1][2][0],selectedCoordinates[1][2][1]];
+      let pointArray = [point1,point2];
+      pointArray.sort(function(a,b){
+        return a[0]-b[0];
+      })
+      pointArray[1][0] = pointArray[1][0]+200;
+
+      if(area1Status<0){
+        let i = 1;
+        while(true){
+          if(i == 200)break;
+          if(requiredPercentJson.areaType1Percent == firstPlotPercentAdj)break;
+          else{
+
+            pointArray[1][0] = pointArray[1][0]+i;
+            pointArray[1][1] = pointArray[1][1]+i;
+            NewLineSplitterDisplay(pointArray);
+            autoDisplayArea(pointArray);
+            i++;
+          }
+        }
+        
+         
+         
+      }
+    }
+    else{
+
+    }
     
  
 
