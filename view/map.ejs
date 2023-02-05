@@ -45,7 +45,7 @@
         <!-- <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly1()"> Plot 1 </button>
         <button type="button" class="btn btn-success m-1" onclick="DisplaySplitPoly2()"> Plot 2</button> -->
         <button type="button" class="btn btn-primary m-1" onclick="clearPage()"> Reset </button>
-        <button type="button" class="btn btn-primary m-1 btn-sm" onclick="lineCoordinatesLabeling()">Line Label </button>
+        <!-- <button type="button" class="btn btn-primary m-1 btn-sm" onclick="lineCoordinatesLabeling()">Line Label </button> -->
         <button id = "saveButton" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#confirmSave">
           Save 
         </button>
@@ -112,6 +112,7 @@
 
     <!-- script for display parent plot  -->
    <script type="text/javascript">
+    var LineType;
       var childPlotArea1,childPlotArea2;
       //const utm = "+proj=cass";
       const utm = "+proj=utm +zone=32";
@@ -1031,24 +1032,11 @@
      <!-- function for line string percentage Horizontal  -->
      <script>
       function selectDirection(){
-        let y2 = lineCoordinates[1][1];
-        let y1 = lineCoordinates[0][1];
-        let x2 = lineCoordinates[1][0];
-        let x1 = lineCoordinates[0][0];
-        let m = (y2-y1)/(x2-x1);
-        let angle = Math.atan(m)*57.2958;
-        console.log("Degree : "+ angle);
-        //console.log(lineCoordinates);
-        let angularDistanceX = angle - 0;
-        let angularDistanceY = 90-angle;
-        let closeToAxis = "";
-        if(angle<70 && angle>-70){
-          closeToAxis = "Close to X axis";
-          //lineStringPercentageBreakDownHorizontal();
+        if(LineType == "HorizontalLine"){
+          lineStringPercentageBreakDownHorizontal();
         }
         else{
-          closeToAxis = "Close to Y axis";
-          //lineStringPercentageBreakDownVertical();
+          lineStringPercentageBreakDownVertical();
         }
       }
       var percentDistance1V,percentDistance2V;
@@ -1095,10 +1083,10 @@
         let l1,l2;
        
 
-        //StyleCoordinatesPecentage(cX1,cY1,0,255,255);
-        //displayLabelForLineStringPercentageBreakDown(cX1-5,cY1-5,percentDistance1V)
-        //displayLabelForLineStringPercentageBreakDown(cX2-5,cY2+4,percentDistance2V)
-        //StyleCoordinatesPecentage(cX2,cY2,255,255,0);
+        StyleCoordinatesPecentage(cX1,cY1,0,255,255);
+        displayLabelForLineStringPercentageBreakDown(cX1-5,cY1-5,percentDistance1V)
+        displayLabelForLineStringPercentageBreakDown(cX2-5,cY2+4,percentDistance2V)
+        StyleCoordinatesPecentage(cX2,cY2,255,255,0);
         
       }
       var percentDistance1H,percentDistance2H;
@@ -1153,8 +1141,8 @@
               l1 = [lineCoordinates[0][0]+2,lineCoordinates[0][1]+2];
               l2 = [lineCoordinates[1][0]+2,lineCoordinates[1][1]+2];
             }
-         // displayLabelForLineStringPercentageBreakDown(l1[0],l1[1],percentDistance2H);
-         // displayLabelForLineStringPercentageBreakDown(l2[0],l2[1],percentDistance1H);
+          displayLabelForLineStringPercentageBreakDown(l1[0],l1[1],percentDistance2H);
+          displayLabelForLineStringPercentageBreakDown(l2[0],l2[1],percentDistance1H);
         }
         else{
           if(lineCoordinates[0][0]>lineCoordinates[1][0]){
@@ -1165,12 +1153,12 @@
               l1 = [lineCoordinates[0][0]+2,lineCoordinates[0][1]+2]
               l2 = [lineCoordinates[1][0]+2,lineCoordinates[1][1]+2]
             }
-           // displayLabelForLineStringPercentageBreakDown(l1[0],l1[1],percentDistance1H);
-           // displayLabelForLineStringPercentageBreakDown(l2[0],l2[1],percentDistance2H);
+            displayLabelForLineStringPercentageBreakDown(l1[0],l1[1],percentDistance1H);
+            displayLabelForLineStringPercentageBreakDown(l2[0],l2[1],percentDistance2H);
         }
 
-       // StyleCoordinatesPecentage(cX1,cY1);
-       // StyleCoordinatesPecentage(cX2,cY2);
+        StyleCoordinatesPecentage(cX1,cY1);
+        StyleCoordinatesPecentage(cX2,cY2);
 
         
  
@@ -1342,7 +1330,7 @@
           let layersList =  map.getLayers().getArray();
           let initial= layersList.length;
           let count = 1;
-          for(let i = layersList.length-1;count<3;i--){
+          for(let i = layersList.length-1;count<8;i--){
             map.getLayers().getArray()[i].setVisible(false);
             count++;
           }        
@@ -1507,7 +1495,7 @@
         }
 </script>
 
-<script>
+<!-- <script>
   var vertices  ;
   function lineCoordinatesLabeling(){
     let lineString = JSON.parse(LineSplitterGeoJson);
@@ -1546,100 +1534,20 @@
       }
   }
   
-</script>
+</script> -->
 
 <script>
   function specificAdjustFunction(){
-    let vartexNo = document.getElementById('variableCoordinates').value -1;
-    let area1Percent = document.getElementById('spercent1').value;
-    let area2Percent = document.getElementById('spercent2').value;
-    let c = vertices[vartexNo];
-       let currentBigArea,currentSmallArea;
-       if(firstPlotPercentAdj>secondPlotPercentAdj){
-        currentBigArea = firstPlotPercentAdj;
-        currentSmallArea = secondPlotPercentAdj;
-       }
-       else{
-        currentBigArea = secondPlotPercentAdj;
-        currentSmallArea = firstPlotPercentAdj;
-       }
-
-       let givenBigArea,givenSmallArea;
-       if(area1Percent>area2Percent){
-        givenBigArea = area1Percent;
-        givenSmallArea = area2Percent;
-       }
-       else{
-        givenBigArea = area2Percent;
-        givenSmallArea = area1Percent;
-       }
-       let needBigAreaDecrement = currentBigArea- givenBigArea; // if minus result , big area will be incremented 
-       let needSmallAreaIncrement = Math.abs(currentSmallArea-givenSmallArea); 
-       console.log(needBigAreaDecrement , " " , needSmallAreaIncrement);
-       autoDisplayArea(vertices);
    
-         let rNode = c;
-         let c1 = [rNode[0]+1,rNode[1]];
-         vertices[vartexNo] = c1;
-         NewLineSplitterDisplay(vertices);
-         autoDisplayArea(vertices);
-         console.log(firstPlotPercentAdj , " " , secondPlotPercentAdj);
-         let c2 = [rNode[0],rNode[1]+1];
-         vertices[vartexNo] = c2;
-         NewLineSplitterDisplay(vertices);
-         autoDisplayArea(vertices);
-         console.log(firstPlotPercentAdj , " " , secondPlotPercentAdj);
-         let c3 = [rNode[0]-1,rNode[1]];
-         vertices[vartexNo] = c3;
-         NewLineSplitterDisplay(vertices);
-         autoDisplayArea(vertices);
-         console.log(firstPlotPercentAdj , " " , secondPlotPercentAdj);
-         let c4 = [rNode[0],rNode[1]-1];
-         vertices[vartexNo] = c4;
-         NewLineSplitterDisplay(vertices);
-         autoDisplayArea(vertices);
-         console.log(firstPlotPercentAdj , " " , secondPlotPercentAdj);
-         let c5 = [rNode[0]+1,rNode[1]+1];
-         vertices[vartexNo] = c5;
-         NewLineSplitterDisplay(vertices);
-         autoDisplayArea(vertices);
-         console.log(firstPlotPercentAdj , " " , secondPlotPercentAdj);
-         let c6 = [rNode[0]-1,rNode[1]-1];
-         vertices[vartexNo] = c6;
-         NewLineSplitterDisplay(vertices);
-         autoDisplayArea(vertices);
-         console.log(firstPlotPercentAdj , " " , secondPlotPercentAdj);
-      
+    let area1Percent = document.getElementById('spercent1').value;
+    let areaType1 = document.getElementById('splitPortion1').innerText;
+    let area2Percent = document.getElementById('spercent2').value;
+    let areaType2 = document.getElementById('splitPortion2').innerText;
 
-       
 
-      
+    console.log(areaType1 , area1Percent, " " , areaType2, area2Percent);
     
-       
-       vertices[vartexNo] = c1;
-       NewLineSplitterDisplay(vertices);
-       autoDisplayArea(vertices)
-     
-       vertices[vartexNo] = c2;
-       NewLineSplitterDisplay(vertices);
-       autoDisplayArea(vertices);
-     
-       vertices[vartexNo] = c3;
-       NewLineSplitterDisplay(vertices);
-       autoDisplayArea(vertices);
-       
-       vertices[vartexNo] = c4;
-       NewLineSplitterDisplay(vertices);
-       autoDisplayArea(vertices);
-       
-       vertices[vartexNo] = c5;
-       NewLineSplitterDisplay(vertices);
-       autoDisplayArea(vertices);
-       
-       
-       NewLineSplitterDisplay(vertices);
-       autoDisplayArea(vertices);
-      
+ 
 
     
     
@@ -1715,8 +1623,14 @@
         }       
     }
     console.log(temp);
-    if(temp == "HorizontalLine")return true;
-    return false;
+    if(temp == "HorizontalLine"){
+      LineType = "HorizontalLine";
+      return true;
+    }
+    else{
+      LineType = "VerticalLine"
+      return false;
+    }
   }
 
 </script>
@@ -1742,12 +1656,7 @@
               <td><input type="number" required id="spercent2"/></td>
               <td><span>%</span></td>
             </tr>
-            <tr>
-              <td>Changing Position of the Coordinates </td>
-              <td>
-                <input type="number" required id="variableCoordinates" />
-              </td>
-            </tr>
+         
           </table>
         </div>
         <div class="modal-footer">
