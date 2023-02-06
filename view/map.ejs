@@ -1328,8 +1328,9 @@
       function RemoveSpecificLayer(){
           let layersList =  map.getLayers().getArray();
           let initial= layersList.length;
+          
           let count = 1;
-          for(let i = layersList.length-1;count<8;i--){
+          for(let i = layersList.length-1;count<7;i--){
             map.getLayers().getArray()[i].setVisible(false);
             count++;
           }        
@@ -1512,7 +1513,11 @@
             point2[1]++;
             autoDisplayArea([point1,point2]);
         }
+        map.removeLayer(vector_string);
+        RemoveSpecificLayer();
         NewLineSplitterDisplay([point1,point2]);
+        DisplaySplitPoly1();
+        DisplaySplitPoly2();
       }
       else{
         while(firstPlotPercentAdj < requiredPercentJson.areaType1Percent){
@@ -1521,7 +1526,11 @@
           point2[1]--;
           autoDisplayArea([point1,point2]);
         }
+        map.removeLayer(vector_string);
+        RemoveSpecificLayer();
         NewLineSplitterDisplay([point1,point2]);
+        DisplaySplitPoly1();
+        DisplaySplitPoly2();
       }
     
 
@@ -1536,7 +1545,11 @@
             point2[0]--;
             autoDisplayArea([point1,point2]);
         }
+        map.removeLayer(vector_string);
+        RemoveSpecificLayer();
         NewLineSplitterDisplay([point1,point2]);
+        DisplaySplitPoly1();
+        DisplaySplitPoly2();
       }
       else{
         while(firstPlotPercentAdj < requiredPercentJson.areaType1Percent){
@@ -1545,7 +1558,12 @@
           point2[0]++;
           autoDisplayArea([point1,point2]);
         }
+        map.removeLayer(vector_string);
+        RemoveSpecificLayer();
         NewLineSplitterDisplay([point1,point2]);
+        DisplaySplitPoly1();
+        DisplaySplitPoly2();
+        
       }
     }
     
@@ -1571,7 +1589,7 @@
               }),
               style: new ol.style.Style({
                   stroke: new ol.style.Stroke({
-                    color: 'black',
+                    color: 'red',
                     width: 1,
                     opacity:0.5
                   })
@@ -1719,7 +1737,6 @@
       return false;
     }
   }
-
 </script>
 <!-- modal for adjust function  -->
 <div class="modal fade" id="Adjust" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
