@@ -453,7 +453,7 @@
                   document.getElementById('area1').innerHTML = area1L;
                   document.getElementById('area2').innerHTML = area2R;
                   document.getElementById('splitPortion1').innerHTML = area1L;
-                  document.getElementById('splitPortion2').innerHTML = area2R;
+                  //document.getElementById('splitPortion2').innerHTML = area2R;
                   document.getElementById('a1').innerHTML = area1L;
                   document.getElementById('a2').innerHTML = area2R;
                   childPlotArea1 = (area_sp_1*0.00002295684113).toFixed(4);
@@ -1495,7 +1495,7 @@
     var requiredPercentJson = {
       areaType1 : areaType1,
       areaType1Percent:parseInt(area1Percent),
-      areaType2 : areaType2,
+      //areaType2 : areaType2,
       areaType2Percent:  parseInt(area2Percent)
     }
 
@@ -1529,6 +1529,7 @@
         map.removeLayer(vector_string);
         RemoveSpecificLayer();
         NewLineSplitterDisplay([point1,point2]);
+        
         DisplaySplitPoly1();
         DisplaySplitPoly2();
       }
@@ -1597,6 +1598,7 @@
      
             })
           );
+          interSectedCoordinatesLabelForAdjust(newLineString);
   }
 </script>
 
@@ -1663,7 +1665,7 @@
                   document.getElementById('area1').innerHTML = area1L;
                   document.getElementById('area2').innerHTML = area2R;
                   document.getElementById('splitPortion1').innerHTML = area1L;
-                  document.getElementById('splitPortion2').innerHTML = area2R;
+                  //document.getElementById('splitPortion2').innerHTML = area2R;
                   document.getElementById('a1').innerHTML = area1L;
                   document.getElementById('a2').innerHTML = area2R;
                   childPlotArea1 = (area_sp_1*0.00002295684113).toFixed(4);
@@ -1738,6 +1740,51 @@
     }
   }
 </script>
+
+
+<!-- function for adjusted intersected coordinates labeling  -->
+<script>
+      function interSectedCoordinatesLabelForAdjust(NewLineString){
+        console.log(NewLineString.coordinates);
+        //selectedCoordinates = [];
+        const coordinatesNList = [];
+        const plot = JSON.parse(plotGeo);
+        let lineCoordinates = NewLineString.coordinates;
+        console.log(lineCoordinates)
+        let lineString = turf.lineString(lineCoordinates);
+        let intersectsArray = [];
+        let plotCoordinates = plot.coordinates[0][0];
+        for(let i = 1;i<plotCoordinates.length;i++){
+          let x1 = plotCoordinates[i-1][0];
+          let x2 = plotCoordinates[i][0];
+          let y1 = plotCoordinates[i-1][1];
+          let y2 = plotCoordinates[i][1];
+          let polyLineString = turf.lineString([[x1,y1],[x2,y2]]);
+          let tx = turf.lineIntersect(lineString, polyLineString);
+          if(tx.features.length !=0){
+            // [x1,y1] first coordinate // [x2,y2] second coordinate  // [x3,y3] middle coordinates 
+            let xo = tx.features[0].geometry.coordinates[0];
+            let yo = tx.features[0].geometry.coordinates[1];
+            //selectedCoordinates.push([[x1,y1],[x2,y2],[xo,yo]]);
+            
+          }
+          intersectsArray.push(tx);
+        }
+        let intersectedLineCoordinates = [];
+        for(let i = 0;i<intersectsArray.length;i++){
+          if(intersectsArray[i].features[0]){
+            const coordi = intersectsArray[i].features[0].geometry.coordinates;
+            intersectedLineCoordinates.push(coordi);
+            StyleCoordinatesInterceted(coordi[0],coordi[1]);
+          }
+        }
+        console.log(intersectedLineCoordinates);
+        let newLineDistance =  lineStringDistance(intersectedLineCoordinates);
+        let mid   = midPoint(intersectedLineCoordinates[0][0],intersectedLineCoordinates[1][0],intersectedLineCoordinates[0][1],intersectedLineCoordinates[1][1]);
+      }
+
+
+</script>
 <!-- modal for adjust function  -->
 <div class="modal fade" id="Adjust" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
@@ -1756,9 +1803,9 @@
               <td><span > %</span></td>
             </tr>
             <tr>
-              <td><span id="splitPortion2"></span> </td>
-              <td><input type="number" required id="spercent2"/></td>
-              <td><span>%</span></td>
+              <td><input type="hidden" id="splitPortion2"></span> </td>
+              <td><input type="hidden"  value="100" required id="spercent2"/></td>
+              <td></td>
             </tr>
          
           </table>
