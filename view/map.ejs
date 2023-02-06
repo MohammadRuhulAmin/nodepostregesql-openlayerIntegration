@@ -49,7 +49,9 @@
         <button id = "saveButton" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#confirmSave">
           Save 
         </button>
-
+        <!-- <button id = "saveButton" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#confirmSaveAdj">
+          Save Adj 
+        </button> -->
        <!-- <form action="/saveEqualSplitedPolygon" method="post">
           <input type="hidden" id="NSplittedGeoJsons" value="xxxxx" name="NSplittedGeoJsons" />
           <button type="submit" class="btn btn-danger m-1 btn-small">Save_ES</button>
@@ -506,7 +508,7 @@
       var sp_1CoordinatesLangLot = [];
          var spGeoJson_1 = {
             "type":"MultiPolygon"
-        }
+         }
         function sp_1CoordinateLangLotConverter(){
               for(let i = 0;i<spGeoJson_1.coordinates[0][0].length;i++){
                 //const utm = "+proj=utm +zone=32";
@@ -1466,6 +1468,7 @@
             splittedPolygonAdjust = polygonized;
             console.log("Splitted");
             console.log(splittedPolygonAdjust);
+
         }
         
     
@@ -1850,6 +1853,7 @@
     </div>
   </div>
 </div>
+
 
 
 
