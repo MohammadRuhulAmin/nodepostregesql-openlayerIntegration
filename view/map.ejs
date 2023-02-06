@@ -954,9 +954,9 @@
         console.log(intersectedLineCoordinates);
         let newLineDistance =  lineStringDistance(intersectedLineCoordinates);
         let mid   = midPoint(intersectedLineCoordinates[0][0],intersectedLineCoordinates[1][0],intersectedLineCoordinates[0][1],intersectedLineCoordinates[1][1]);
-       // addLineDistanceLabel(mid[0],mid[1],newLineDistance);
+        addLineDistanceLabel(mid[0],mid[1],newLineDistance);
         //lineStringPercentageBreakDownHorizontal();
-        selectDirection();
+       // selectDirection();
       }
 
       function ToLatLong(coordx,coordy){
@@ -1781,6 +1781,9 @@
         console.log(intersectedLineCoordinates);
         let newLineDistance =  lineStringDistance(intersectedLineCoordinates);
         let mid   = midPoint(intersectedLineCoordinates[0][0],intersectedLineCoordinates[1][0],intersectedLineCoordinates[0][1],intersectedLineCoordinates[1][1]);
+        // let newLineDistance =  lineStringDistance(intersectedLineCoordinates);
+        // let mid   = midPoint(intersectedLineCoordinates[0][0],intersectedLineCoordinates[1][0],intersectedLineCoordinates[0][1],intersectedLineCoordinates[1][1]);
+        addLineDistanceLabel(mid[0],mid[1],newLineDistance);
       }
 
 
