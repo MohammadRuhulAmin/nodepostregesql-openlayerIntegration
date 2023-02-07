@@ -75,6 +75,9 @@
       <li class="list-group-item"> <span id="area1"></span> <span id="sA_1"></li>
       <li class="list-group-item"><span id="area2"></span> <span id="sA_2"></li>
     </ul>
+    <ul class="list-group list-group-horizontal m-2">
+      <li class="list-group-item"><span class="text-danger" id="invalidAdjustMessage"></span></li>
+    </ul>
     <div id="map" class="map"></div>
     <input type="hidden" id="combineGeoJson" value="<%=combineGeoJson %>" />
     <input id="plotInfo" type="hidden" value="<%=plotInfo %>"/>
@@ -115,6 +118,7 @@
     <!-- script for display parent plot  -->
    <script type="text/javascript">
     var LineType;
+    var adjustFunctionHitted = false;
       var childPlotArea1,childPlotArea2;
       //const utm = "+proj=cass";
       const utm = "+proj=utm +zone=32";
@@ -528,7 +532,10 @@
           if(upperIndex == 0) index = 0;
         }
         
-     
+          
+        if(adjustFunctionHitted)splittedPolygon =  splittedPolygonAdjust;
+       
+                
                 var source_sp_1 = new ol.source.Vector({wrapX: false});
                 vector_sp_1 = new ol.layer.Vector({
                     source: source_sp_1,
@@ -706,6 +713,7 @@
             "type":"MultiPolygon"
         }
        function DisplaySplitPoly2(){
+        if(adjustFunctionHitted)splittedPolygon =  splittedPolygonAdjust;
         let index = 0; 
         if(!horizontalSplitOperation){
           if(rightIndex == 1) index = 1;
@@ -713,6 +721,7 @@
         else{
           if(lowerIndex == 1)index = 1;
         }
+    
         
         
           var source_sp_2 = new ol.source.Vector({wrapX: false});
@@ -958,7 +967,7 @@
         let mid   = midPoint(intersectedLineCoordinates[0][0],intersectedLineCoordinates[1][0],intersectedLineCoordinates[0][1],intersectedLineCoordinates[1][1]);
         addLineDistanceLabel(mid[0],mid[1],newLineDistance);
         //lineStringPercentageBreakDownHorizontal();
-       // selectDirection();
+        selectDirection();
       }
 
       function ToLatLong(coordx,coordy){
@@ -1332,7 +1341,7 @@
           let initial= layersList.length;
           
           let count = 1;
-          for(let i = layersList.length-1;count<7;i--){
+          for(let i = layersList.length-1;count<8;i--){
             map.getLayers().getArray()[i].setVisible(false);
             count++;
           }        
@@ -1398,58 +1407,13 @@
        
     </script>
     
-    <script>
-      
-      function Adjustment(){
-        let parentPlotArea = document.getElementById("plotTotalArea").value;
-        parentPlotArea = (parseFloat(parentPlotArea)*0.00002295684113).toFixed(2);
-        console.log(childPlotArea1);
-        console.log(childPlotArea2);
-        let p1 = (childPlotArea1/parentPlotArea)*100;
-        let p2 =(childPlotArea2/parentPlotArea)*100;
-        console.log(p1, " " , p2);
-        let nP1 = 50-p1;
-        let nP2 = 50-p2;
-        let c = JSON.parse(LineSplitterGeoJson).features[0].geometry.coordinates;
-        let Point1 = [c[0][0],c[0][1]];
-        let Point2 = [c[1][0],c[1][1]];
-
-        
-        //let iPoint1 = [selectedCoordinates[0][2][0],selectedCoordinates[0][2][1]];
-        let iPoint1 = [selectedCoordinates[1][2][0],selectedCoordinates[1][2][1]];
-         
-        let i = 1;
-        let bigArea,smallArea;
-        console.log(firstPlotPercentAdj , " " , secondPlotPercentAdj)
-        if(firstPlotPercentAdj>secondPlotPercentAdj){
-          bigArea   = firstPlotPercentAdj;
-          smallArea = secondPlotPercentAdj;
-        }
-        else{
-          bigArea   = secondPlotPercentAdj;
-          smallArea = firstPlotPercentAdj;
-        }
-        let areaNeeded = bigArea - smallArea;
-        while(true){
-          Point2 = [c[1][0]+i,c[1][1]+i];
-          //autoDisplayArea(Point1,Point2);
-          // NewLineSplitterDisplay(Point1,Point2);
-          if(parseInt(secondPlotPercentAdj-firstPlotPercentAdj) == 0){
-            //NewLineSplitterDisplay(Point1,Point2);
-            break;
-          }
-          i++;
-        }
-     
-      }
-    </script>
-
+ 
 
   
     <!-- lang lot to utm -->
 
 <script>
- 
+  var plotSplittedInPortionTwo = true;
   function SplitOperationWithDynamicLineString(vertices){
             var plotGeoJson = JSON.parse(plotGeo);
             var poly = turf.polygon(plotGeoJson.coordinates[0]);
@@ -1468,7 +1432,9 @@
             splittedPolygonAdjust = polygonized;
             console.log("Splitted");
             console.log(splittedPolygonAdjust);
-
+            console.log("Ll")
+            if(splittedPolygonAdjust.features.length !=2)plotSplittedInPortionTwo = false;
+          
         }
         
     
@@ -1480,7 +1446,7 @@
 
 <script>
   function specificAdjustFunction(){
-    
+    adjustFunctionHitted = true;
     console.log(firstPlotPercentAdj , " " , secondPlotPercentAdj)
     let area1Percent = document.getElementById('spercent1').value;
     let areaType1 = document.getElementById('splitPortion1').innerText;
@@ -1511,30 +1477,44 @@
       let adjustParcent =requiredPercentJson.areaType1Percent -  prevPercentJson.areaType1Percent ;
       if(adjustParcent<0){
         while(firstPlotPercentAdj > requiredPercentJson.areaType1Percent){
-        
+          if(!plotSplittedInPortionTwo){
+            document.getElementById('invalidAdjustMessage').innerHTML = "The coordinates for your given adjustment % was not found";
+            setTimeout(() => {
+              clearPage();
+            }, 2000); 
+            break;
+          }
             point1[1]++;
             point2[1]++;
             autoDisplayArea([point1,point2]);
         }
         map.removeLayer(vector_string);
         RemoveSpecificLayer();
-        NewLineSplitterDisplay([point1,point2]);
         DisplaySplitPoly1();
         DisplaySplitPoly2();
+        NewLineSplitterDisplay([point1,point2]);
+        buttonEnableDisable();
       }
       else{
         while(firstPlotPercentAdj < requiredPercentJson.areaType1Percent){
-        
+          if(!plotSplittedInPortionTwo){
+            document.getElementById('invalidAdjustMessage').innerHTML = "The coordinates for your given adjustment % was not found";
+            setTimeout(() => {
+              clearPage();
+            }, 2000); 
+            break;
+          }
           point1[1]--;
           point2[1]--;
           autoDisplayArea([point1,point2]);
         }
         map.removeLayer(vector_string);
         RemoveSpecificLayer();
-        NewLineSplitterDisplay([point1,point2]);
-        
+
         DisplaySplitPoly1();
         DisplaySplitPoly2();
+        NewLineSplitterDisplay([point1,point2]);
+        buttonEnableDisable();
       }
     
 
@@ -1544,37 +1524,48 @@
       let adjustParcent =requiredPercentJson.areaType1Percent -  prevPercentJson.areaType1Percent ;
       if(adjustParcent<0){
         while(firstPlotPercentAdj > requiredPercentJson.areaType1Percent){
-        
+          if(!plotSplittedInPortionTwo){
+            document.getElementById('invalidAdjustMessage').innerHTML = "The coordinates for your given adjustment % was not found";
+            setTimeout(() => {
+              clearPage();
+            }, 2000); 
+            break;
+          }
             point1[0]--;
             point2[0]--;
             autoDisplayArea([point1,point2]);
         }
         map.removeLayer(vector_string);
         RemoveSpecificLayer();
-        NewLineSplitterDisplay([point1,point2]);
+
         DisplaySplitPoly1();
         DisplaySplitPoly2();
+        NewLineSplitterDisplay([point1,point2]);
+        buttonEnableDisable();
       }
       else{
         while(firstPlotPercentAdj < requiredPercentJson.areaType1Percent){
-        
+          if(!plotSplittedInPortionTwo){
+            document.getElementById('invalidAdjustMessage').innerHTML = "The coordinates for your given adjustment % was not found";
+            setTimeout(() => {
+              clearPage();
+            }, 2000); 
+            break;
+          }
           point1[0]++;
           point2[0]++;
           autoDisplayArea([point1,point2]);
         }
         map.removeLayer(vector_string);
         RemoveSpecificLayer();
-        NewLineSplitterDisplay([point1,point2]);
+
         DisplaySplitPoly1();
         DisplaySplitPoly2();
+        NewLineSplitterDisplay([point1,point2]);
+        buttonEnableDisable();
         
       }
     }
-    
- 
-
-    
-    
   }
 </script>
 <script>
@@ -1882,7 +1873,6 @@
       
        </div>
        <div class="modal-footer">
-         
          <button type="submit"  onclick="typeSelectFunction();typeSelectOnChange();" class="btn btn-primary" data-dismiss="modal"> Draw </button>
        </div>
    </div>

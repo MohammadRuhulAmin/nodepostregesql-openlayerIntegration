@@ -21,7 +21,9 @@
 <body>
  
    
-        
+    <% if(locals.success_msg) { %>
+        <div class="alert alert-success" role="alert"><%= success_msg %></div>
+    <% } %>
 
    
     <div class="container m-2">

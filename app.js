@@ -263,7 +263,11 @@ app.post('/savePlot', (req,res)=>{
                                                                                                     if (err) throw err
                                                                                                     else {
                                                                                                         var plotList = results.rows;
-                                                                                                        res.render('index',{plotList:results.rows});
+                                                                                                        res.render('index',
+                                                                                                        {
+                                                                                                            plotList:results.rows,
+                                                                                                            success_msg:"New Splitted Plots Are Saved Successfully!"
+                                                                                                        });
                                                                                                     }
                                                                                                 });
                                                                                             }
